@@ -1,3 +1,4 @@
+//TODO: Fix Grid
 import React from 'react';
 import {
   Box,
@@ -15,6 +16,7 @@ import {
   AccountBalance as AccountBalanceIcon,
   Percent as PercentIcon,
 } from '@mui/icons-material';
+//TODO: Update utils
 import { formatCurrency, formatPercentage } from '../../utils/formatters';
 
 interface PortfolioSummary {
