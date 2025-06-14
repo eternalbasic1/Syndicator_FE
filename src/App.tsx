@@ -1,35 +1,71 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.tsx
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import { CssBaseline } from '@mui/material';
+import { Provider } from 'react-redux';
+import { store } from './store';
+import { theme } from './theme/theme';
+import { useAppDispatch, useAppSelector } from './hooks/useAuth';
+import { loadUserFromStorage } from './store/authSlice';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Pages
+import AuthPage from './pages/AuthPage';
+import DashboardPage from './pages/DashboardPage';
+import TransactionsPage from './pages/TransactionsPage';
+import FriendsPage from './pages/FriendsPage';
+import PortfolioPage from './pages/PortfolioPage';
+import SyndicatePage from './pages/SyndicatePage';
+
+// Components
+import Layout from './components/common/Layout/Layout';
+import ProtectedRoute from './components/common/ProtectedRoute';
+
+const AppContent: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(loadUserFromStorage());
+  }, [dispatch]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Router>
+      <Routes>
+        <Route
+          path="/auth"
+          element={!isAuthenticated ? <AuthPage /> : <Navigate to="/dashboard" />}
+        />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/dashboard" />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="transactions" element={<TransactionsPage />} />
+          <Route path="friends" element={<FriendsPage />} />
+          <Route path="portfolio" element={<PortfolioPage />} />
+          <Route path="syndicate" element={<SyndicatePage />} />
+        </Route>
+        <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/auth"} />} />
+      </Routes>
+    </Router>
+  );
+};
 
-export default App
+const App: React.FC = () => {
+  return (
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AppContent />
+      </ThemeProvider>
+    </Provider>
+  );
+};
+
+export default App;
