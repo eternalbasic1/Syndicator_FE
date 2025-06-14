@@ -46,8 +46,8 @@ const Header: React.FC<HeaderProps> = ({ drawerWidth, onDrawerToggle }) => {
     <AppBar
       position="fixed"
       sx={{
-        width: { sm: calc(100% - ${drawerWidth}px) },
-        ml: { sm: ${drawerWidth}px },
+        width: { sm: `calc(100% - ${drawerWidth}px)` },
+        ml: { sm: `${drawerWidth}px` },
       }}
     >
       <Toolbar>
