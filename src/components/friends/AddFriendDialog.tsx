@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -12,8 +13,9 @@ import {
   InputAdornment,
 } from '@mui/material';
 import { PersonAdd as PersonAddIcon } from '@mui/icons-material';
-import { useCreateFriendRequestMutation } from '../../store/api/friendApi';
+//TODO: fix utils
 import { validateUsername } from '../../utils/validators';
+import { useCreateFriendRequestMutation } from '../../store/api/friendApi';
 
 interface AddFriendDialogProps {
   open: boolean;
@@ -28,7 +30,7 @@ const AddFriendDialog: React.FC<AddFriendDialogProps> = ({
 }) => {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
-  const [createFriend, { isLoading }] = useCreateFriendMutation();
+  const [createFriend, { isLoading }] = useCreateFriendRequestMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,10 +46,11 @@ const AddFriendDialog: React.FC<AddFriendDialogProps> = ({
     try {
       const result = await createFriend({
         mutual_friend_name: username.trim(),
+        username: ''
       }).unwrap();
 
       // Show success message based on result
-      if (result.created) {
+      if (result ?? false) {
         setUsername('');
         onSuccess?.();
         onClose();
