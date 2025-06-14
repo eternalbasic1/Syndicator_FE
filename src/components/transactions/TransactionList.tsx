@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/transactions/TransactionList.tsx
 import React, { useState } from 'react';
 import {
@@ -6,18 +7,17 @@ import {
   Typography,
   Box,
   Chip,
-  Button,
   IconButton,
   Grid,
 } from '@mui/material';
-import { Visibility, Edit, Delete } from '@mui/icons-material';
-import { useGetAllTransactionsQuery } from '../../store/api';
+import { Visibility } from '@mui/icons-material';
+import { useGetAllTransactionsQuery } from '../../store/api/transactionApi';
 import LoadingSpinner from '../common/LoadingSpinner';
 import TransactionDetails from './TransactionDetails';
-import { Transaction } from '../../types';
+import type { Transaction } from '../../types/transaction.types';
 
 const TransactionList: React.FC = () => {
-  const { data, isLoading } = useGetAllTransactionsQuery();
+  const { data, isLoading } = useGetAllTransactionsQuery("sufgsu");
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
@@ -36,6 +36,7 @@ const TransactionList: React.FC = () => {
 
   return (
     <Box>
+      {/*TODO: Need to fix types first then come back to here later*/}
       <Typography variant="h6" gutterBottom>
         All Transactions ({data?.transaction_count || 0})
       </Typography>
