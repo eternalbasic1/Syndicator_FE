@@ -39,22 +39,25 @@ const StatsCard: React.FC<StatsCardProps> = ({
             )}
           </Box>
           <Box
-            sx={{
+            sx={(theme) => ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               width: 48,
               height: 48,
               borderRadius: '50%',
-              backgroundColor: ${color}.light,
-              color: ${color}.main,
-            }}
-          >
+              backgroundColor: theme.palette[color].light + '33', // Adding 20% opacity
+              color: theme.palette[color].main,
+              '& svg': {
+                fontSize: '1.5rem',
+              },
+            })}>
             {icon}
           </Box>
         </Box>
       </CardContent>
     </Card>
+
   );
 };
 

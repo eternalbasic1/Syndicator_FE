@@ -13,7 +13,7 @@ import {
   AccountBalance,
   TrendingUp,
 } from '@mui/icons-material';
-import { Transaction } from '../../types/transaction.types';
+import type { Transaction } from '../../types/transaction.types';
 import dayjs from 'dayjs';
 
 interface RecentTransactionsProps {
@@ -60,7 +60,8 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({
                 </Typography>
                 <Chip
                   size="small"
-                  label={₹${transaction.total_principal_amount.toLocaleString()}}
+                  // TODO: You can add Rupee symbol here
+                  label={transaction.total_principal_amount.toLocaleString()}
                   color="primary"
                   variant="outlined"
                 />
