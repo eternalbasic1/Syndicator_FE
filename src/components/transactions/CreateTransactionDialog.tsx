@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/transactions/CreateTransactionDialog.tsx
 import React, { useState } from 'react';
 import {
@@ -19,7 +20,8 @@ import {
   Alert,
 } from '@mui/material';
 import { Add, Delete } from '@mui/icons-material';
-import { useCreateTransactionMutation, useGetSyndicateQuery } from '../../store/api';
+import { useCreateTransactionMutation } from '../../store/api/transactionApi';
+import { useGetSyndicateViewQuery } from '../../store/api/syndicateApi';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 interface CreateTransactionDialogProps {
@@ -38,7 +40,7 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
   onClose,
 }) => {
   const [createTransaction, { isLoading: isCreating }] = useCreateTransactionMutation();
-  const { data: syndicate } = useGetSyndicateQuery();
+  const { data: syndicate } = useGetSyndicateViewQuery("sufgsu");
   
   const [totalPrincipal, setTotalPrincipal] = useState<number>(0);
   const [totalInterest, setTotalInterest] = useState<number>(0);
@@ -204,7 +206,7 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
                     Add Member
                   </Button>
                 </Box>
-
+                //TODO: Need to completely revamp code as i can see friends is not in syndicate data
                 {syndicate?.friends && (
                   <Box mb={2}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>

@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { User } from "./auth.types";
 
 
 // src/types/friend.types.ts
 export interface FriendRequest {
+    // TODO: check other_user & request_type not part of original flow
+    other_user?: any;
+    request_type?: string;
     request_id: string;
     user_id: string;
     requested_id: string;

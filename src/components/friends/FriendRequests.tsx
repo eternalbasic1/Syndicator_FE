@@ -68,6 +68,7 @@ const FriendRequests: React.FC = () => {
     );
   }
 
+  // TODO: Looks like WE need to completely revamp this entire code 
   const { requests, status_summary } = friendRequestsData || {
     requests: { all: [], sent: [], received: [] },
     status_summary: { pending: 0, accepted: 0, rejected: 0, canceled: 0 }
@@ -131,7 +132,8 @@ const FriendRequests: React.FC = () => {
                   <FriendRequestCard
                     key={request.request_id}
                     request={request}
-                    currentUserId={friendRequestsData?.user_id || ''}
+                    // TODO: check this previously it was friendRequestsData?.user_id
+                    currentUserId={friendRequestsData?.[0]?.user_id || ''}
                     onUpdate={refetch}
                   />
                 ))}
@@ -147,7 +149,7 @@ const FriendRequests: React.FC = () => {
                         <FriendRequestCard
                           key={request.request_id}
                           request={request}
-                          currentUserId={friendRequestsData?.user_id || ''}
+                          currentUserId={friendRequestsData?.[0]?.user_id || ''}
                           onUpdate={refetch}
                         />
                       ))}
@@ -173,7 +175,7 @@ const FriendRequests: React.FC = () => {
                   <FriendRequestCard
                     key={request.request_id}
                     request={request}
-                    currentUserId={friendRequestsData?.user_id || ''}
+                    currentUserId={friendRequestsData?.[0]?.user_id || ''}
                     onUpdate={refetch}
                   />
                 ))}
@@ -189,7 +191,7 @@ const FriendRequests: React.FC = () => {
                         <FriendRequestCard
                           key={request.request_id}
                           request={request}
-                          currentUserId={friendRequestsData?.user_id || ''}
+                          currentUserId={friendRequestsData?.[0]?.user_id || ''}
                           onUpdate={refetch}
                         />
                       ))}
@@ -228,7 +230,7 @@ const FriendRequests: React.FC = () => {
                   <FriendRequestCard
                     key={request.request_id}
                     request={request}
-                    currentUserId={friendRequestsData?.user_id || ''}
+                    currentUserId={friendRequestsData?.[0]?.user_id || ''}
                     onUpdate={refetch}
                   />
                 ))}

@@ -1,4 +1,4 @@
-//TODO: COme back later
+//TODO: COme back later, Fix Grid
 import React from 'react';
 import {
   Box,
@@ -39,7 +39,8 @@ const DashboardPage: React.FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Total Invested"
-            value={₹${totalInvested.toLocaleString()}}
+            //TODO: You Can add rupee symbol here later
+            value={totalInvested.toLocaleString()}
             icon={<Savings />}
             color="primary"
             loading={portfolioLoading}
@@ -49,7 +50,7 @@ const DashboardPage: React.FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             title="Total Returns"
-            value={₹${totalInterest.toLocaleString()}}
+            value={totalInterest.toLocaleString()}
             icon={<TrendingUp />}
             color="success"
             loading={portfolioLoading}

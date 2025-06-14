@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import {
   Card,
   CardContent,
   Typography,
   Box,
-  Button,
   Avatar,
   Chip,
   IconButton,
@@ -17,6 +17,7 @@ import {
   Person as PersonIcon,
 } from '@mui/icons-material';
 import { useUpdateFriendRequestStatusMutation } from '../../store/api/friendApi';
+// TODO: fix utils
 import { formatDate } from '../../utils/formatters';
 import type { FriendRequest } from '../../types/friend.types';
 

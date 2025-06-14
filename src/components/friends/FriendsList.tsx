@@ -1,4 +1,5 @@
 // src/components/friends/FriendsList.tsx
+//TODO: FIx Grid issue
 import React from 'react';
 import {
   Card,
@@ -10,17 +11,17 @@ import {
   Grid,
 } from '@mui/material';
 import { Group } from '@mui/icons-material';
-import { useGetSyndicateQuery } from '../../store/api';
+import { useGetSyndicateViewQuery } from '../../store/api/syndicateApi';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 const FriendsList: React.FC = () => {
-  const { data, isLoading } = useGetSyndicateQuery();
+  const { data, isLoading } = useGetSyndicateViewQuery("sufgsu");
 
   if (isLoading) {
     return <LoadingSpinner message="Loading friends..." />;
   }
 
-  if (!data?.friends?.length) {
+  if (!data?.transactions?.length) {
     return (
       <Card>
         <CardContent>
@@ -41,27 +42,27 @@ const FriendsList: React.FC = () => {
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
-        Friends ({data.friends.length})
+        Friends ({data.transactions.length})
       </Typography>
       
       <Grid container spacing={2}>
-        {data.friends.map((friend) => (
-          <Grid item xs={12} sm={6} md={4} key={friend.user_id}>
+        {data.transactions.map((friend) => (
+          <Grid item xs={12} sm={6} md={4} key={friend.risk_taker_id}>
             <Card>
               <CardContent>
                 <Box display="flex" alignItems="center" gap={2}>
                   <Avatar sx={{ bgcolor: 'primary.main' }}>
-                    {friend.name?.charAt(0) || friend.username.charAt(0)}
+                    {friend.risk_taker?.name?.charAt(0) || friend.risk_taker?.username.charAt(0)}
                   </Avatar>
                   <Box flex={1}>
                     <Typography variant="subtitle1">
-                      {friend.name || friend.username}
+                      {friend.risk_taker?.name || friend.risk_taker?.username}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      @{friend.username}
+                      @{friend.risk_taker?.username}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      {friend.email}
+                      {friend.risk_taker?.email}
                     </Typography>
                   </Box>
                 </Box>

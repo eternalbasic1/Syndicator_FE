@@ -1,4 +1,5 @@
 // src/components/transactions/TransactionDetails.tsx
+// TODO: Grid Fix
 import React from 'react';
 import {
   Dialog,
@@ -14,7 +15,7 @@ import {
   Grid,
   Divider,
 } from '@mui/material';
-import { Transaction } from '../../types';
+import type { Transaction } from '../../types/transaction.types';
 
 interface TransactionDetailsProps {
   open: boolean;
