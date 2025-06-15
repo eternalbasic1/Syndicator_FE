@@ -3,6 +3,7 @@ import { Box, Container, Typography, Paper, CircularProgress } from '@mui/materi
 import Grid from '@mui/material/Grid';
 import GridItem from '../components/common/GridItem';
 import { useGetPortfolioQuery, useGetAllTransactionsQuery } from '../store/api/transactionApi';
+// import type { TransactionMetaData } from '../types/transaction.types';
 import Portfolio from '../components/portfolio/Portfolio';
 import PortfolioChart from '../components/portfolio/PortfolioChart';
 import PortfolioStats from '../components/portfolio/PortfolioStats';
@@ -10,6 +11,13 @@ import PortfolioStats from '../components/portfolio/PortfolioStats';
 const PortfolioPage: React.FC = () => {
   const { data: portfolioData, isLoading: portfolioLoading } = useGetPortfolioQuery();
   const { data: transactionsData, isLoading: transactionsLoading } = useGetAllTransactionsQuery();
+
+  // Handle undefined or null data and ensure proper data structure
+  // const safeTransactions = Array.isArray(transactionsData) ? transactionsData : [];
+  // const allTransactions = safeTransactions.reduce((acc, tx) => {
+  //   const txArray = Array.isArray(tx.transactions) ? tx.transactions : [];
+  //   return [...acc, ...txArray];
+  // }, [] as TransactionMetaData[]);
 
   if (portfolioLoading || transactionsLoading) {
     return (
