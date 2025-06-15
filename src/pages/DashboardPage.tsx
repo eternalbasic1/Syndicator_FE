@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Box, Typography, Card, CardContent, Alert, Grid, type GridProps } from '@mui/material';
+import { Box, Typography, Card, CardContent, Alert, Grid } from '@mui/material';
+import GridItem from '../components/common/GridItem';
 import QuickActions from '../components/dashboard/QuickActions';
 import {
   Savings as SavingsIcon,
@@ -90,13 +91,6 @@ const DashboardPage: React.FC = () => {
     p: 2
   } as const;
   
-  // Grid item component with proper typing
-  const GridItem: React.FC<GridProps> = React.memo(({ children, ...props }) => (
-    <Grid item component="div" {...props}>
-      {children}
-    </Grid>
-  ));
-  GridItem.displayName = 'GridItem';
 
   // Move QuickStats component before its usage
   const QuickStats: React.FC = () => (

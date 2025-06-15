@@ -25,12 +25,13 @@ import {
   CircularProgress,
   Card,
   CardContent,
-  Grid,
   Divider,
   IconButton,
   Tooltip,
-type SelectChangeEvent
+  type SelectChangeEvent
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import GridItem from '../components/common/GridItem';
 import {
   Add as AddIcon,
   Visibility as ViewIcon,
@@ -39,7 +40,8 @@ import {
   People as PeopleIcon,
   CalendarToday as CalendarIcon
 } from '@mui/icons-material';
-import { useGetAllTransactionsQuery, useCreateTransactionMutation, useGetSyndicateQuery } from '../store/api/apiSlice';
+import { useGetAllTransactionsQuery, useCreateTransactionMutation } from '../store/api/transactionApi';
+import { useGetSyndicateViewQuery } from '../store/api/syndicateApi';
 import { format } from 'date-fns';
 
 interface SyndicateDetail {
@@ -70,11 +72,11 @@ const TransactionsPage: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const { data: transactionsData, isLoading: transactionsLoading, error: transactionsError } = useGetAllTransactionsQuery();
-  const { data: syndicateData, isLoading: syndicateLoading } = useGetSyndicateQuery();
+  const { data: syndicateData, isLoading: syndicateLoading } = useGetSyndicateViewQuery();
   const [createTransaction, { isLoading: createLoading }] = useCreateTransactionMutation();
 
   const friends = syndicateData?.friends || [];
-  const transactions = transactionsData?.transactions || [];
+  const transactions = transactionsData || [];
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -227,57 +229,54 @@ const TransactionsPage: React.FC = () => {
 
       {/* Summary Cards */}
       <Grid container spacing={3} mb={4}>
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Box display="flex" alignItems="center">
-                <AccountBalanceIcon color="primary" sx={{ mr: 2, fontSize: 32 }} />
-                <Box>
-                  <Typography variant="h6" color="primary">
-                    Total Principal
-                  </Typography>
-                  <Typography variant="h4">
-                    ₹{totalPrincipal.toLocaleString()}
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Box display="flex" alignItems="center">
-                <TrendingUpIcon color="success" sx={{ mr: 2, fontSize: 32 }} />
-                <Box>
-                  <Typography variant="h6" color="success.main">
-                    Total Interest
-                  </Typography>
-                  <Typography variant="h4">
-                    ₹{totalInterest.toLocaleString()}
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Box display="flex" alignItems="center">
-                <PeopleIcon color="info" sx={{ mr: 2, fontSize: 32 }} />
-                <Box>
-                  <Typography variant="h6" color="info.main">
-                    Total Transactions
-                  </Typography>
-                  <Typography variant="h4">
-                    {transactions.length}
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+        <GridItem xs={12} md={4}>
+          <Paper sx={{ p: 3, height: '100%' }}>
+            <Box display="flex" alignItems="center" mb={2}>
+              <AccountBalanceIcon color="primary" sx={{ mr: 1 }} />
+              <Typography variant="h6" component="div">
+                Total Principal
+              </Typography>
+            </Box>
+            <Typography variant="h4" color="primary" gutterBottom>
+              ₹{totalPrincipal.toLocaleString('en-IN')}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Across all transactions
+            </Typography>
+          </Paper>
+        </GridItem>
+        <GridItem xs={12} md={4}>
+          <Paper sx={{ p: 3, height: '100%' }}>
+            <Box display="flex" alignItems="center" mb={2}>
+              <TrendingUpIcon color="success" sx={{ mr: 1 }} />
+              <Typography variant="h6" component="div">
+                Total Interest
+              </Typography>
+            </Box>
+            <Typography variant="h4" color="success" gutterBottom>
+              ₹{totalInterest.toLocaleString('en-IN')}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Earned from all transactions
+            </Typography>
+          </Paper>
+        </GridItem>
+        <GridItem xs={12} md={4}>
+          <Paper sx={{ p: 3, height: '100%' }}>
+            <Box display="flex" alignItems="center" mb={2}>
+              <PeopleIcon color="info" sx={{ mr: 1 }} />
+              <Typography variant="h6" component="div">
+                Active Syndicates
+              </Typography>
+            </Box>
+            <Typography variant="h4" color="info" gutterBottom>
+              {syndicateData?.friends?.length || 0}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Active investment groups
+            </Typography>
+          </Paper>
+        </GridItem>
       </Grid>
 
       {/* Transactions Table */}
@@ -354,7 +353,7 @@ const TransactionsPage: React.FC = () => {
         <DialogContent>
           <Box sx={{ pt: 2 }}>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <GridItem xs={12} md={6}>
                 <TextField
                   fullWidth
                   label="Total Principal Amount"
@@ -365,8 +364,8 @@ const TransactionsPage: React.FC = () => {
                   helperText={errors.total_principal_amount}
                   InputProps={{ startAdornment: '₹' }}
                 />
-              </Grid>
-              <Grid item xs={12} md={6}>
+              </GridItem>
+              <GridItem xs={12} md={6}>
                 <TextField
                   fullWidth
                   label="Interest Rate (%)"
@@ -377,8 +376,8 @@ const TransactionsPage: React.FC = () => {
                   helperText={errors.total_interest_amount}
                   InputProps={{ endAdornment: '%' }}
                 />
-              </Grid>
-              <Grid item xs={12}>
+              </GridItem>
+              <GridItem xs={12}>
                 <FormControl fullWidth>
                   <InputLabel>Select Syndicators (Optional)</InputLabel>
                   <Select
@@ -400,10 +399,10 @@ const TransactionsPage: React.FC = () => {
                     ))}
                   </Select>
                 </FormControl>
-              </Grid>
+              </GridItem>
               
               {selectedFriends.length > 0 && (
-                <Grid item xs={12}>
+                <GridItem xs={12}>
                   <Divider sx={{ my: 2 }} />
                   <Typography variant="h6" gutterBottom>
                     Syndicate Details
@@ -415,7 +414,7 @@ const TransactionsPage: React.FC = () => {
                   )}
                   <Grid container spacing={2}>
                     {selectedFriends.map((friendUsername) => (
-                      <Grid item xs={12} md={6} key={friendUsername}>
+                      <GridItem xs={12} md={6} key={friendUsername}>
                         <Card variant="outlined">
                           <CardContent>
                             <Typography variant="subtitle1" gutterBottom>
@@ -433,10 +432,10 @@ const TransactionsPage: React.FC = () => {
                             />
                           </CardContent>
                         </Card>
-                      </Grid>
+                      </GridItem>
                     ))}
                   </Grid>
-                </Grid>
+                </GridItem>
               )}
             </Grid>
           </Box>
@@ -461,48 +460,48 @@ const TransactionsPage: React.FC = () => {
           {selectedTransaction && (
             <Box sx={{ pt: 2 }}>
               <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <GridItem xs={12} md={6}>
                   <Typography variant="subtitle2" color="textSecondary">
                     Transaction ID
                   </Typography>
                   <Typography variant="body1" sx={{ fontFamily: 'monospace', mb: 2 }}>
                     {selectedTransaction.transaction_id}
                   </Typography>
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </GridItem>
+                <GridItem xs={12} md={6}>
                   <Typography variant="subtitle2" color="textSecondary">
                     Created Date
                   </Typography>
                   <Typography variant="body1" mb={2}>
                     {format(new Date(selectedTransaction.created_at), 'PPp')}
                   </Typography>
-                </Grid>
-                <Grid item xs={12} md={4}>
+                </GridItem>
+                <GridItem xs={12} md={4}>
                   <Typography variant="subtitle2" color="textSecondary">
                     Principal Amount
                   </Typography>
                   <Typography variant="h6" color="primary">
                     ₹{selectedTransaction.total_principal_amount.toLocaleString()}
                   </Typography>
-                </Grid>
-                <Grid item xs={12} md={4}>
+                </GridItem>
+                <GridItem xs={12} md={4}>
                   <Typography variant="subtitle2" color="textSecondary">
                     Interest Rate
                   </Typography>
                   <Typography variant="h6" color="success.main">
                     {selectedTransaction.total_interest}%
                   </Typography>
-                </Grid>
-                <Grid item xs={12} md={4}>
+                </GridItem>
+                <GridItem xs={12} md={4}>
                   <Typography variant="subtitle2" color="textSecondary">
                     Interest Amount
                   </Typography>
                   <Typography variant="h6" color="success.main">
                     ₹{(selectedTransaction.total_principal_amount * selectedTransaction.total_interest / 100).toLocaleString()}
                   </Typography>
-                </Grid>
+                </GridItem>
                 {selectedTransaction.syndicators.length > 0 && (
-                  <Grid item xs={12}>
+                  <GridItem xs={12}>
                     <Typography variant="subtitle2" color="textSecondary" gutterBottom>
                       Syndicators
                     </Typography>
@@ -516,7 +515,7 @@ const TransactionsPage: React.FC = () => {
                         />
                       ))}
                     </Box>
-                  </Grid>
+                  </GridItem>
                 )}
               </Grid>
             </Box>

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Box, Container, Typography, Paper, CircularProgress, Grid } from '@mui/material';
+import { Box, Container, Typography, Paper, CircularProgress } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import GridItem from '../components/common/GridItem';
 import { useGetPortfolioQuery, useGetAllTransactionsQuery } from '../store/api/transactionApi';
 import Portfolio from '../components/portfolio/Portfolio';
 import PortfolioChart from '../components/portfolio/PortfolioChart';
@@ -41,16 +43,16 @@ const PortfolioPage: React.FC = () => {
       </Typography>
 
       <Grid container spacing={4}>
-        <Grid item xs={12} md={8}>
+        <GridItem xs={12} md={8}>
           <Paper sx={{ p: 3 }}>
             <Portfolio
               summary={portfolioSummary}
               isLoading={portfolioLoading || transactionsLoading}
             />
           </Paper>
-        </Grid>
+        </GridItem>
 
-        <Grid item xs={12} md={4}>
+        <GridItem xs={12} md={4}>
           <Paper sx={{ p: 3 }}>
             <PortfolioStats
               transactions={transactionsData?.map(tx => tx.transactions).flat() || []}
@@ -59,9 +61,9 @@ const PortfolioPage: React.FC = () => {
               loading={transactionsLoading}
             />
           </Paper>
-        </Grid>
+        </GridItem>
 
-        <Grid item xs={12}>
+        <GridItem xs={12}>
           <Paper sx={{ p: 3 }}>
             <PortfolioChart
               transactions={transactionsData?.map(transaction => transaction.transactions).flat() || []}
@@ -69,7 +71,7 @@ const PortfolioPage: React.FC = () => {
               totalInterest={totalInterest}
             />
           </Paper>
-        </Grid>
+        </GridItem>
       </Grid>
     </Container>
   );
