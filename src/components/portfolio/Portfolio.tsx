@@ -4,12 +4,12 @@ import {
   Card,
   CardContent,
   Typography,
-  Grid,
   Chip,
   Avatar,
   Divider,
   LinearProgress,
 } from '@mui/material';
+import GridItem from '../common/GridItem';
 import {
   TrendingUp as TrendingUpIcon,
   AccountBalance as AccountBalanceIcon,
@@ -40,6 +40,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
     active_transactions,
     monthly_earnings,
   } = summary;
+
   const stats = [
     {
       title: 'Total Principal',
@@ -77,9 +78,9 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
         <Typography variant="h5" gutterBottom>
           Portfolio Overview
         </Typography>
-        <Grid container spacing={3}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
           {[1, 2, 3, 4].map((item) => (
-            <Grid item xs={12} sm={6} md={3} key={item}>
+            <GridItem key={item} xs={12} sm={6} md={3}>
               <Card>
                 <CardContent>
                   <LinearProgress />
@@ -90,9 +91,9 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
+            </GridItem>
           ))}
-        </Grid>
+        </Box>
       </Box>
     );
   }
@@ -110,9 +111,9 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
         />
       </Box>
 
-      <Grid container spacing={3} mb={4}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }} mb={4}>
         {stats.map((stat, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <GridItem key={index} xs={12} sm={6} md={3}>
             <Card
               sx={{
                 height: '100%',
@@ -149,12 +150,12 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
                 </Typography>
               </CardContent>
             </Card>
-          </Grid>
+          </GridItem>
         ))}
-      </Grid>
+      </Box>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+        <GridItem xs={12} md={6}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -181,9 +182,9 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
               </Box>
             </CardContent>
           </Card>
-        </Grid>
+        </GridItem>
 
-        <Grid item xs={12} md={6}>
+        <GridItem xs={12} md={6}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -223,8 +224,8 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
               </Box>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </GridItem>
+      </Box>
     </Box>
   );
 };
