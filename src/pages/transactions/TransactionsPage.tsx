@@ -57,7 +57,9 @@ const TransactionsPage: React.FC = () => {
   };
 
   const handleViewTransaction = (transaction: Transaction) => {
+    console.log('handleViewTransaction called with:', transaction);
     setSelectedTransaction(transaction);
+    console.log('selectedTransaction state after set:', selectedTransaction);
   };
 
   const handleCloseDetails = () => {
@@ -171,6 +173,11 @@ const TransactionsPage: React.FC = () => {
         transaction={selectedTransaction}
         onClose={handleCloseDetails}
       />
+      {/* Debug Info */}
+      <div style={{ display: 'none' }}>
+        <div>Selected Transaction: {JSON.stringify(selectedTransaction)}</div>
+        <div>Dialog Open: {selectedTransaction ? 'true' : 'false'}</div>
+      </div>
     </Box>
   );
 };

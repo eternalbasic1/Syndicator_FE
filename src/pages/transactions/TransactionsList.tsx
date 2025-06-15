@@ -66,8 +66,6 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
   }
 
   return (
-    <>
-    <h1>HOEEELLLWWW List</h1>
      <Paper>
       <TableContainer>
         <Table>
@@ -124,7 +122,6 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
         </Table>
       </TableContainer>
     </Paper>
-    </>
    
   );
 };

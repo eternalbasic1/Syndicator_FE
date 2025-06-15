@@ -26,10 +26,30 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
   transaction,
   onClose,
 }) => {
-  if (!transaction) return null;
-  console.log("HITTING TRANSACTION DETAILS")
+  React.useEffect(() => {
+    console.log('TransactionDetails - open state:', open);
+    console.log('TransactionDetails - transaction prop:', transaction);
+  }, [open, transaction]);
+
+  if (!transaction) {
+    console.log('No transaction data available', transaction);
+    return null;
+  }
+
+  console.log('Rendering TransactionDetails with:', {
+    open,
+    transactionId: transaction.transaction_id,
+    transaction
+  });
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="md" 
+      fullWidth
+      data-testid="transaction-details-dialog"
+    >
       <DialogTitle>Transaction Details</DialogTitle>
       <DialogContent>
         {transaction && (
