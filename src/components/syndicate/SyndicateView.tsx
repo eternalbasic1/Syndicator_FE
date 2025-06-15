@@ -3,37 +3,26 @@ import {
   Card,
   CardContent,
   Typography,
+  Box,
   Avatar,
   Chip,
-  Box,
-  Grid
+  Container,
 } from '@mui/material';
-import {
-  Person as PersonIcon,
-  Email as EmailIcon,
-  AccountBox as AccountBoxIcon,
-} from '@mui/icons-material';
-
-interface Friend {
-  user_id: string;
-  username: string;
-  name?: string;
-  email: string;
-}
-
-interface SyndicateData {
-  friend_list_id: string;
-  user: {
-    user_id: string;
-    username: string;
-  };
-  friends: Friend[];
-  created_at: string;
-}
+import GridItem from '../common/GridItem';
+import { Email as EmailIcon } from '@mui/icons-material';
+import type { SyndicateMember } from '../../types/syndicate.types';
 
 interface SyndicateViewProps {
-  syndicateData: SyndicateData;
-  onFriendSelect?: (friend: Friend) => void;
+  syndicateData: {
+    friend_list_id: string;
+    user: {
+      user_id: string;
+      username: string;
+    };
+    friends: SyndicateMember[];
+    created_at: string;
+  };
+  onFriendSelect?: (friend: SyndicateMember) => void;
 }
 
 const SyndicateView: React.FC<SyndicateViewProps> = ({
@@ -98,78 +87,54 @@ const SyndicateView: React.FC<SyndicateViewProps> = ({
 
       {/* Friends Grid */}
       {friends.length === 0 ? (
-        <Card>
-          <CardContent>
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              py={4}
-            >
-              <PersonIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-              <Typography variant="h6" color="text.secondary" gutterBottom>
-                No Friends in Syndicate
-              </Typography>
-              <Typography variant="body2" color="text.secondary" textAlign="center">
-                Add friends to start building your syndicate network
-              </Typography>
-            </Box>
-          </CardContent>
-        </Card>
+        <Box>
+          <Typography variant="h6" color="text.secondary" textAlign="center" py={4}>
+            No friends in your syndicate yet
+          </Typography>
+        </Box>
       ) : (
-        <Grid container spacing={2}>
-          {friends.map((friend) => (
-            <Grid item xs={12} sm={6} md={4} key={friend.user_id}>
-              <Card
-                sx={{
-                  height: '100%',
-                  transition: 'all 0.3s ease',
-                  cursor: onFriendSelect ? 'pointer' : 'default',
-                  '&:hover': {
-                    transform: onFriendSelect ? 'translateY(-4px)' : 'none',
-                    boxShadow: onFriendSelect ? 3 : 1,
-                  },
-                }}
-                onClick={() => onFriendSelect?.(friend)}
-              >
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={2} mb={2}>
-                    <Avatar
-                      sx={{
-                        bgcolor: 'primary.main',
-                        width: 48,
-                        height: 48,
-                      }}
-                    >
-                      {getInitials(friend.name || friend.username)}
-                    </Avatar>
-                    <Box flex={1}>
-                      <Typography variant="h6" fontWeight="bold" noWrap>
-                        {friend.name || friend.username}
-                      </Typography>
-                      {friend.name && (
-                        <Typography variant="body2" color="text.secondary" noWrap>
-                          @{friend.username}
-                        </Typography>
-                      )}
-                    </Box>
-                  </Box>
-
-                  <Box display="flex" alignItems="center" gap={1} mb={1}>
-                    <AccountBoxIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      ID: {friend.user_id.slice(0, 8)}...
-                    </Typography>
-                  </Box>
-
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      {friend.email}
-                    </Typography>
-                  </Box>
-
+        <Box>
+          <Typography variant="h6" mb={2}>
+            Friends in Syndicate
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            {friends.map((friend) => (
+              <GridItem key={friend.user_id} xs={12} sm={6} md={4}>
+                <Card
+                  sx={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    p: 2,
+                    cursor: onFriendSelect ? 'pointer' : 'default',
+                    '&:hover': {
+                      transform: onFriendSelect ? 'translateY(-2px)' : 'none',
+                      boxShadow: onFriendSelect ? 3 : 1,
+                    },
+                  }}
+                  onClick={() => onFriendSelect?.(friend)}
+                >
+                  <Avatar
+                    sx={{
+                      bgcolor: 'primary.main',
+                      mb: 1,
+                      width: 64,
+                      height: 64,
+                    }}
+                  >
+                    {getInitials(friend.username)}
+                  </Avatar>
+                  <Typography variant="h6" gutterBottom>
+                    {friend.name || friend.username}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" noWrap>
+                    @{friend.username}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" mt={1}>
+                    <EmailIcon sx={{ fontSize: '0.875rem', mr: 0.5 }} />
+                    {friend.email}
+                  </Typography>
                   {onFriendSelect && (
                     <Box mt={2}>
                       <Chip
@@ -180,11 +145,11 @@ const SyndicateView: React.FC<SyndicateViewProps> = ({
                       />
                     </Box>
                   )}
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+                </Card>
+              </GridItem>
+            ))}
+          </Box>
+        </Box>
       )}
     </Box>
   );

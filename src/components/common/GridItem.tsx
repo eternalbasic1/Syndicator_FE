@@ -1,24 +1,37 @@
 import React from 'react';
-import { Grid, type GridProps as MuiGridProps } from '@mui/material';
+import { Grid } from '@mui/material';
 
-// Extend MUI GridProps but make 'item' optional since we're setting it to true
-type GridItemProps = Omit<MuiGridProps, 'item' | 'container'> & {
-  xs?: number | 'auto' | true | false;
-  sm?: number | 'auto' | true | false;
-  md?: number | 'auto' | true | false;
-  lg?: number | 'auto' | true | false;
-  xl?: number | 'auto' | true | false;
-};
+interface GridItemProps {
+  children: React.ReactNode;
+  xs?: number;
+  sm?: number;
+  md?: number;
+  lg?: number;
+  xl?: number;
+  container?: boolean;
+  item?: boolean;
+  direction?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
+  spacing?: number;
+  wrap?: 'wrap' | 'nowrap' | 'wrap-reverse';
+  justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
+  alignItems?: 'flex-start' | 'center' | 'flex-end' | 'stretch' | 'baseline';
+  alignContent?: 'flex-start' | 'center' | 'flex-end' | 'stretch' | 'space-between' | 'space-around';
+}
 
 /**
  * A memoized Grid item component with proper TypeScript support.
  * Wraps MUI Grid with item prop set to true and includes proper typing.
  */
-const GridItem = React.memo<GridItemProps>(({ children, ...props }) => (
-  <Grid item component="div" {...props}>
-    {children}
-  </Grid>
-));
+export const GridItem = React.memo(({ children, ...props }: GridItemProps) => {
+  const gridProps = { ...props };
+  gridProps.item = true;
+  
+  return (
+    <Grid {...gridProps}>
+      {children}
+    </Grid>
+  );
+});
 
 GridItem.displayName = 'GridItem';
 

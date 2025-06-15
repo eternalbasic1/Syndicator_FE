@@ -9,8 +9,12 @@ import {
   Divider,
   LinearProgress,
 } from '@mui/material';
+<<<<<<< HEAD
+import GridItem from '../common/GridItem';
+=======
 import Grid from '@mui/material/Grid';
 import GridItem from '../../components/common/GridItem';
+>>>>>>> 829988b97fdf8009e194fc337a32346ef2c4c75f
 import {
   TrendingUp as TrendingUpIcon,
   AccountBalance as AccountBalanceIcon,
@@ -41,6 +45,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
     active_transactions,
     monthly_earnings,
   } = summary;
+
   const stats = [
     {
       title: 'Total Principal',
@@ -78,9 +83,22 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
         <Typography variant="h5" gutterBottom>
           Portfolio Overview
         </Typography>
-        <Grid container spacing={3}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
           {[1, 2, 3, 4].map((item) => (
             <GridItem key={item} xs={12} sm={6} md={3}>
+<<<<<<< HEAD
+              <Card>
+                <CardContent>
+                  <LinearProgress />
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="h6" component="div">
+                      Loading...
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            </GridItem>
+=======
             <Card>
               <CardContent>
                 <LinearProgress />
@@ -92,8 +110,9 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
               </CardContent>
             </Card>
           </GridItem>
+>>>>>>> 829988b97fdf8009e194fc337a32346ef2c4c75f
           ))}
-        </Grid>
+        </Box>
       </Box>
     );
   }
@@ -111,7 +130,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
         />
       </Box>
 
-      <Grid container spacing={3} mb={4}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }} mb={4}>
         {stats.map((stat, index) => (
           <GridItem key={index} xs={12} sm={6} md={3}>
             <Card
@@ -152,9 +171,13 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
             </Card>
           </GridItem>
         ))}
-      </Grid>
+      </Box>
 
+<<<<<<< HEAD
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+=======
       <Grid container spacing={3}>
+>>>>>>> 829988b97fdf8009e194fc337a32346ef2c4c75f
         <GridItem xs={12} md={6}>
           <Card>
             <CardContent>
@@ -225,7 +248,11 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
             </CardContent>
           </Card>
         </GridItem>
+<<<<<<< HEAD
+      </Box>
+=======
       </Grid>
+>>>>>>> 829988b97fdf8009e194fc337a32346ef2c4c75f
     </Box>
   );
 };

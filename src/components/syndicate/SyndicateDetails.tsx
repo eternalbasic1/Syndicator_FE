@@ -27,25 +27,19 @@ import {
   Add as AddIcon,
   Group as GroupIcon,
 } from '@mui/icons-material';
-
-interface Friend {
-  user_id: string;
-  username: string;
-  name?: string;
-  email: string;
-}
+import type { SyndicateMember } from '../../types/syndicate.types';
 
 interface SyndicateDetailsProps {
   open: boolean;
   onClose: () => void;
-  friend?: Friend;
+  friend?: SyndicateMember;
   syndicateData?: {
     friend_list_id: string;
     user: {
       user_id: string;
       username: string;
     };
-    friends: Friend[];
+    friends: SyndicateMember[];
     created_at: string;
   };
 }
@@ -56,7 +50,6 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
   friend,
   syndicateData,
 }) => {
- // const [selectedTab, setSelectedTab] = useState<'details' | 'transactions'>('details');
   const [transactionAmount, setTransactionAmount] = useState('');
   const [interestRate, setInterestRate] = useState('');
 
@@ -80,15 +73,33 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
   };
 
   const handleCreateTransaction = () => {
-    // TODO: Implement transaction creation logic
-    console.log('Creating transaction:', {
-      friend,
-      amount: transactionAmount,
-      interest: interestRate,
-    });
+    if (!friend) return;
+    
+    try {
+      const amount = parseFloat(transactionAmount);
+      const interest = parseFloat(interestRate);
+      
+      if (isNaN(amount) || amount <= 0) {
+        throw new Error('Please enter a valid amount');
+      }
+      
+      if (isNaN(interest) || interest < 0) {
+        throw new Error('Please enter a valid interest rate');
+      }
+
+      // TODO: Implement transaction creation logic
+      console.log('Creating transaction:', {
+        friend,
+        amount,
+        interest,
+      });
+    } catch (error) {
+      console.error('Transaction creation error:', error);
+      // TODO: Show error message to user
+    }
   };
 
-  if (!open) return null;
+  if (!open || !friend) return null;
 
   return (
     <Dialog
@@ -99,7 +110,8 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
       PaperProps={{
         sx: {
           borderRadius: 2,
-          minHeight: '500px',
+          boxShadow: 4,
+          border: '1px solid rgba(0, 0, 0, 0.12)',
         },
       }}
     >
