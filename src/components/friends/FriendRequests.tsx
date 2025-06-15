@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -9,31 +9,49 @@ import {
   Alert,
   Badge,
   Button,
-  Fab,
+  Divider,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { Add as AddIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { useGetFriendRequestsQuery } from '../../store/api/friendApi';
 import FriendRequestCard from './FriendRequestCard';
 import AddFriendDialog from './AddFriendDialog';
-import type { FriendRequest } from '../../types/friend.types';
+import type { FriendRequestMetaData } from '../../types/friend.types';
+
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
+  className?: string;
 }
 
-const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
+const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...other }) => {
   return (
-    <div role="tabpanel" hidden={value !== index}>
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`friend-requests-tabpanel-${index}`}
+      aria-labelledby={`friend-requests-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 2 }}>{children}</Box>}
     </div>
   );
 };
 
+const a11yProps = (index: number) => ({
+  id: `friend-requests-tab-${index}`,
+  'aria-controls': `friend-requests-tabpanel-${index}`,
+});
+
 const FriendRequests: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [tabValue, setTabValue] = useState(0);
   const [addFriendOpen, setAddFriendOpen] = useState(false);
+  
   const { 
     data: friendRequestsData, 
     isLoading, 
@@ -41,7 +59,7 @@ const FriendRequests: React.FC = () => {
     refetch 
   } = useGetFriendRequestsQuery();
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -49,9 +67,67 @@ const FriendRequests: React.FC = () => {
     refetch();
   };
 
+  const handleAddFriendOpen = () => {
+    setAddFriendOpen(true);
+  };
+
+  const handleAddFriendClose = () => {
+    setAddFriendOpen(false);
+  };
+
+  const handleFriendRequestSent = () => {
+    refetch();
+    setAddFriendOpen(false);
+  };
+
+  // Process friend requests data
+  const { received, sent, all } = useMemo(() => {
+    // Handle case where friendRequestsData might be undefined
+    if (!friendRequestsData) {
+      return { received: [], sent: [], all: [] };
+    }
+    
+    // Handle both array and object response formats
+    if (Array.isArray(friendRequestsData)) {
+      return {
+        received: friendRequestsData.filter(req => req.request_type === 'received'),
+        sent: friendRequestsData.filter(req => req.request_type === 'sent'),
+        all: friendRequestsData,
+      };
+    }
+    
+    // Handle object response format with requests property
+    const data = friendRequestsData.requests || { received: [], sent: [], all: [] };
+    return {
+      received: (data.received || []) as FriendRequestMetaData[],
+      sent: (data.sent || []) as FriendRequestMetaData[],
+      all: (data.all || []) as FriendRequestMetaData[],
+    };
+  }, [friendRequestsData]);
+
+  const pendingReceived = useMemo(
+    () => received.filter(req => req.status === 'pending'),
+    [received]
+  );
+
+  const pendingSent = useMemo(
+    () => sent.filter(req => req.status === 'pending'),
+    [sent]
+  );
+
+  const otherReceived = useMemo(
+    () => received.filter(req => req.status !== 'pending'),
+    [received]
+  );
+
+  const otherSent = useMemo(
+    () => sent.filter(req => req.status !== 'pending'),
+    [sent]
+  );
+
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
         <CircularProgress />
       </Box>
     );
@@ -59,200 +135,275 @@ const FriendRequests: React.FC = () => {
 
   if (error) {
     return (
-      <Alert severity="error" sx={{ m: 2 }}>
-        Failed to load friend requests. Please try again.
-        <Button onClick={handleRefresh} sx={{ ml: 2 }}>
+      <Alert 
+        severity="error" 
+        sx={{ 
+          mb: 2,
+          '& .MuiAlert-message': {
+            display: 'flex',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 1,
+          },
+        }}
+      >
+        Failed to load friend requests.
+        <Button 
+          onClick={handleRefresh} 
+          size="small" 
+          color="inherit"
+          sx={{ ml: 1 }}
+        >
           Retry
         </Button>
       </Alert>
     );
   }
 
-  // TODO: Looks like WE need to completely revamp this entire code 
-  const { requests, status_summary } = friendRequestsData || {
-    requests: { all: [], sent: [], received: [] },
-    status_summary: { pending: 0, accepted: 0, rejected: 0, canceled: 0 }
-  };
-
-  const pendingReceived = requests.received?.filter((req: FriendRequest) => req.status === 'pending') || [];
-  const pendingSent = requests.sent?.filter((req: FriendRequest) => req.status === 'pending') || [];
-
   return (
     <Box>
-      <Box display="flex" justifyContent="between" alignItems="center" mb={3}>
-        <Typography variant="h5" component="h1" gutterBottom>
+      <Box 
+        display="flex" 
+        justifyContent="space-between" 
+        alignItems="center" 
+        mb={3}
+        flexWrap="wrap"
+        gap={2}
+      >
+        <Typography variant="h5" component="h1" gutterBottom sx={{ mb: 0 }}>
           Friend Requests
         </Typography>
-        <Button
-          startIcon={<RefreshIcon />}
-          onClick={handleRefresh}
-          variant="outlined"
-          size="small"
-        >
-          Refresh
-        </Button>
+        <Box display="flex" gap={1}>
+          <Button
+            startIcon={<RefreshIcon />}
+            onClick={handleRefresh}
+            variant="outlined"
+            size={isMobile ? 'small' : 'medium'}
+            sx={{ minWidth: 'auto' }}
+          >
+            {!isMobile && 'Refresh'}
+          </Button>
+          <Button
+            startIcon={<AddIcon />}
+            onClick={handleAddFriendOpen}
+            variant="contained"
+            color="primary"
+            size={isMobile ? 'small' : 'medium'}
+            sx={{ minWidth: 'auto' }}
+          >
+            {!isMobile && 'Add Friend'}
+          </Button>
+        </Box>
       </Box>
 
-      <Paper sx={{ borderRadius: 2 }}>
+      <Paper sx={{ borderRadius: 2, overflow: 'hidden' }}>
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
-          variant="fullWidth"
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
+          variant="scrollable"
+          scrollButtons="auto"
+          aria-label="friend request tabs"
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+            '& .MuiTabs-scroller': {
+              overflow: 'auto !important',
+            },
+          }}
         >
           <Tab
             label={
-              <Badge badgeContent={pendingReceived.length} color="primary">
-                Received
-              </Badge>
+              <Box display="flex" alignItems="center" gap={1}>
+                <span>Received</span>
+                {pendingReceived.length > 0 && (
+                  <Badge 
+                    badgeContent={pendingReceived.length} 
+                    color="primary"
+                    sx={{ '& .MuiBadge-badge': { top: 0 } }}
+                  />
+                )}
+              </Box>
             }
+            {...a11yProps(0)}
           />
           <Tab
             label={
-              <Badge badgeContent={pendingSent.length} color="secondary">
-                Sent
-              </Badge>
+              <Box display="flex" alignItems="center" gap={1}>
+                <span>Sent</span>
+                {pendingSent.length > 0 && (
+                  <Badge 
+                    badgeContent={pendingSent.length} 
+                    color="secondary"
+                    sx={{ '& .MuiBadge-badge': { top: 0 } }}
+                  />
+                )}
+              </Box>
             }
+            {...a11yProps(1)}
           />
-          <Tab label="All Requests" />
+          <Tab 
+            label="All Requests" 
+            {...a11yProps(2)}
+          />
         </Tabs>
 
         <TabPanel value={tabValue} index={0}>
-          <Box sx={{ p: 3 }}>
-            {requests.received?.length === 0 ? (
-              <Typography variant="body1" color="text.secondary" textAlign="center" py={4}>
-                No friend requests received
+          {received.length === 0 ? (
+            <Box textAlign="center" py={4}>
+              <Typography variant="body1" color="text.secondary" gutterBottom>
+                No friend requests received yet
               </Typography>
-            ) : (
-              <>
-                <Typography variant="h6" gutterBottom>
-                  Pending Requests ({pendingReceived.length})
-                </Typography>
-                {pendingReceived.map((request: FriendRequest) => (
-                  <FriendRequestCard
-                    key={request.request_id}
-                    request={request}
-                    // TODO: check this previously it was friendRequestsData?.user_id
-                    currentUserId={friendRequestsData?.[0]?.user_id || ''}
-                    onUpdate={refetch}
-                  />
-                ))}
+              <Button 
+                onClick={handleRefresh} 
+                variant="outlined" 
+                size="small"
+                sx={{ mt: 1 }}
+              >
+                Refresh
+              </Button>
+            </Box>
+          ) : (
+            <Box>
+              {pendingReceived.length > 0 && (
+                <Box mb={3}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    Pending Requests • {pendingReceived.length}
+                  </Typography>
+                  <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                    {pendingReceived.map((request) => (
+                      <FriendRequestCard
+                        key={request.request_id}
+                        request={request}
+                        currentUserId={request.user_id}
+                        onUpdate={refetch}
+                      />
+                    ))}
+                  </Paper>
+                </Box>
+              )}
 
-                {requests.received.filter((req: FriendRequest) => req.status !== 'pending').length > 0 && (
-                  <>
-                    <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                      Other Requests
-                    </Typography>
-                    {requests.received
-                      .filter((req: FriendRequest) => req.status !== 'pending')
-                      .map((request: FriendRequest) => (
-                        <FriendRequestCard
-                          key={request.request_id}
-                          request={request}
-                          currentUserId={friendRequestsData?.[0]?.user_id || ''}
-                          onUpdate={refetch}
-                        />
-                      ))}
-                  </>
-                )}
-              </>
-            )}
-          </Box>
+              {otherReceived.length > 0 && (
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    Previous Requests • {otherReceived.length}
+                  </Typography>
+                  <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                    {otherReceived.map((request) => (
+                      <FriendRequestCard
+                        key={request.request_id}
+                        request={request}
+                        currentUserId={request.user_id}
+                        onUpdate={refetch}
+                      />
+                    ))}
+                  </Paper>
+                </Box>
+              )}
+            </Box>
+          )}
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
-          <Box sx={{ p: 3 }}>
-            {requests.sent?.length === 0 ? (
-              <Typography variant="body1" color="text.secondary" textAlign="center" py={4}>
-                No friend requests sent
+          {sent.length === 0 ? (
+            <Box textAlign="center" py={4}>
+              <Typography variant="body1" color="text.secondary" gutterBottom>
+                No friend requests sent yet
               </Typography>
-            ) : (
-              <>
-                <Typography variant="h6" gutterBottom>
-                  Pending Requests ({pendingSent.length})
-                </Typography>
-                {pendingSent.map((request: FriendRequest) => (
-                  <FriendRequestCard
-                    key={request.request_id}
-                    request={request}
-                    currentUserId={friendRequestsData?.[0]?.user_id || ''}
-                    onUpdate={refetch}
-                  />
-                ))}
+              <Button 
+                onClick={handleAddFriendOpen}
+                variant="contained" 
+                color="primary"
+                size="small"
+                startIcon={<AddIcon />}
+                sx={{ mt: 1 }}
+              >
+                Add Friend
+              </Button>
+            </Box>
+          ) : (
+            <Box>
+              {pendingSent.length > 0 && (
+                <Box mb={3}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    Pending Approval • {pendingSent.length}
+                  </Typography>
+                  <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                    {pendingSent.map((request) => (
+                      <FriendRequestCard
+                        key={request.request_id}
+                        request={request}
+                        currentUserId={request.user_id}
+                        onUpdate={refetch}
+                      />
+                    ))}
+                  </Paper>
+                </Box>
+              )}
 
-                {requests.sent.filter((req: FriendRequest) => req.status !== 'pending').length > 0 && (
-                  <>
-                    <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                      Other Requests
-                    </Typography>
-                    {requests.sent
-                      .filter((req: FriendRequest) => req.status !== 'pending')
-                      .map((request: FriendRequest) => (
-                        <FriendRequestCard
-                          key={request.request_id}
-                          request={request}
-                          currentUserId={friendRequestsData?.[0]?.user_id || ''}
-                          onUpdate={refetch}
-                        />
-                      ))}
-                  </>
-                )}
-              </>
-            )}
-          </Box>
+              {otherSent.length > 0 && (
+                <Box>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    Previous Requests • {otherSent.length}
+                  </Typography>
+                  <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                    {otherSent.map((request) => (
+                      <FriendRequestCard
+                        key={request.request_id}
+                        request={request}
+                        currentUserId={request.user_id}
+                        onUpdate={refetch}
+                      />
+                    ))}
+                  </Paper>
+                </Box>
+              )}
+            </Box>
+          )}
         </TabPanel>
 
         <TabPanel value={tabValue} index={2}>
-          <Box sx={{ p: 3 }}>
-            {requests.all?.length === 0 ? (
-              <Typography variant="body1" color="text.secondary" textAlign="center" py={4}>
+          {all.length === 0 ? (
+            <Box textAlign="center" py={4}>
+              <Typography variant="body1" color="text.secondary" gutterBottom>
                 No friend requests found
               </Typography>
-            ) : (
-              <>
-                <Box display="flex" justifyContent="space-between" mb={2}>
-                  <Typography variant="h6">
-                    All Requests ({requests.all?.length || 0})
-                  </Typography>
-                  <Box display="flex" gap={2}>
-                    <Typography variant="body2" color="success.main">
-                      Accepted: {status_summary.accepted}
-                    </Typography>
-                    <Typography variant="body2" color="warning.main">
-                      Pending: {status_summary.pending}
-                    </Typography>
-                    <Typography variant="body2" color="error.main">
-                      Rejected: {status_summary.rejected}
-                    </Typography>
-                  </Box>
-                </Box>
-                {requests.all?.map((request: FriendRequest) => (
-                  <FriendRequestCard
-                    key={request.request_id}
-                    request={request}
-                    currentUserId={friendRequestsData?.[0]?.user_id || ''}
-                    onUpdate={refetch}
-                  />
+              <Button 
+                onClick={handleAddFriendOpen}
+                variant="contained" 
+                color="primary"
+                size="small"
+                startIcon={<AddIcon />}
+                sx={{ mt: 1 }}
+              >
+                Add Friend
+              </Button>
+            </Box>
+          ) : (
+            <Box>
+              <Typography variant="subtitle1" gutterBottom sx={{ mb: 2 }}>
+                All Requests • {all.length}
+              </Typography>
+              <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                {all.map((request, idx) => (
+                  <React.Fragment key={request.request_id}>
+                    <FriendRequestCard
+                      request={request}
+                      currentUserId={request.user_id}
+                      onUpdate={refetch}
+                    />
+                    {idx < all.length - 1 && <Divider />}
+                  </React.Fragment>
                 ))}
-              </>
-            )}
-          </Box>
+              </Paper>
+            </Box>
+          )}
         </TabPanel>
       </Paper>
-
-      <Fab
-        color="primary"
-        aria-label="add friend"
-        sx={{ position: 'fixed', bottom: 16, right: 16 }}
-        onClick={() => setAddFriendOpen(true)}
-      >
-        <AddIcon />
-      </Fab>
-
+      
       <AddFriendDialog
         open={addFriendOpen}
-        onClose={() => setAddFriendOpen(false)}
-        onSuccess={refetch}
+        onClose={handleAddFriendClose}
+        onSuccess={handleFriendRequestSent}
       />
     </Box>
   );
