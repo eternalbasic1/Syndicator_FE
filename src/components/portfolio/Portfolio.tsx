@@ -1,4 +1,3 @@
-//TODO: Fix Grid
 import React from 'react';
 import {
   Box,
@@ -16,8 +15,8 @@ import {
   AccountBalance as AccountBalanceIcon,
   Percent as PercentIcon,
 } from '@mui/icons-material';
-//TODO: Update utils
 import { formatCurrency, formatPercentage } from '../../utils/formatters';
+import type { TransactionResponse } from '../../types/transaction.types';
 
 interface PortfolioSummary {
   total_principal_amount: number;
@@ -42,7 +41,6 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
     active_transactions,
     monthly_earnings,
   } = summary;
-
   const stats = [
     {
       title: 'Total Principal',
@@ -52,25 +50,25 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
       description: 'Total amount invested',
     },
     {
-      title: 'Total Interest Earned',
+      title: 'Total Interest',
       value: formatCurrency(total_interest_amount),
       icon: <TrendingUpIcon />,
-      color: 'success',
-      description: 'Interest earned to date',
+      color: 'secondary',
+      description: 'Total interest earned',
     },
     {
-      title: 'Portfolio Value',
+      title: 'Total Value',
       value: formatCurrency(total_value),
-      icon: <AccountBalanceIcon />,
-      color: 'info',
-      description: 'Principal + Interest',
+      icon: <PercentIcon />,
+      color: 'success',
+      description: 'Total value of portfolio',
     },
     {
-      title: 'ROI',
-      value: formatPercentage(roi_percentage),
-      icon: <PercentIcon />,
-      color: roi_percentage >= 0 ? 'success' : 'error',
-      description: 'Return on Investment',
+      title: 'Monthly Earnings',
+      value: formatCurrency(monthly_earnings),
+      icon: <AccountBalanceIcon />,
+      color: 'warning',
+      description: 'Average monthly earnings',
     },
   ];
 

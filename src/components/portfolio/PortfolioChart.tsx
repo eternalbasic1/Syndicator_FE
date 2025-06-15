@@ -1,33 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-//TODO: first fix types & come back here
 import React from 'react';
 import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-
-interface Transaction {
-  transaction_id: string;
-  risk_taker_id: string;
-  syndicators: Array<{
-    user_id: string;
-    username: string;
-  }>;
-  total_principal_amount: number;
-  total_interest: number;
-  created_at: string;
-  start_date: string;
-}
+import type { TransactionMetaData } from '@/types/transaction.types';
 
 interface PortfolioChartProps {
-  transactions: Transaction[];
+  transactions: TransactionMetaData[];
   totalPrincipal: number;
   totalInterest: number;
 }
 
-const PortfolioChart: React.FC<PortfolioChartProps> = ({ 
+const PortfolioChart = ({ 
   transactions, 
   totalPrincipal, 
   totalInterest 
-}) => {
+}: PortfolioChartProps) => {
   const theme = useTheme();
 
   // Prepare pie chart data
@@ -57,7 +44,7 @@ const PortfolioChart: React.FC<PortfolioChartProps> = ({
       }
       
       monthlyBreakdown[monthKey].principal += transaction.total_principal_amount;
-      monthlyBreakdown[monthKey].interest += (transaction.total_principal_amount * transaction.total_interest) / 100;
+      monthlyBreakdown[monthKey].interest += transaction.total_interest;
       monthlyBreakdown[monthKey].count += 1;
     });
 
@@ -74,8 +61,8 @@ const PortfolioChart: React.FC<PortfolioChartProps> = ({
   const COLORS = [theme.palette.primary.main, theme.palette.secondary.main];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any; label?: string }) => {
+  if (active && payload && payload.length) {
       return (
         <Box
           sx={{
