@@ -2,6 +2,7 @@
 // src/store/api/syndicateApi.ts
 import { baseApi } from './baseApi';
 
+// Looks Good
 export interface SyndicateData {
   friend_list_id: string;
   user: {

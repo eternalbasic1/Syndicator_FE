@@ -21,6 +21,8 @@ export interface SyndicateDetail {
         created_at: string,
         start_date: string
     }
+
+// Looks Good
   export interface Transaction {
     message: string;
     user: {
@@ -31,7 +33,8 @@ export interface SyndicateDetail {
     transaction_count: number,
     transactions: TransactionMetaData[]
 }
-  
+
+// Looks Good
   export interface CreateTransactionRequest {
     total_principal_amount: number;
     total_interest_amount: number;
@@ -48,6 +51,7 @@ export interface SyndicateDetail {
     start_date: string;
   }
 
+  // Looks Good
   export interface CreateTransactionResponse {
       message: string,
       transaction_id: string,
@@ -61,6 +65,7 @@ export interface SyndicateDetail {
       splitwise_entries_count: number
   }
     
+  // Looks Good
   export interface PortfolioResponse {
     total_principal_amount: number,
     total_interest_amount: number

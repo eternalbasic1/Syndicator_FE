@@ -16,6 +16,8 @@ export interface FriendRequestMetaData {
       name: string
   }
 }
+
+// Looks Good
 export interface FriendRequest {
   message: string;
   user: string;
@@ -35,11 +37,11 @@ export interface FriendRequest {
       received: FriendRequestMetaData[],
   };
 }
-  
+  // Looks Good
   export interface CreateFriendRequest {
     mutual_friend_name: string;
   }
-  
+  // Looks Good
   export interface CreateFriendResponse {
     message: string;
     friend_request_id: string;
@@ -48,11 +50,14 @@ export interface FriendRequest {
     status: 'pending' | 'accepted' | 'rejected' | 'canceled';
     created: boolean;
 }
+
+  // Looks Good
   export interface UpdateFriendRequestStatus {
     request_id: string;
     status: 'accepted' | 'rejected' | 'canceled';
   }
 
+  //Looks Good
   export interface UpdateFriendRequestStatusResponse {
     message: string;
     request_id: string;
