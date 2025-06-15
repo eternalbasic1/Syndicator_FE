@@ -15,11 +15,12 @@
     password: string;
   }
   
+  //Looks Good
   export interface RegisterRequest {
     username: string;
     email: string;
     password: string;
-    phone_number?: string;
+    phone_number: string;
   }
   
   //Looks Good
@@ -27,4 +28,9 @@
     access: string;
     refresh?: string;
     user: User;
+  }
+
+  //Looks Good
+  export interface RegisterResponse {
+    message: string;
   }

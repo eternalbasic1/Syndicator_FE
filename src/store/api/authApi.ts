@@ -2,7 +2,7 @@
 
 // src/store/api/authApi.ts
 import { baseApi } from './baseApi';
-import type { AuthResponse, LoginRequest, RegisterRequest } from '../../types/auth.types';
+import type { AuthResponse, LoginRequest, RegisterRequest, RegisterResponse } from '../../types/auth.types';
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,7 +13,7 @@ export const authApi = baseApi.injectEndpoints({
         body: credentials,
       }),
     }),
-    register: builder.mutation<AuthResponse, RegisterRequest>({
+    register: builder.mutation<RegisterResponse, RegisterRequest>({
       query: (userData) => ({
         url: 'register/',
         method: 'POST',
