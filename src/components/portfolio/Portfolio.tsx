@@ -16,7 +16,6 @@ import {
   Percent as PercentIcon,
 } from '@mui/icons-material';
 import { formatCurrency, formatPercentage } from '../../utils/formatters';
-import type { TransactionResponse } from '../../types/transaction.types';
 
 interface PortfolioSummary {
   total_principal_amount: number;

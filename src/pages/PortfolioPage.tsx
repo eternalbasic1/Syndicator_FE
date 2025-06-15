@@ -55,7 +55,7 @@ const PortfolioPage: React.FC = () => {
         <GridItem xs={12} md={4}>
           <Paper sx={{ p: 3 }}>
             <PortfolioStats
-              transactions={transactionsData?.map(tx => tx.transactions).flat() || []}
+              transactions={transactionsData || []}
               totalPrincipal={totalPrincipal}
               totalInterest={totalInterest}
               loading={transactionsLoading}
@@ -66,7 +66,7 @@ const PortfolioPage: React.FC = () => {
         <GridItem xs={12}>
           <Paper sx={{ p: 3 }}>
             <PortfolioChart
-              transactions={transactionsData?.map(transaction => transaction.transactions).flat() || []}
+              transactions={transactionsData || []}
               totalPrincipal={totalPrincipal}
               totalInterest={totalInterest}
             />
