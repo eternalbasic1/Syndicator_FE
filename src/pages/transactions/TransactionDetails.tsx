@@ -259,7 +259,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
                           </TableCell>
                           <TableCell align="right">
                             <Typography variant="body2" color="success.main">
-                              ₹{entry.interest_amount.toLocaleString()}
+                              ₹{entry.interest_amount/100 * entry.principal_amount}
                             </Typography>
                           </TableCell>
                           <TableCell>
@@ -289,7 +289,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
                         Total Splitwise Interest
                       </Typography>
                       <Typography variant="h6" color="success.main">
-                        ₹{transaction.splitwise_entries.reduce((sum, entry) => sum + entry.interest_amount, 0).toLocaleString()}
+                        ₹{transaction.splitwise_entries.reduce((sum, entry) => sum + entry.interest_amount/100 * entry.principal_amount, 0).toLocaleString()}
                       </Typography>
                     </Grid>
                     <Grid item xs={12} md={4}>
