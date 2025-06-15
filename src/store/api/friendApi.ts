@@ -2,7 +2,7 @@
 
 // src/store/api/friendApi.ts
 import { baseApi } from './baseApi';
-import type { FriendRequest, CreateFriendRequest, UpdateFriendRequestStatus, CreateFriendResponse } from '../../types/friend.types';
+import type { FriendRequest, CreateFriendRequest, UpdateFriendRequestStatus, CreateFriendResponse, UpdateFriendRequestStatusResponse } from '../../types/friend.types';
 
 export const friendApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -21,7 +21,7 @@ export const friendApi = baseApi.injectEndpoints({
       }),
       providesTags: ['FriendRequest'],
     }),
-    updateFriendRequestStatus: builder.mutation<void, UpdateFriendRequestStatus>({
+    updateFriendRequestStatus: builder.mutation<UpdateFriendRequestStatusResponse, UpdateFriendRequestStatus>({
       query: (updateData) => ({
         url: 'update_friend_request_status/',
         method: 'POST',

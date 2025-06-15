@@ -53,4 +53,29 @@ export interface FriendRequest {
     status: 'accepted' | 'rejected' | 'canceled';
   }
 
+  export interface UpdateFriendRequestStatusResponse {
+    message: string;
+    request_id: string;
+    old_status: string;
+    new_status: string;
+    authenticated_user: string;
+    requester: string;
+    recipient: string;
+    friends_added: boolean;
+    requester_details: {
+        user_id: string,
+        username: string,
+        name: string
+    },
+    recipient_details: {
+        user_id: string,
+        username: string,
+        name: string | null
+    },
+    friend_lists_created: {
+        requester_list_created: boolean,
+        requested_list_created: boolean
+    }
+}
+    
   
