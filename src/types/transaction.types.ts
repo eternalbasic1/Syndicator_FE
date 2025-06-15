@@ -47,3 +47,17 @@ export interface SyndicateDetail {
     created_at: string;
     start_date: string;
   }
+
+  export interface CreateTransactionResponse {
+      message: string,
+      transaction_id: string,
+      risk_taker: {
+          user_id: string,
+          username: string
+      },
+      total_principal_amount: number,
+      total_interest: number,
+      transaction_type: string,
+      splitwise_entries_count: number
+  }
+    
