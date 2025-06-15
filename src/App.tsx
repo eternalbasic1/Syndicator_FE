@@ -12,10 +12,10 @@ import { loadUserFromStorage } from './store/authSlice';
 // Pages
 import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashboardPage';
-import TransactionsPage from './pages/TransactionsPage';
-import FriendsPage from './pages/FriendsPage';
-import PortfolioPage from './pages/PortfolioPage';
-import SyndicatePage from './pages/SyndicatePage';
+// import TransactionsPage from './pages/TransactionsPage';
+// import FriendsPage from './pages/FriendsPage';
+// import PortfolioPage from './pages/PortfolioPage';
+// import SyndicatePage from './pages/SyndicatePage';
 
 // Components
 import Layout from './components/common/Layout/Layout';
@@ -46,10 +46,10 @@ const AppContent: React.FC = () => {
         >
           <Route index element={<Navigate to="/dashboard" />} />
           <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="transactions" element={<TransactionsPage />} />
-          <Route path="friends" element={<FriendsPage />} />
+          {/* <Route path="transactions" element={<TransactionsPage />} /> */}
+          {/* <Route path="friends" element={<FriendsPage />} />
           <Route path="portfolio" element={<PortfolioPage />} />
-          <Route path="syndicate" element={<SyndicatePage />} />
+          <Route path="syndicate" element={<SyndicatePage />} /> */}
         </Route>
         <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/auth"} />} />
       </Routes>
