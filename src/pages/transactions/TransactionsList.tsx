@@ -8,28 +8,27 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Button,
   Box,
   IconButton,
   Tooltip,
   Chip,
+  CircularProgress,
 } from '@mui/material';
-import { Visibility as ViewIcon, Add as AddIcon } from '@mui/icons-material';
+import { Visibility as ViewIcon } from '@mui/icons-material';
 import type { Transaction } from '../../types/transaction.types';
-import { CircularProgress } from '@mui/material';
 
 interface TransactionsListProps {
   transactions: Transaction[];
   onViewTransaction: (transaction: Transaction) => void;
-  onCreateTransaction: () => void;
   loading?: boolean;
+  error?: string;
 }
 
 const TransactionsList: React.FC<TransactionsListProps> = ({
   transactions,
   onViewTransaction,
-  onCreateTransaction,
   loading = false,
+  error,
 }) => {
   if (loading) {
     return (
@@ -39,29 +38,37 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
     );
   }
 
-
-  if (transactions.length === 0) {
+  if (error) {
     return (
       <Box p={4} textAlign="center">
-        <Typography variant="h6" color="textSecondary" gutterBottom>
+        <Typography variant="h6" color="error">
+          Error loading transactions
+        </Typography>
+        <Typography variant="body2" color="error" mb={2}>
+          {error}
+        </Typography>
+      </Box>
+    );
+  }
+
+  console.log("HITTING TRANSACTION LIST", transactions )
+  if (!transactions || transactions.length === 0) {
+    return (
+      <Box p={4} textAlign="center">
+        <Typography variant="h6" color="textSecondary">
           No transactions found
         </Typography>
         <Typography variant="body2" color="textSecondary" mb={2}>
-          Create your first transaction to get started
+          No transactions available
         </Typography>
-        <Button 
-          variant="contained" 
-          onClick={onCreateTransaction}
-          startIcon={<AddIcon />}
-        >
-          Create Transaction
-        </Button>
       </Box>
     );
   }
 
   return (
-    <Paper>
+    <>
+    <h1>HOEEELLLWWW List</h1>
+     <Paper>
       <TableContainer>
         <Table>
           <TableHead>
@@ -117,6 +124,8 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
         </Table>
       </TableContainer>
     </Paper>
+    </>
+   
   );
 };
 

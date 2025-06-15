@@ -27,7 +27,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
   onClose,
 }) => {
   if (!transaction) return null;
-
+  console.log("HITTING TRANSACTION DETAILS")
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Transaction Details</DialogTitle>

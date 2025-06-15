@@ -30,7 +30,7 @@ const TransactionsPage: React.FC = () => {
     transactionsError,
     createTransaction: createTransactionApi,
   } = useTransactions();
-
+  console.log("mian page, transactions=", transactions)
   const {
     formData,
     setFormData,
@@ -95,7 +95,7 @@ const TransactionsPage: React.FC = () => {
       </Box>
     );
   }
-
+   console.log("HITTINHs")
   return (
     <Box p={3}>
       {/* Header */}
@@ -129,12 +129,23 @@ const TransactionsPage: React.FC = () => {
         loading={isLoading}
       />
 
+      {/* Create Transaction Button */}
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <Button
+          variant="contained"
+          onClick={handleOpenForm}
+          startIcon={<AddIcon />}
+        >
+          Create Transaction
+        </Button>
+      </Box>
+
       {/* Transactions List */}
       <TransactionsList
         transactions={transactions}
         onViewTransaction={handleViewTransaction}
-        onCreateTransaction={handleOpenForm}
         loading={isLoading}
+        error={transactionsError}
       />
 
       {/* Transaction Form Dialog */}

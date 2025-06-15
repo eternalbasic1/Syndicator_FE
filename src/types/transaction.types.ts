@@ -16,45 +16,51 @@ export interface TransactionSyndicatorMetaData {
   interest: number;
 }
 
-export interface TransactionMetaData {
+export interface SplitwiseEntry {
+  splitwise_id: string;
+  syndicator_id: string;
+  syndicator_username: string;
+  syndicator_name: string | null;
+  syndicator_email: string;
+  principal_amount: number;
+  interest_amount: number;
+  created_at: string;
+}
+
+export interface Transaction {
   transaction_id: string;
   risk_taker_id: string;
+  risk_taker_username: string;
+  risk_taker_name: string | null;
   syndicators: TransactionSyndicatorMetaData[];
   total_principal_amount: number;
   total_interest: number;
   created_at: string;
   start_date: string;
+  splitwise_entries: SplitwiseEntry[];
 }
 
-export interface Transaction extends Omit<TransactionMetaData, 'syndicators'> {
-  syndicators: Array<{
+export interface TransactionResponse {
+  message: string;
+  user: {
     user_id: string;
     username: string;
-    principal_amount: number;
-    interest: number;
-  }>;
+    name: string;
+  };
+  transaction_count: number;
+  transactions: Transaction[];
 }
 
 export interface CreateTransactionRequest {
   total_principal_amount: number;
   total_interest_amount: number;
   syndicate_details: SyndicateDetails;
-  // risk_taker: {
-  //   user_id: string;
-  //   username: string;
-  // };
-  // transaction_type: string;
-  // splitwise_entries_count: number;
 }
 
 export interface CreateTransactionResponse {
   success: boolean;
   transaction_id: string;
   message?: string;
-}
-
-export interface TransactionResponse {
-  transactions: Transaction[];
 }
 
 export interface PortfolioStats {

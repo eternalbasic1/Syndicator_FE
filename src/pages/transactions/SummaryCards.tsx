@@ -21,6 +21,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
   activeSyndicates,
   loading = false,
 }) => {
+  console.log("HItting summmary")
   const cards = [
     {
       title: 'Total Principal',

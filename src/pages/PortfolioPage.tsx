@@ -3,7 +3,7 @@ import { Box, Container, Typography, Paper, CircularProgress } from '@mui/materi
 import Grid from '@mui/material/Grid';
 import GridItem from '../components/common/GridItem';
 import { useGetPortfolioQuery, useGetAllTransactionsQuery } from '../store/api/transactionApi';
-import type { TransactionMetaData } from '../types/transaction.types';
+import type { Transaction } from '../types/transaction.types';
 import Portfolio from '../components/portfolio/Portfolio';
 import PortfolioChart from '../components/portfolio/PortfolioChart';
 import PortfolioStats from '../components/portfolio/PortfolioStats';
@@ -15,9 +15,8 @@ const PortfolioPage: React.FC = () => {
   // Handle undefined or null data and ensure proper data structure
   const safeTransactions = Array.isArray(transactionsData) ? transactionsData : [];
   const allTransactions = safeTransactions.reduce((acc, tx) => {
-    const txArray = Array.isArray(tx.transaction_id) ? tx.transaction_id : [];
-    return [...acc, ...txArray];
-  }, [] as TransactionMetaData[]);
+    return [...acc, tx];
+  }, [] as Transaction[]);
 
   if (portfolioLoading || transactionsLoading) {
     return (
@@ -32,7 +31,7 @@ const PortfolioPage: React.FC = () => {
   const totalInterest = portfolioData?.total_interest_amount || 0;
   const totalValue = totalPrincipal + totalInterest;
   const roiPercentage = totalPrincipal > 0 ? (totalInterest / totalPrincipal) * 100 : 0;
-  const activeTransactions = transactionsData?.length || 0;
+  const activeTransactions = transactionsData?.transactions?.length || 0;
   const monthlyEarnings = totalInterest / 12; // Simplified monthly earnings calculation
 
   const portfolioSummary = {

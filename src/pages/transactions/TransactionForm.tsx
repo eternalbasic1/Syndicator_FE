@@ -51,7 +51,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   const handleFriendSelection = (event: React.ChangeEvent<{ value: unknown }> | Event & { target: { value: string[]; name: string; } }) => {
     const value = Array.isArray(event.target.value) ? event.target.value : [event.target.value];
     handleFriendSelectionProp(value);
-    
+    console.log("HITTING TRANSACTION FORM")
     // Update syndicate_details when friends are selected/deselected
     const newSyndicateDetails: Record<string, SyndicateDetail> = {};
     value.forEach(friendUsername => {
