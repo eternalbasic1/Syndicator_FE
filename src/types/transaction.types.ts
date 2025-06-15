@@ -61,3 +61,7 @@ export interface SyndicateDetail {
       splitwise_entries_count: number
   }
     
+  export interface PortfolioResponse {
+    total_principal_amount: number,
+    total_interest_amount: number
+}
