@@ -14,7 +14,7 @@ export const friendApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['FriendRequest'],
     }),
-    getFriendRequests: builder.query<FriendRequest[], void>({
+    getFriendRequests: builder.query<FriendRequest, void>({
       query: () => ({
         url: 'check_friend_request_status/',
         method: 'GET',
