@@ -1,12 +1,15 @@
 // src/types/auth.types.ts
-export interface User {
+
+  //Looks Good
+  export interface User {
     user_id: string;
     username: string;
     email: string;
     phone_number?: string;
     name?: string;
   }
-  
+
+  //Looks Good
   export interface LoginRequest {
     username: string;
     password: string;
@@ -19,8 +22,9 @@ export interface User {
     phone_number?: string;
   }
   
+  //Looks Good
   export interface AuthResponse {
     access: string;
-    refresh: string;
+    refresh?: string;
     user: User;
   }
