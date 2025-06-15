@@ -17,12 +17,20 @@ export interface FriendRequest {
   }
   
   export interface CreateFriendRequest {
-    username: string;
     mutual_friend_name: string;
   }
   
+  export interface CreateFriendResponse {
+    message: string;
+    friend_request_id: string;
+    user: string;
+    mutual_friend: string;
+    status: 'pending' | 'accepted' | 'rejected' | 'canceled';
+    created: boolean;
+}
   export interface UpdateFriendRequestStatus {
     request_id: string;
     status: 'accepted' | 'rejected' | 'canceled';
   }
+
   
