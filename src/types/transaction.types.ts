@@ -1,5 +1,3 @@
-import type { User } from "./auth.types";
-
 // src/types/transaction.types.ts
 export interface SyndicateDetail {
     principal_amount: number;
@@ -10,16 +8,29 @@ export interface SyndicateDetail {
     [username: string]: SyndicateDetail;
   }
   
-  export interface Transaction {
-    transaction_id: string;
-    risk_taker_id: string;
-    syndicators: string[];
-    total_principal_amount: number;
-    total_interest: number;
-    created_at: string;
-    start_date: string;
-    risk_taker?: User;
+  export interface TransactionSyndicatorMetaData {
+    user_id: string,
+    username: string
   }
+  export interface TransactionMetaData {
+        transaction_id: string,
+        risk_taker_id: string,
+        syndicators: TransactionSyndicatorMetaData[],
+        total_principal_amount: number,
+        total_interest: number,
+        created_at: string,
+        start_date: string
+    }
+  export interface Transaction {
+    message: string;
+    user: {
+        user_id: string,
+        username: string,
+        name: string
+    },
+    transaction_count: number,
+    transactions: TransactionMetaData[]
+}
   
   export interface CreateTransactionRequest {
     total_principal_amount: number;

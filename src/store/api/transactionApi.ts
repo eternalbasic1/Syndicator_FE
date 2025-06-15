@@ -12,9 +12,9 @@ export const transactionApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Transaction'],
     }),
-    getAllTransactions: builder.query<Transaction[], string>({
-      query: (username) => ({
-        url: `all_transaction/?username=${username}`,
+    getAllTransactions: builder.query<Transaction[], void>({
+      query: () => ({
+        url: 'all_transaction/',
         method: 'GET',
       }),
       providesTags: ['Transaction'],
