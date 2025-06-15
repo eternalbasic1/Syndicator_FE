@@ -1,6 +1,6 @@
 // src/store/api/transactionApi.ts
 import { baseApi } from './baseApi';
-import type { Transaction, CreateTransactionRequest, CreateTransactionResponse, PortfolioStats } from '../../types/transaction.types';
+import type { Transaction, CreateTransactionRequest, CreateTransactionResponse, PortfolioStats, TransactionResponse } from '../../types/transaction.types';
 
 export const transactionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -15,7 +15,7 @@ export const transactionApi = baseApi.injectEndpoints({
     // }
       invalidatesTags: ['Transaction'],
     }),
-    getAllTransactions: builder.query<Transaction[], void>({
+    getAllTransactions: builder.query<TransactionResponse, void>({
       query: () => ({
         url: 'all_transaction/',
         method: 'GET',

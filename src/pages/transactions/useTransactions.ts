@@ -12,7 +12,7 @@ export const useTransactions = () => {
     error: transactionsError,
     refetch: refetchTransactions 
   } = useGetAllTransactionsQuery();
-
+  console.log("useTransactions, transactionsData=", transactionsData)
   // Fetch syndicate data for friends list
   const { 
     data: syndicateData, 
@@ -62,7 +62,7 @@ export const useTransactions = () => {
 
   return {
     // Data
-    transactions: Array.isArray(transactionsData) ? transactionsData : [],
+    transactions: Array.isArray(transactionsData?.transactions) ? transactionsData.transactions : [],
     friends: Array.isArray(syndicateData?.friends) ? syndicateData.friends : [],
     stats: calculateStats(),
     
