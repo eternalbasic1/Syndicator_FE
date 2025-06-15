@@ -3,7 +3,7 @@ import { Box, Container, Typography, Paper, CircularProgress } from '@mui/materi
 import Grid from '@mui/material/Grid';
 import GridItem from '../components/common/GridItem';
 import { useGetPortfolioQuery, useGetAllTransactionsQuery } from '../store/api/transactionApi';
-// import type { TransactionMetaData } from '../types/transaction.types';
+import type { TransactionMetaData } from '../types/transaction.types';
 import Portfolio from '../components/portfolio/Portfolio';
 import PortfolioChart from '../components/portfolio/PortfolioChart';
 import PortfolioStats from '../components/portfolio/PortfolioStats';
@@ -13,11 +13,11 @@ const PortfolioPage: React.FC = () => {
   const { data: transactionsData, isLoading: transactionsLoading } = useGetAllTransactionsQuery();
 
   // Handle undefined or null data and ensure proper data structure
-  // const safeTransactions = Array.isArray(transactionsData) ? transactionsData : [];
-  // const allTransactions = safeTransactions.reduce((acc, tx) => {
-  //   const txArray = Array.isArray(tx.transactions) ? tx.transactions : [];
-  //   return [...acc, ...txArray];
-  // }, [] as TransactionMetaData[]);
+  const safeTransactions = Array.isArray(transactionsData) ? transactionsData : [];
+  const allTransactions = safeTransactions.reduce((acc, tx) => {
+    const txArray = Array.isArray(tx.transaction_id) ? tx.transaction_id : [];
+    return [...acc, ...txArray];
+  }, [] as TransactionMetaData[]);
 
   if (portfolioLoading || transactionsLoading) {
     return (
@@ -63,7 +63,7 @@ const PortfolioPage: React.FC = () => {
         <GridItem xs={12} md={4}>
           <Paper sx={{ p: 3 }}>
             <PortfolioStats
-              transactions={transactionsData || []}
+              transactions={allTransactions}
               totalPrincipal={totalPrincipal}
               totalInterest={totalInterest}
               loading={transactionsLoading}
@@ -74,7 +74,7 @@ const PortfolioPage: React.FC = () => {
         <GridItem xs={12}>
           <Paper sx={{ p: 3 }}>
             <PortfolioChart
-              transactions={transactionsData || []}
+              transactions={allTransactions}
               totalPrincipal={totalPrincipal}
               totalInterest={totalInterest}
             />
