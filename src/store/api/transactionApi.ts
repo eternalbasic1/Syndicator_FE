@@ -1,6 +1,6 @@
 // src/store/api/transactionApi.ts
 import { baseApi } from './baseApi';
-import type { Transaction, CreateTransactionRequest, CreateTransactionResponse, PortfolioStats, TransactionResponse } from '../../types/transaction.types';
+import type { CreateTransactionRequest, CreateTransactionResponse, PortfolioStats, TransactionResponse } from '../../types/transaction.types';
 
 export const transactionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
