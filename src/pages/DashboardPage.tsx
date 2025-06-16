@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+import type { FunctionComponent } from 'react';
 import { Box, Typography, Card, CardContent, Alert, Grid } from '@mui/material';
-import GridItem from '../components/common/GridItem';
 import QuickActions from '../components/dashboard/QuickActions';
+import GridItem from '../components/common/GridItem';
 import {
   Savings as SavingsIcon,
   TrendingUp as TrendingUpIcon,
@@ -9,29 +10,30 @@ import {
   AccountBalance as AccountBalanceIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../hooks/useAuth';
-import { useGetAllTransactionsQuery, useGetPortfolioQuery } from '../store/api/transactionApi';
+import { useGetAllTransactionsQuery } from '../store/api/transactionApi';
 import { useGetFriendRequestsQuery } from '../store/api/friendApi';
-import type { TransactionMetaData } from '../types/transaction.types';
+import type { Transaction, SplitwiseEntry } from '../types/transaction.types';
 import StatsCard from '../components/dashboard/StatsCard';
 import RecentTransactions from '../components/dashboard/RecentTransactions';
 
-const DashboardPage: React.FC = () => {
+const DashboardPage: FunctionComponent = () => {
   const { user } = useAuth();
-  const { 
-    data: portfolio, 
-    isLoading: isPortfolioLoading, 
-    isError: isPortfolioError 
-  } = useGetPortfolioQuery();
-  
+
   const { 
     data: transactionsResponse,
     isLoading: isTransactionsLoading,
   } = useGetAllTransactionsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
-  
-  // Transform transactions to match TransactionMetaData type
-  const transactions = useMemo<TransactionMetaData[]>(() => {
+
+  const { 
+    data: friendRequests, 
+    isLoading: isFriendsLoading,
+    isError: isFriendsError
+  } = useGetFriendRequestsQuery();
+
+  // Transform transactions to match Transaction type
+  const transactions = useMemo<Transaction[]>(() => {
     if (!transactionsResponse) return [];
     
     // Get the raw transactions array
@@ -43,32 +45,41 @@ const DashboardPage: React.FC = () => {
       rawTransactions = Array.isArray(resp.transactions) ? resp.transactions : [];
     }
     
-    // Transform to match TransactionMetaData type
-    return rawTransactions.map(tx => {
-      const t = tx as Record<string, unknown>;
+    // Transform to match Transaction type
+    return rawTransactions.map((tx: unknown) => {
+      const recordTx = tx as Record<string, unknown>;
+      const amount = typeof recordTx.amount === 'number' ? recordTx.amount : 0;
+      const interest = typeof recordTx.interest === 'number' ? recordTx.interest : 0;
+      
       return {
-        transaction_id: typeof t.id === 'string' ? t.id : '',
-        risk_taker_id: typeof t.risk_taker_id === 'string' ? t.risk_taker_id : '',
-        syndicators: Array.isArray(t.syndicators) ? t.syndicators : [],
-        total_principal_amount: typeof t.amount === 'number' ? t.amount : 0,
-        total_interest: typeof t.interest === 'number' ? t.interest : 0,
-        status: typeof t.status === 'string' ? t.status : 'pending',
-        start_date: t.start_date as string || new Date().toISOString(),
-        created_at: t.created_at as string || new Date().toISOString(),
-        updated_at: t.updated_at as string || new Date().toISOString()
-      };
+        transaction_id: typeof recordTx.id === 'string' ? recordTx.id : '',
+        risk_taker_id: typeof recordTx.risk_taker_id === 'string' ? recordTx.risk_taker_id : '',
+        risk_taker_username: typeof recordTx.risk_taker_username === 'string' ? recordTx.risk_taker_username : '',
+        risk_taker_name: typeof recordTx.risk_taker_name === 'string' ? recordTx.risk_taker_name : null,
+        syndicators: Array.isArray(recordTx.syndicators) ? recordTx.syndicators : [],
+        total_principal_amount: amount,
+        total_interest: interest,
+        created_at: recordTx.created_at as string || new Date().toISOString(),
+        start_date: recordTx.start_date as string || new Date().toISOString(),
+        splitwise_entries: Array.isArray(recordTx.splitwise_entries) ? recordTx.splitwise_entries : []
+      } as Transaction;
     });
   }, [transactionsResponse]);
-  
-  const { 
-    data: friendRequests, 
-    isLoading: isFriendsLoading,
-    isError: isFriendsError
-  } = useGetFriendRequestsQuery();
 
   const stats = useMemo(() => {
-    const totalPrincipal = portfolio?.total_principal_amount || 0;
-    const totalInterestAmount = portfolio?.total_interest_amount || 0;
+    // Calculate total principal and interest from user's splitwise entries
+    const userEntries = transactions.flatMap(tx => 
+      tx.splitwise_entries.filter(entry => entry.syndicator_username === user?.username)
+    );
+
+    const totalPrincipal = userEntries.reduce((sum: number, entry: SplitwiseEntry) => 
+      sum + entry.principal_amount, 0
+    );
+    
+    const totalInterestAmount = userEntries.reduce((sum: number, entry: SplitwiseEntry) => 
+      sum + entry.interest_amount/100*entry.principal_amount, 0
+    );
+    
     const pendingRequestsCount = friendRequests?.requests?.received?.filter(
       (req: { status: string }) => req.status === 'pending'
     ).length || 0;
@@ -81,8 +92,8 @@ const DashboardPage: React.FC = () => {
       returnRate: totalPrincipal > 0 ? (totalInterestAmount / totalPrincipal) * 100 : 0,
       activeTransactions: transactions.length
     };
-  }, [portfolio, friendRequests, transactions]);
-  
+  }, [friendRequests, transactions, user]);
+
   // Grid item style
   const gridItemSx = {
     display: 'flex',
@@ -93,7 +104,7 @@ const DashboardPage: React.FC = () => {
   
 
   // Move QuickStats component before its usage
-  const QuickStats: React.FC = () => (
+  const QuickStats: FunctionComponent = () => (
     <Box sx={{ mt: 2 }}>
       <Typography variant="body2" color="text.secondary">
         Active Investments: {stats.activeTransactions}
@@ -111,37 +122,37 @@ const DashboardPage: React.FC = () => {
       </Typography>
       
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <GridItem sx={{ xs: 12, sm: 6, md: 3, ...gridItemSx }}>
+        <GridItem xs={12} sm={6} md={3}>
           <StatsCard
             title="Total Invested"
             value={`₹${stats.totalPrincipal.toLocaleString()}`}
             icon={<SavingsIcon />}
             color="primary"
-            loading={isPortfolioLoading}
+            loading={isTransactionsLoading}
           />
         </GridItem>
         
-        <GridItem sx={{ xs: 12, sm: 6, md: 3, ...gridItemSx }}>
+        <GridItem xs={12} sm={6} md={3}>
           <StatsCard
             title="Total Returns"
             value={`₹${stats.totalInterestAmount.toLocaleString()}`}
             icon={<TrendingUpIcon />}
             color="success"
-            loading={isPortfolioLoading}
+            loading={isTransactionsLoading}
           />
         </GridItem>
         
-        <GridItem sx={{ xs: 12, sm: 6, md: 3, ...gridItemSx }}>
+        <GridItem xs={12} sm={6} md={3}>
           <StatsCard
             title="Active Transactions"
             value={stats.activeTransactions.toString()}
             icon={<AccountBalanceIcon />}
             color="info"
-            loading={isPortfolioLoading || isTransactionsLoading}
+            loading={isTransactionsLoading}
           />
         </GridItem>
         
-        <GridItem sx={{ xs: 12, sm: 6, md: 3, ...gridItemSx }}>
+        <GridItem xs={12} sm={6} md={3}>
           <StatsCard
             title="Pending Requests"
             value={stats.pendingRequests.toString()}
@@ -152,16 +163,14 @@ const DashboardPage: React.FC = () => {
         </GridItem>
       </Grid>
 
-      {(isPortfolioError || isFriendsError) && (
+      {(isFriendsError) && (
         <Alert severity="error" sx={{ mb: 3 }}>
-          {isPortfolioError ? 'Failed to load portfolio data. ' : ''}
-          {isFriendsError ? 'Failed to load friend requests. ' : ''}
-          Please try again later.
+          Failed to load friend requests. Please try again later.
         </Alert>
       )}
 
       <Grid container spacing={3}>
-        <GridItem sx={{ xs: 12, lg: 8, ...gridItemSx }}>
+        <GridItem xs={12} lg={8}>
           <Card>
             <CardContent>
               <Typography variant="h6" component="h2" gutterBottom>
@@ -172,7 +181,7 @@ const DashboardPage: React.FC = () => {
           </Card>
         </GridItem>
         
-        <GridItem sx={{ xs: 12, lg: 4, ...gridItemSx }}>
+        <GridItem xs={12} lg={4}>
           <Card>
             <CardContent>
               <Typography variant="h6" component="h2" gutterBottom>
@@ -185,7 +194,7 @@ const DashboardPage: React.FC = () => {
       </Grid>
 
       <Grid container spacing={3}>
-        <GridItem sx={{ xs: 12, lg: 4, ...gridItemSx }}>
+        <GridItem xs={12} lg={4}>
           <Card>
             <CardContent>
               <Typography variant="h6" component="h2" gutterBottom>
