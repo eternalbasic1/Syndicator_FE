@@ -7,33 +7,59 @@ import {
   TrendingUp as TrendingUpIcon,
   People as PeopleIcon,
 } from '@mui/icons-material';
+import type { Transaction, SplitwiseEntry } from '../../types/transaction.types';
 
 interface SummaryCardsProps {
-  totalPrincipal: number;
-  totalInterest: number;
-  activeSyndicates: number;
+  transactions: Transaction[];
   loading?: boolean;
 }
 
-const SummaryCards: React.FC<SummaryCardsProps> = ({
-  totalPrincipal,
-  totalInterest,
-  activeSyndicates,
-  loading = false,
-}) => {
-  console.log("HItting summmary")
+const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions, loading = false }) => {
+  console.log("Hitting summary")
+
+  if (loading) {
+    return (
+      <Box display="flex" gap={3}>
+        {[1, 2, 3].map((i) => (
+          <Paper key={i} sx={{ p: 3, flex: 1 }}>
+            <Skeleton variant="rectangular" height={100} />
+          </Paper>
+        ))}
+      </Box>
+    );
+  }
+
+  const totalPrincipal = transactions.reduce<number>((sum, t) => {
+    const userEntry = t.splitwise_entries?.find((entry: SplitwiseEntry) => entry.syndicator_id === t.risk_taker_id);
+    if (userEntry) {
+      sum += userEntry.principal_amount;
+    }
+    return sum;
+  }, 0);
+
+  const totalInterest = transactions.reduce<number>((sum, t) => {
+    const userEntry = t.splitwise_entries?.find((entry: SplitwiseEntry) => entry.syndicator_id === t.risk_taker_id);
+    if (userEntry) {
+      const interest = (userEntry.principal_amount * t.total_interest) / 100;
+      sum += interest;
+    }
+    return sum;
+  }, 0);
+
+  const activeSyndicates = transactions.length;
+
   const cards = [
     {
       title: 'Total Principal',
       value: `₹${totalPrincipal.toLocaleString()}`,
-      description: 'Across all transactions',
+      description: 'Your invested amount',
       icon: <AccountBalanceIcon color="primary" sx={{ mr: 1 }} />,
       color: 'primary',
     },
     {
       title: 'Total Interest',
       value: `₹${totalInterest.toLocaleString()}`,
-      description: 'Earned from all transactions',
+      description: 'Your earned interest',
       icon: <TrendingUpIcon color="success" sx={{ mr: 1 }} />,
       color: 'success',
     },

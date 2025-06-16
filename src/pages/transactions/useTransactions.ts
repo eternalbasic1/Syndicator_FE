@@ -2,7 +2,19 @@
 import { useCallback } from 'react';
 import { useGetAllTransactionsQuery, useCreateTransactionMutation } from '../../store/api/transactionApi';
 import { useGetSyndicateViewQuery } from '../../store/api/syndicateApi';
-import type { TransactionFormData } from '../../types/transaction.types';
+import type { TransactionFormData, TransactionSyndicatorMetaData } from '../../types/transaction.types';
+
+interface SplitwiseEntry {
+  user_id: string;
+  amount: number;
+  splitwise_id: string;
+}
+
+interface Transaction {
+  splitwise_entries: SplitwiseEntry[];
+  total_principal_amount: number;
+  total_interest: number;
+}
 
 export const useTransactions = () => {
   // Fetch transactions data
@@ -32,18 +44,30 @@ export const useTransactions = () => {
   const calculateStats = useCallback(() => {
     const transactions = Array.isArray(transactionsData) ? transactionsData : [];
     
-    const totalPrincipal = transactions.reduce(
-      (sum, t) => sum + (t?.total_principal_amount || 0), 
-      0
-    );
+    // Calculate user's invested amount from Splitwise
+    const userInvestedAmount = transactions.reduce((sum, t) => {
+      // Get the user's splitwise entry
+      const userEntry = t.splitwise_entries?.find((entry: SplitwiseEntry) => entry.user_id === syndicateData?.user?.user_id);
+      if (userEntry) {
+        // Add the user's invested amount
+        sum += userEntry.amount;
+      }
+      return sum;
+    }, 0);
+
+    // Calculate interest based on user's invested amount
+    const totalInterest = transactions.reduce((sum, t) => {
+      const userEntry = t.splitwise_entries?.find((entry: SplitwiseEntry) => entry.user_id === syndicateData?.user?.user_id);
+      if (userEntry) {
+        // Calculate interest based on user's proportion of investment
+        const userInterest = (userEntry.amount / t.total_principal_amount) * ((t.total_principal_amount * t.total_interest) / 100);
+        sum += userInterest;
+      }
+      return sum;
+    }, 0);
     
-    const totalInterest = transactions.reduce(
-      (sum, t) => sum + ((t?.total_principal_amount || 0) * (t?.total_interest || 0) / 100), 
-      0
-    );
-    
-    return { totalPrincipal, totalInterest };
-  }, [transactionsData]);
+    return { totalPrincipal: userInvestedAmount, totalInterest };
+  }, [transactionsData, syndicateData]);
 
   // Handle transaction creation
   const handleCreateTransaction = useCallback(async (formData: TransactionFormData) => {
@@ -79,3 +103,16 @@ export const useTransactions = () => {
     refetchTransactions,
   };
 };
+
+interface Transaction {
+  transaction_id: string;
+  risk_taker_id: string;
+  risk_taker_username: string;
+  risk_taker_name: string | null;
+  syndicators: TransactionSyndicatorMetaData[];
+  total_principal_amount: number;
+  total_interest: number;
+  created_at: string;
+  start_date: string;
+  splitwise_entries: SplitwiseEntry[];
+}
