@@ -18,8 +18,8 @@ import {
   TableRow,
   Paper,
   Avatar,
+  Grid,
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import GridItem from '../../components/common/GridItem';
 import { format } from 'date-fns';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -54,6 +54,12 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
     transactionId: transaction.transaction_id,
     transaction
   });
+
+  // Get the user's Splitwise entry
+  const userEntry = transaction.splitwise_entries?.find(entry => entry.syndicator_id === transaction.risk_taker_id);
+  const userPrincipalAmount = userEntry?.principal_amount || 0;
+  const userInterestAmount = (userPrincipalAmount * transaction.total_interest) / 100;
+  const userTotalAmount = userPrincipalAmount + userInterestAmount;
 
   const totalInterestAmount = (transaction.total_principal_amount * transaction.total_interest) / 100;
   const totalAmount = transaction.total_principal_amount + totalInterestAmount;
@@ -275,32 +281,32 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
                 
                 {/* Splitwise Summary */}
                 <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} md={4}>
+                  <GridItem container spacing={2}>
+                    <GridItem xs={12} md={4}>
                       <Typography variant="subtitle2" color="textSecondary">
                         Total Splitwise Principal
                       </Typography>
                       <Typography variant="h6" color="primary">
                         ₹{transaction.splitwise_entries.reduce((sum, entry) => sum + entry.principal_amount, 0).toLocaleString()}
                       </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
+                    </GridItem>
+                    <GridItem xs={12} md={4}>
                       <Typography variant="subtitle2" color="textSecondary">
                         Total Splitwise Interest
                       </Typography>
                       <Typography variant="h6" color="success.main">
                         ₹{transaction.splitwise_entries.reduce((sum, entry) => sum + entry.interest_amount/100 * entry.principal_amount, 0).toLocaleString()}
                       </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
+                    </GridItem>
+                    <GridItem xs={12} md={4}>
                       <Typography variant="subtitle2" color="textSecondary">
                         Number of Entries
                       </Typography>
-                      <Typography variant="h6">
+                      <Typography variant="h6" color="primary">
                         {transaction.splitwise_entries.length}
                       </Typography>
-                    </Grid>
-                  </Grid>
+                    </GridItem>
+                  </GridItem>
                 </Box>
               </CardContent>
             </Card>

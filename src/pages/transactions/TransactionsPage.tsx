@@ -24,7 +24,6 @@ const TransactionsPage: React.FC = () => {
   const {
     transactions,
     friends,
-    stats: { totalPrincipal, totalInterest },
     isLoading,
     isCreating,
     transactionsError,
@@ -125,9 +124,7 @@ const TransactionsPage: React.FC = () => {
 
       {/* Summary Cards */}
       <SummaryCards
-        totalPrincipal={totalPrincipal}
-        totalInterest={totalInterest}
-        activeSyndicates={friends.length}
+        transactions={transactions}
         loading={isLoading}
       />
 
