@@ -17,7 +17,7 @@ import {
   Card,
   CardContent,
   CircularProgress,
-  Alert,
+  Alert
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import GridItem from '../../components/common/GridItem';
@@ -77,6 +77,19 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         [friendUsername]: {
           ...prev.syndicate_details[friendUsername],
           principal_amount: amount
+        }
+      }
+    }));
+  };
+
+  const handleSyndicateInterestChange = (friendUsername: string, interest: number) => {
+    setFormData(prev => ({
+      ...prev,
+      syndicate_details: {
+        ...prev.syndicate_details,
+        [friendUsername]: {
+          ...prev.syndicate_details[friendUsername],
+          interest: interest
         }
       }
     }));
@@ -162,6 +175,11 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                     {errors.syndicate_total}
                   </Alert>
                 )}
+                {errors.syndicate_interest_total && (
+                  <Alert severity="error" sx={{ mb: 2 }}>
+                    {errors.syndicate_interest_total}
+                  </Alert>
+                )}
                 <Grid container spacing={2}>
                   {selectedFriends.map((friendUsername) => (
                     <GridItem xs={12} md={6} key={friendUsername}>
@@ -170,16 +188,32 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                           <Typography variant="subtitle1" gutterBottom>
                             {friendUsername}
                           </Typography>
-                          <TextField
-                            fullWidth
-                            label="Principal Amount"
-                            type="number"
-                            value={formData.syndicate_details[friendUsername]?.principal_amount || 0}
-                            onChange={(e) => handlePrincipalAmountChange(friendUsername, Number(e.target.value))}
-                            error={!!errors[`syndicate_${friendUsername}`]}
-                            helperText={errors[`syndicate_${friendUsername}`]}
-                            InputProps={{ startAdornment: '₹' }}
-                          />
+                          <Grid container spacing={2}>
+                            <GridItem item xs={12} md={6}>
+                              <TextField
+                                fullWidth
+                                label="Principal Amount"
+                                type="number"
+                                value={formData.syndicate_details[friendUsername]?.principal_amount || 0}
+                                onChange={(e) => handlePrincipalAmountChange(friendUsername, Number(e.target.value))}
+                                error={!!errors[`syndicate_${friendUsername}_principal`]}
+                                helperText={errors[`syndicate_${friendUsername}_principal`]}
+                                InputProps={{ startAdornment: '₹' }}
+                              />
+                            </GridItem>
+                            <GridItem  xs={12} md={6}>
+                              <TextField
+                                fullWidth
+                                label="Interest Amount"
+                                type="number"
+                                value={formData.syndicate_details[friendUsername]?.interest || 0}
+                                onChange={(e) => handleSyndicateInterestChange(friendUsername, Number(e.target.value))}
+                                error={!!errors[`syndicate_${friendUsername}_interest`]}
+                                helperText={errors[`syndicate_${friendUsername}_interest`] || ' '}
+                                InputProps={{ endAdornment: '%' }}
+                              />
+                            </GridItem>
+                          </Grid>
                         </CardContent>
                       </Card>
                     </GridItem>
