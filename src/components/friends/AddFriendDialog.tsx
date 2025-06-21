@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { PersonAdd as PersonAddIcon } from '@mui/icons-material';
 //TODO: fix utils
-import { validateUsername } from '../../utils/validators';
+// import { validateUsername } from '../../utils/validators';
 import { useCreateFriendRequestMutation } from '../../store/api/friendApi';
 
 interface AddFriendDialogProps {
@@ -37,16 +37,15 @@ const AddFriendDialog: React.FC<AddFriendDialogProps> = ({
     setError('');
 
     // Validate username
-    const validationError = validateUsername(username);
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+    // const validationError = validateUsername(username);
+    // if (validationError) {
+    //   setError(validationError);
+    //   return;
+    // }
 
     try {
       const result = await createFriend({
         mutual_friend_name: username.trim(),
-        username: ''
       }).unwrap();
 
       // Show success message based on result
