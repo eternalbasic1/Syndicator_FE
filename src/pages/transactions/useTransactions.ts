@@ -10,10 +10,16 @@ interface SplitwiseEntry {
   splitwise_id: string;
 }
 
-interface Transaction {
-  splitwise_entries: SplitwiseEntry[];
-  total_principal_amount: number;
-  total_interest: number;
+// interface Transaction {
+//   splitwise_entries: SplitwiseEntry[];
+//   total_principal_amount: number;
+//   total_interest: number;
+// }
+
+export interface Friend {
+  user_id: string;
+  username: string;
+  name?: string;
 }
 
 export const useTransactions = () => {
@@ -84,10 +90,24 @@ export const useTransactions = () => {
     }
   }, [createTransaction, refetchTransactions]);
 
+  // Include current user in friends list
+  const friendsWithSelf = [
+    {
+      user_id: syndicateData?.user?.user_id || '',
+      username: syndicateData?.user?.username || '',
+      name: syndicateData?.user?.name || syndicateData?.user?.username || 'You'
+    },
+    ...(Array.isArray(syndicateData?.friends) ? syndicateData.friends.map(friend => ({
+      ...friend,
+      name: friend.name || friend.username
+    })) : [])
+  ];
+
   return {
     // Data
     transactions: Array.isArray(transactionsData?.transactions) ? transactionsData.transactions : [],
-    friends: Array.isArray(syndicateData?.friends) ? syndicateData.friends : [],
+    friends: friendsWithSelf,
+    currentUser: syndicateData?.user,
     stats: calculateStats(),
     
     // Loading states

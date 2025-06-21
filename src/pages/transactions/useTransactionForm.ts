@@ -19,21 +19,31 @@ export const useTransactionForm = (initialData?: Partial<TransactionFormData>) =
       newErrors.total_principal_amount = 'Total principal amount must be greater than 0';
     }
 
-    if (formData.total_interest_amount <= 0) {
-      newErrors.total_interest_amount = 'Total interest amount must be greater than 0';
+    if (formData.total_interest_amount < 0) {
+      newErrors.total_interest_amount = 'Interest amount cannot be negative';
     }
 
     if (selectedFriends.length > 0) {
-      const totalSyndicateAmount = Object.values(formData.syndicate_details)
+      const totalSyndicatePrincipal = Object.values(formData.syndicate_details)
         .reduce((sum, detail) => sum + (detail?.principal_amount || 0), 0);
       
-      if (Math.abs(totalSyndicateAmount - formData.total_principal_amount) > 0.01) {
+      // const totalSyndicateInterest = Object.values(formData.syndicate_details)
+      //   .reduce((sum, detail) => sum + (detail?.interest || 0), 0);
+      
+      if (Math.abs(totalSyndicatePrincipal - formData.total_principal_amount) > 0.01) {
         newErrors.syndicate_total = 'Sum of syndicate principal amounts must equal total principal amount';
       }
 
+      // if (Math.abs(totalSyndicateInterest - formData.total_interest_amount) > 0.01) {
+      //   newErrors.syndicate_interest_total = 'Sum of syndicate interest amounts must equal total interest amount';
+      // }
+
       selectedFriends.forEach(friend => {
         if (!formData.syndicate_details[friend] || formData.syndicate_details[friend]?.principal_amount <= 0) {
-          newErrors[`syndicate_${friend}`] = 'Principal amount must be greater than 0';
+          newErrors[`syndicate_${friend}_principal`] = 'Principal amount must be greater than 0';
+        }
+        if (!formData.syndicate_details[friend] || formData.syndicate_details[friend]?.interest < 0) {
+          newErrors[`syndicate_${friend}_interest`] = 'Interest amount cannot be negative';
         }
       });
     }
