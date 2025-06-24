@@ -74,7 +74,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions, loading = fal
 
   if (loading) {
     return (
-      <Grid container spacing={3} mb={4}>
+      <Grid container spacing={3} mb={4} >
         {[1, 2, 3].map((item) => (
           <GridItem key={item} xs={12} md={4}>
             <Paper sx={{ p: 3, height: '100%' }}>
@@ -92,7 +92,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions, loading = fal
     <Grid container spacing={3} mb={4}>
       {cards.map((card, index) => (
         <GridItem key={index} xs={12} md={4}>
-          <Paper sx={{ p: 3, height: '100%' }}>
+          <Paper sx={{ p: 3, height: '100%' , minWidth: 350}}>
             <Box display="flex" alignItems="center" mb={2}>
               {card.icon}
               <Typography variant="h6" component="div">

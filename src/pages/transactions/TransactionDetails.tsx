@@ -55,11 +55,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
     transaction
   });
 
-  // Get the user's Splitwise entry
-  const userEntry = transaction.splitwise_entries?.find(entry => entry.syndicator_id === transaction.risk_taker_id);
-  const userPrincipalAmount = userEntry?.principal_amount || 0;
-  const userInterestAmount = (userPrincipalAmount * transaction.total_interest) / 100;
-  const userTotalAmount = userPrincipalAmount + userInterestAmount;
+
 
   const totalInterestAmount = (transaction.total_principal_amount * transaction.total_interest) / 100;
   const totalAmount = transaction.total_principal_amount + totalInterestAmount;

@@ -1,20 +1,31 @@
 import { useMemo } from 'react';
 import type { FunctionComponent } from 'react';
-import { Box, Typography, Card, CardContent, Alert, Grid } from '@mui/material';
-import QuickActions from '../components/dashboard/QuickActions';
-import GridItem from '../components/common/GridItem';
+import { 
+  Box, 
+  Typography, 
+  Alert, 
+  Grid, 
+  Container, 
+  Paper, 
+  Stack,
+  CircularProgress, 
+} from '@mui/material';
 import {
   Savings as SavingsIcon,
   TrendingUp as TrendingUpIcon,
   People as PeopleIcon,
   AccountBalance as AccountBalanceIcon,
 } from '@mui/icons-material';
+
+import QuickActions from '../components/dashboard/QuickActions';
+import GridItem from '../components/common/GridItem';
 import { useAuth } from '../hooks/useAuth';
 import { useGetAllTransactionsQuery } from '../store/api/transactionApi';
 import { useGetFriendRequestsQuery } from '../store/api/friendApi';
 import type { Transaction, SplitwiseEntry } from '../types/transaction.types';
 import StatsCard from '../components/dashboard/StatsCard';
 import RecentTransactions from '../components/dashboard/RecentTransactions';
+import QuickStats from '../components/dashboard/QuickStats';
 
 const DashboardPage: FunctionComponent = () => {
   const { user } = useAuth();
@@ -32,11 +43,9 @@ const DashboardPage: FunctionComponent = () => {
     isError: isFriendsError
   } = useGetFriendRequestsQuery();
 
-  // Transform transactions to match Transaction type
   const transactions = useMemo<Transaction[]>(() => {
     if (!transactionsResponse) return [];
     
-    // Get the raw transactions array
     let rawTransactions: unknown[] = [];
     if (Array.isArray(transactionsResponse)) {
       rawTransactions = transactionsResponse;
@@ -45,7 +54,6 @@ const DashboardPage: FunctionComponent = () => {
       rawTransactions = Array.isArray(resp.transactions) ? resp.transactions : [];
     }
     
-    // Transform to match Transaction type
     return rawTransactions.map((tx: unknown) => {
       const recordTx = tx as Record<string, unknown>;
       const amount = typeof recordTx.amount === 'number' ? recordTx.amount : 0;
@@ -67,7 +75,6 @@ const DashboardPage: FunctionComponent = () => {
   }, [transactionsResponse]);
 
   const stats = useMemo(() => {
-    // Calculate total principal and interest from user's splitwise entries
     const userEntries = transactions.flatMap(tx => 
       tx.splitwise_entries.filter(entry => entry.syndicator_username === user?.username)
     );
@@ -94,128 +101,128 @@ const DashboardPage: FunctionComponent = () => {
     };
   }, [friendRequests, transactions, user]);
 
-  // Grid item style
-  const gridItemSx = {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    p: 2
-  } as const;
-  
-
-  // Move QuickStats component before its usage
-  const QuickStats: FunctionComponent = () => (
-    <Box sx={{ mt: 2 }}>
-      <Typography variant="body2" color="text.secondary">
-        Active Investments: {stats.activeTransactions}
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        Pending Requests: {stats.pendingRequests}
-      </Typography>
-    </Box>
-  );
+  if (isTransactionsLoading || isFriendsLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Welcome back, {user?.name || user?.username}!
-      </Typography>
-      
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <GridItem xs={12} sm={6} md={3}>
-          <StatsCard
-            title="Total Invested"
-            value={`₹${stats.totalPrincipal.toLocaleString()}`}
-            icon={<SavingsIcon />}
-            color="primary"
-            loading={isTransactionsLoading}
-          />
-        </GridItem>
-        
-        <GridItem xs={12} sm={6} md={3}>
-          <StatsCard
-            title="Total Returns"
-            value={`₹${stats.totalInterestAmount.toLocaleString()}`}
-            icon={<TrendingUpIcon />}
-            color="success"
-            loading={isTransactionsLoading}
-          />
-        </GridItem>
-        
-        <GridItem xs={12} sm={6} md={3}>
-          <StatsCard
-            title="Active Transactions"
-            value={stats.activeTransactions.toString()}
-            icon={<AccountBalanceIcon />}
-            color="info"
-            loading={isTransactionsLoading}
-          />
-        </GridItem>
-        
-        <GridItem xs={12} sm={6} md={3}>
-          <StatsCard
-            title="Pending Requests"
-            value={stats.pendingRequests.toString()}
-            icon={<PeopleIcon />}
-            color="warning"
-            loading={isFriendsLoading}
-          />
-        </GridItem>
-      </Grid>
+    <Box sx={{ 
+      backgroundColor: (theme) => theme.palette.background.default, 
+      minHeight: '100vh', 
+      py: 4 
+    }}>
+      <Container maxWidth="xl">
+        <Stack spacing={4}>
+          {/* Header */}
+          <Box>
+            <Typography variant="h4" component="h1" fontWeight="bold">
+              Dashboard
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary">
+              Welcome back, {user?.name || user?.username}! Here's your financial overview.
+            </Typography>
+          </Box>
 
-      {(isFriendsError) && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          Failed to load friend requests. Please try again later.
-        </Alert>
-      )}
+          {/* Stats Cards */}
+          <Grid container spacing={3}>
+            <GridItem xs={12} sm={6} md={3}>
+              <StatsCard
+                title="Total Invested"
+                value={`₹${stats.totalPrincipal.toLocaleString()}`}
+                icon={<SavingsIcon />}
+                color="primary"
+                loading={isTransactionsLoading}
+              />
+            </GridItem>
+            <GridItem xs={12} sm={6} md={3}>
+              <StatsCard
+                title="Total Returns"
+                value={`₹${stats.totalInterestAmount.toLocaleString()}`}
+                icon={<TrendingUpIcon />}
+                color="success"
+                loading={isTransactionsLoading}
+              />
+            </GridItem>
+            <GridItem xs={12} sm={6} md={3}>
+              <StatsCard
+                title="Active Syndications"
+                value={stats.activeTransactions.toString()}
+                icon={<AccountBalanceIcon />}
+                color="info"
+                loading={isTransactionsLoading}
+              />
+            </GridItem>
+            <GridItem xs={12} sm={6} md={3}>
+              <StatsCard
+                title="Pending Requests"
+                value={stats.pendingRequests.toString()}
+                icon={<PeopleIcon />}
+                color="warning"
+                loading={isFriendsLoading}
+              />
+            </GridItem>
+          </Grid>
 
-      <Grid container spacing={3}>
-        <GridItem xs={12} lg={8}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" component="h2" gutterBottom>
-                Recent Transactions
-              </Typography>
-              <RecentTransactions transactions={transactions} loading={isTransactionsLoading} />
-            </CardContent>
-          </Card>
-        </GridItem>
-        
-        <GridItem xs={12} lg={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" component="h2" gutterBottom>
-                Quick Actions
-              </Typography>
-              <QuickActions />
-            </CardContent>
-          </Card>
-        </GridItem>
-      </Grid>
+          {isFriendsError && (
+            <Alert severity="error">
+              Failed to load friend requests. Please try again later.
+            </Alert>
+          )}
 
-      <Grid container spacing={3}>
-        <GridItem xs={12} lg={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" component="h2" gutterBottom>
-                Quick Stats
-              </Typography>
-              <QuickStats />
-              <Box sx={{ mt: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Return Rate:
+          {/* Main Content */}
+          <Grid container spacing={3}>
+            {/* Recent Transactions */}
+            <GridItem xs={12} lg={7}>
+              <Paper elevation={3} sx={{ p: 3, height: '100%', borderRadius: '12px' }}>
+                <Typography variant="h6" component="h2" gutterBottom fontWeight="600">
+                  Recent Transactions
                 </Typography>
-                <Typography 
-                  variant="h5" 
-                  color={stats.returnRate >= 0 ? 'success.main' : 'error.main'}
-                >
-                  {stats.returnRate >= 0 ? '+' : ''}{stats.returnRate.toFixed(2)}%
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </GridItem>
-      </Grid>
+                <RecentTransactions transactions={transactions} loading={isTransactionsLoading} />
+              </Paper>
+            </GridItem>
+            
+            {/* Side Panel */}
+            <GridItem xs={12} lg={5}>
+              <Stack spacing={3}>
+                {/* Quick Stats & Return Rate */}
+                <Paper elevation={3} sx={{ p: 3, borderRadius: '12px' }}>
+                  <Typography variant="h6" component="h2" gutterBottom fontWeight="600">
+                    Portfolio Snapshot
+                  </Typography>
+                  <QuickStats 
+                    activeTransactions={stats.activeTransactions}
+                    pendingRequests={stats.pendingRequests}
+                  />
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Overall Return Rate:
+                    </Typography>
+                    <Typography 
+                      variant="h4" 
+                      fontWeight="bold"
+                      color={stats.returnRate >= 0 ? 'success.main' : 'error.main'}
+                    >
+                      {stats.returnRate >= 0 ? '+' : ''}{stats.returnRate.toFixed(2)}%
+                    </Typography>
+                  </Box>
+                </Paper>
+
+                {/* Quick Actions */}
+                <Paper elevation={3} sx={{ p: 3, borderRadius: '12px' }}>
+                  <Typography variant="h6" component="h2" gutterBottom fontWeight="600">
+                    Quick Actions
+                  </Typography>
+                  <QuickActions />
+                </Paper>
+              </Stack>
+            </GridItem>
+          </Grid>
+        </Stack>
+      </Container>
     </Box>
   );
 };

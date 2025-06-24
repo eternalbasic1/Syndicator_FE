@@ -1,18 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import {
-  Card,
-  CardContent,
   Typography,
   Box,
   Avatar,
   Chip,
   IconButton,
   Tooltip,
+  Paper,
+  Button,
+  Stack
 } from '@mui/material';
 import {
   Check as CheckIcon,
-  Close as CloseIcon,
   Cancel as CancelIcon,
   Person as PersonIcon,
 } from '@mui/icons-material';
@@ -21,139 +20,109 @@ import type { FriendRequestMetaData } from '../../types/friend.types';
 
 interface FriendRequestCardProps {
   request: FriendRequestMetaData;
-  currentUserId?: string; // Made optional since it's not being used
   onUpdate?: () => void;
 }
 
-const FriendRequestCard: React.FC<FriendRequestCardProps> = ({
-  request,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  currentUserId,
-  onUpdate,
-}) => {
+const FriendRequestCard: React.FC<FriendRequestCardProps> = ({ request, onUpdate }) => {
   const [updateFriendRequestStatus, { isLoading }] = useUpdateFriendRequestStatusMutation();
 
   const handleStatusUpdate = async (status: 'accepted' | 'rejected' | 'canceled') => {
     try {
-      await updateFriendRequestStatus({
-        request_id: request.request_id,
-        status,
-      }).unwrap();
+      await updateFriendRequestStatus({ request_id: request.request_id, status }).unwrap();
       onUpdate?.();
     } catch (error) {
       console.error('Failed to update friend request:', error);
-      // TODO: Show error toast/notification to user
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'accepted':
-        return 'success';
-      case 'rejected':
-        return 'error';
-      case 'canceled':
-        return 'default';
-      case 'pending':
-        return 'warning';
-      default:
-        return 'default';
-    }
+  const getStatusChip = (status: string) => {
+    const colorMap: { [key: string]: 'success' | 'error' | 'warning' | 'default' } = {
+      accepted: 'success',
+      rejected: 'error',
+      canceled: 'default',
+      pending: 'warning',
+    };
+    return (
+      <Chip
+        label={status}
+        color={colorMap[status] || 'default'}
+        size="small"
+        sx={{ textTransform: 'capitalize' }}
+      />
+    );
   };
 
-  const isSentRequest = request.request_type === 'sent';
-  const isReceivedRequest = request.request_type === 'received';
+  const isReceived = request.request_type === 'received';
   const isPending = request.status === 'pending';
-  
-  // Use other_user from the request metadata
   const otherUser = request.other_user;
 
   return (
-    <Card 
-      sx={{ 
-        mb: 2, 
-        border: isPending ? '2px solid' : '1px solid',
-        borderColor: isPending ? 'primary.main' : 'divider',
+    <Paper 
+      variant="outlined" 
+      sx={{
+        p: 2, 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: 2, 
+        borderRadius: '12px',
+        transition: 'box-shadow 0.3s, border-color 0.3s',
         '&:hover': {
-          boxShadow: 3,
-        },
+          boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+          borderColor: 'primary.light'
+        }
       }}
     >
-      <CardContent>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Box display="flex" alignItems="center" gap={2}>
-            <Avatar sx={{ bgcolor: 'primary.main' }}>
-              <PersonIcon />
-            </Avatar>
-            <Box>
-              <Typography variant="h6" component="div">
-                {otherUser?.name || 'Unknown User'}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                @{otherUser?.username || 'unknown'}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {isSentRequest ? 'Request sent' : 'Request received'} • {new Date(request.created_at).toLocaleDateString()}
-              </Typography>
-            </Box>
-          </Box>
-
-          <Box display="flex" alignItems="center" gap={1}>
-            <Chip
-              label={request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-              color={getStatusColor(request.status) as any}
-              size="small"
-            />
-
-            {isPending && isReceivedRequest && (
-              <Box display="flex" gap={1}>
-                <Tooltip title="Accept">
-                  <IconButton
-                    color="success"
-                    onClick={() => handleStatusUpdate('accepted')}
-                    disabled={isLoading}
-                    size="small"
-                  >
-                    <CheckIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Reject">
-                  <IconButton
-                    color="error"
-                    onClick={() => handleStatusUpdate('rejected')}
-                    disabled={isLoading}
-                    size="small"
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            )}
-
-            {isPending && isSentRequest && (
-              <Tooltip title="Cancel Request">
-                <IconButton
-                  color="warning"
-                  onClick={() => handleStatusUpdate('canceled')}
-                  disabled={isLoading}
+      <Avatar sx={{ bgcolor: 'primary.light', width: 48, height: 48 }}>
+        <PersonIcon />
+      </Avatar>
+      <Box flexGrow={1}>
+        <Typography variant="subtitle1" fontWeight="600" lineHeight={1.2}>
+          {otherUser?.name || 'Unknown User'}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          @{otherUser?.username || 'unknown'}
+        </Typography>
+      </Box>
+      <Box sx={{ ml: 'auto', flexShrink: 0 }}>
+        {isPending ? (
+          <Stack direction="row" spacing={1}>
+            {isReceived ? (
+              <>
+                <Button
+                  variant="contained"
+                  color="success"
                   size="small"
+                  onClick={() => handleStatusUpdate('accepted')}
+                  disabled={isLoading}
+                  startIcon={<CheckIcon />}
+                  sx={{ textTransform: 'none', borderRadius: '8px' }}
                 >
+                  Accept
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  size="small"
+                  onClick={() => handleStatusUpdate('rejected')}
+                  disabled={isLoading}
+                  sx={{ textTransform: 'none', borderRadius: '8px' }}
+                >
+                  Reject
+                </Button>
+              </>
+            ) : (
+              <Tooltip title="Cancel Sent Request">
+                <IconButton onClick={() => handleStatusUpdate('canceled')} disabled={isLoading}>
                   <CancelIcon />
                 </IconButton>
               </Tooltip>
             )}
-          </Box>
-        </Box>
-
-        {request.status === 'accepted' && (
-          <Box mt={2}>
-            <Typography variant="body2" color="success.main">
-              ✓ You are now friends with {request.other_user.name}
-            </Typography>
-          </Box>
+          </Stack>
+        ) : (
+          getStatusChip(request.status)
         )}
-      </CardContent>
-    </Card>
+      </Box>
+    </Paper>
   );
 };
 

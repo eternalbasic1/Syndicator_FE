@@ -1,208 +1,160 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import { Box, Card, CardContent, Typography, useTheme } from '@mui/material';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import type { TransactionMetaData } from '@/types/transaction.types';
+import {
+  Typography,
+  useTheme,
+  Paper,
+  Stack,
+  Divider,
+  Skeleton,
+  Box,
+} from '@mui/material';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from 'recharts';
+import type { Transaction } from '../../types/transaction.types';
+import { formatAmount, formatCurrency } from '../../utils/formatters';
 
 interface PortfolioChartProps {
-  transactions: TransactionMetaData[];
+  transactions: Transaction[];
   totalPrincipal: number;
   totalInterest: number;
+  loading?: boolean;
 }
 
-const PortfolioChart = ({ 
+interface TooltipPayload {
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayload[];
+  label?: string;
+}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <Paper elevation={3} sx={{ p: 1.5, borderRadius: 2 }}>
+        <Typography variant="body2" fontWeight="bold" gutterBottom>
+          {label}
+        </Typography>
+        {payload.map((entry) => (
+          <Typography key={entry.name} variant="caption" sx={{ color: entry.color, display: 'block' }}>
+            {`${entry.name}: ${formatCurrency(entry.value)}`}
+          </Typography>
+        ))}
+      </Paper>
+    );
+  }
+  return null;
+};
+
+const PortfolioChart: React.FC<PortfolioChartProps> = ({ 
   transactions, 
   totalPrincipal, 
-  totalInterest 
-}: PortfolioChartProps) => {
+  totalInterest, 
+  loading = false 
+}) => {
   const theme = useTheme();
 
-  // Prepare pie chart data
   const pieData = [
-    {
-      name: 'Principal Amount',
-      value: totalPrincipal,
-      color: theme.palette.primary.main,
-    },
-    {
-      name: 'Interest Amount',
-      value: totalInterest,
-      color: theme.palette.secondary.main,
-    },
+    { name: 'Total Principal', value: totalPrincipal },
+    { name: 'Total Interest', value: totalInterest },
   ];
 
-  // Prepare bar chart data (monthly breakdown)
   const monthlyData = React.useMemo(() => {
-    const monthlyBreakdown: { [key: string]: { principal: number; interest: number; count: number } } = {};
-    
+    const monthlyBreakdown: { [key: string]: { principal: number; interest: number } } = {};
     transactions.forEach(transaction => {
       const date = new Date(transaction.created_at);
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      
+      const monthKey = date.toLocaleString('default', { month: 'short', year: '2-digit' });
       if (!monthlyBreakdown[monthKey]) {
-        monthlyBreakdown[monthKey] = { principal: 0, interest: 0, count: 0 };
+        monthlyBreakdown[monthKey] = { principal: 0, interest: 0 };
       }
-      
       monthlyBreakdown[monthKey].principal += transaction.total_principal_amount;
       monthlyBreakdown[monthKey].interest += transaction.total_interest;
-      monthlyBreakdown[monthKey].count += 1;
     });
-
     return Object.entries(monthlyBreakdown)
-      .map(([month, data]) => ({
-        month,
-        principal: Math.round(data.principal),
-        interest: Math.round(data.interest),
-        count: data.count,
-      }))
-      .sort((a, b) => a.month.localeCompare(b.month));
+      .map(([month, data]) => ({ month, ...data }))
+      .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime());
   }, [transactions]);
 
-  const COLORS = [theme.palette.primary.main, theme.palette.secondary.main];
+  const PIE_COLORS = [theme.palette.primary.light, theme.palette.success.light];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any; label?: string }) => {
-  if (active && payload && payload.length) {
-      return (
-        <Box
-          sx={{
-            backgroundColor: 'background.paper',
-            border: 1,
-            borderColor: 'divider',
-            borderRadius: 1,
-            p: 1.5,
-            boxShadow: 3,
-          }}
-        >
-          <Typography variant="body2" fontWeight="medium">
-            {label}
-          </Typography>
-          {payload.map((entry: any, index: number) => (
-            <Typography
-              key={index}
-              variant="body2"
-              sx={{ color: entry.color }}
-            >
-              {`${entry.dataKey}: ₹${entry.value?.toLocaleString()}`}
-            </Typography>
-          ))}
-        </Box>
-      );
-    }
-    return null;
-  };
+  if (loading) {
+    return (
+      <Stack spacing={3}>
+        <Skeleton variant="rounded" height={350} sx={{ borderRadius: 4 }} />
+        <Skeleton variant="rounded" height={350} sx={{ borderRadius: 4 }} />
+      </Stack>
+    );
+  }
 
   if (transactions.length === 0) {
     return (
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Portfolio Overview
-          </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: 300,
-              color: 'text.secondary',
-            }}
-          >
-            <Typography variant="body1">
-              No transactions available to display
-            </Typography>
-          </Box>
-        </CardContent>
-      </Card>
+      <Paper elevation={2} sx={{ p: 3, borderRadius: 4, textAlign: 'center', height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography variant="h6" color="text.secondary">
+          No transaction data available to render charts.
+        </Typography>
+      </Paper>
     );
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      {/* Pie Chart */}
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Portfolio Distribution
-          </Typography>
+    <Stack spacing={3}>
+      <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4 }}>
+        <Stack spacing={2}>
+          <Typography variant="h6" fontWeight={600}>Portfolio Distribution</Typography>
+          <Divider />
           <Box sx={{ height: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
+                  {pieData.map((_entry, index) => (
+                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip
-                  formatter={(value: number) => [`₹${value.toLocaleString()}`, '']}
-                />
+                <Tooltip content={<CustomTooltip />} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
           </Box>
-        </CardContent>
-      </Card>
+        </Stack>
+      </Paper>
 
-      {/* Bar Chart - Monthly Breakdown */}
       {monthlyData.length > 0 && (
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Monthly Transaction Overview
-            </Typography>
+        <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4 }}>
+          <Stack spacing={2}>
+            <Typography variant="h6" fontWeight={600}>Monthly Performance</Typography>
+            <Divider />
             <Box sx={{ height: 300 }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={monthlyData}
-                  margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="month" 
-                    tick={{ fontSize: 12 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={60}
-                  />
-                  <YAxis 
-                    tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => `₹${(value / 1000)}K`}
-                  />
+                <BarChart data={monthlyData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                                    <YAxis tick={{ fontSize: 12 }} tickFormatter={(value) => formatAmount(value)} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
-                  <Bar 
-                    dataKey="principal" 
-                    fill={theme.palette.primary.main} 
-                    name="Principal"
-                    radius={[2, 2, 0, 0]}
-                  />
-                  <Bar 
-                    dataKey="interest" 
-                    fill={theme.palette.secondary.main} 
-                    name="Interest"
-                    radius={[2, 2, 0, 0]}
-                  />
+                  <Bar dataKey="principal" stackId="a" fill={theme.palette.primary.main} name="Principal" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="interest" stackId="a" fill={theme.palette.success.main} name="Interest" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </Box>
-          </CardContent>
-        </Card>
+          </Stack>
+        </Paper>
       )}
-    </Box>
+    </Stack>
   );
 };
 

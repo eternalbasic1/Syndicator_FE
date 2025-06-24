@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  Card,
-  CardContent,
+  Paper,
   Box,
   Typography,
   CircularProgress,
+  Stack,
 } from '@mui/material';
 
 interface StatsCardProps {
@@ -23,41 +23,55 @@ const StatsCard: React.FC<StatsCardProps> = ({
   loading = false,
 }) => {
   return (
-    <Card>
-      <CardContent>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Box>
-            <Typography color="text.secondary" gutterBottom variant="body2">
-              {title}
+    <Paper 
+      elevation={3} 
+      sx={{
+        p: 2.5,
+        borderRadius: '12px',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        transition: 'box-shadow 0.3s ease-in-out, transform 0.2s ease-in-out',
+        '&:hover': {
+          boxShadow: (theme) => theme.shadows[6],
+          transform: 'translateY(-4px)',
+        }
+      }}
+    >
+      <Stack direction="row" spacing={2} alignItems="flex-start" justifyContent="space-between">
+        <Stack spacing={0.5}>
+          <Typography variant="subtitle2" color="text.secondary" fontWeight="medium">
+            {title}
+          </Typography>
+          {loading ? (
+            <Box sx={{ pt: 1 }}>
+              <CircularProgress size={28} />
+            </Box>
+          ) : (
+            <Typography variant="h5" component="div" fontWeight="bold">
+              {value}
             </Typography>
-            {loading ? (
-              <CircularProgress size={24} />
-            ) : (
-              <Typography variant="h5" component="div">
-                {value}
-              </Typography>
-            )}
-          </Box>
-          <Box
-            sx={(theme) => ({
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 48,
-              height: 48,
-              borderRadius: '50%',
-              backgroundColor: theme.palette[color].light + '33', // Adding 20% opacity
-              color: theme.palette[color].main,
-              '& svg': {
-                fontSize: '1.5rem',
-              },
-            })}>
-            {icon}
-          </Box>
+          )}
+        </Stack>
+        <Box
+          sx={(theme) => ({
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 52,
+            height: 52,
+            borderRadius: '12px',
+            backgroundColor: theme.palette[color].light,
+            color: theme.palette[color].main,
+            '& svg': {
+              fontSize: '1.75rem',
+            },
+          })}>
+          {icon}
         </Box>
-      </CardContent>
-    </Card>
-
+      </Stack>
+    </Paper>
   );
 };
 

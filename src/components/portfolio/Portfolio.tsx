@@ -1,19 +1,20 @@
 import React from 'react';
 import {
-  Box,
-  Card,
-  CardContent,
   Typography,
   Chip,
   Avatar,
   Divider,
   LinearProgress,
+  Stack,
+  Paper,
+  Grid,
+  Skeleton,
 } from '@mui/material';
-import GridItem from '../common/GridItem';
 import {
   TrendingUp as TrendingUpIcon,
   AccountBalance as AccountBalanceIcon,
   Percent as PercentIcon,
+  MonetizationOn as MonetizationOnIcon,
 } from '@mui/icons-material';
 import { formatCurrency, formatPercentage } from '../../utils/formatters';
 
@@ -46,187 +47,180 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
       title: 'Total Principal',
       value: formatCurrency(total_principal_amount),
       icon: <AccountBalanceIcon />,
-      color: 'primary',
-      description: 'Total amount invested',
+      color: 'primary' as const,
     },
     {
       title: 'Total Interest',
       value: formatCurrency(total_interest_amount),
       icon: <TrendingUpIcon />,
-      color: 'secondary',
-      description: 'Total interest earned',
+      color: 'secondary' as const,
     },
     {
       title: 'Total Value',
       value: formatCurrency(total_value),
       icon: <PercentIcon />,
-      color: 'success',
-      description: 'Total value of portfolio',
+      color: 'success' as const,
     },
     {
       title: 'Monthly Earnings',
       value: formatCurrency(monthly_earnings),
-      icon: <AccountBalanceIcon />,
-      color: 'warning',
-      description: 'Average monthly earnings',
+      icon: <MonetizationOnIcon />,
+      color: 'warning' as const,
     },
   ];
 
   if (isLoading) {
     return (
-      <Box>
-        <Typography variant="h5" gutterBottom>
-          Portfolio Overview
-        </Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-          {[1, 2, 3, 4].map((item) => (
-            <GridItem key={item} xs={12} sm={6} md={3}>
-              <Card>
-                <CardContent>
-                  <LinearProgress />
-                  <Box sx={{ mt: 2 }}>
-                    <Typography variant="h6" component="div">
-                      Loading...
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </GridItem>
+      <Stack spacing={3}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Skeleton variant="text" width={250} height={40} />
+          <Skeleton variant="rectangular" width={180} height={32} sx={{ borderRadius: '16px' }} />
+        </Stack>
+        <Grid container spacing={3}>
+          {[...Array(4)].map((_, index) => (
+            <Grid item xs={12} sm={6} md={3} key={index}>
+              <Skeleton variant="rounded" height={150} sx={{ borderRadius: 4 }} />
+            </Grid>
           ))}
-        </Box>
-      </Box>
+        </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Skeleton variant="rounded" height={200} sx={{ borderRadius: 4 }} />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Skeleton variant="rounded" height={200} sx={{ borderRadius: 4 }} />
+          </Grid>
+        </Grid>
+      </Stack>
     );
   }
 
   return (
-    <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5" component="h1">
-          Portfolio Overview
+    <Stack spacing={3}>
+      {/* Header */}
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="h5" component="h1" fontWeight="bold">
+          Portfolio Summary
         </Typography>
         <Chip
           label={`${active_transactions} Active Transactions`}
           color="primary"
-          variant="outlined"
+          variant="filled"
+          sx={{ fontWeight: 'bold' }}
         />
-      </Box>
+      </Stack>
 
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }} mb={4}>
+      {/* Stats Cards */}
+      <Grid container spacing={3}>
         {stats.map((stat, index) => (
-          <GridItem key={index} xs={12} sm={6} md={3}>
-            <Card
-              sx={{
+          <Grid item xs={12} sm={6} md={3} key={index}>
+            <Paper 
+              elevation={2} 
+              sx={{ 
+                p: 2.5, 
+                borderRadius: 4, 
                 height: '100%',
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: 4,
-                },
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
               }}
             >
-              <CardContent>
-                <Box display="flex" alignItems="center" mb={2}>
-                  <Avatar
-                    sx={{
-                      bgcolor: `${stat.color}.main`,
-                      mr: 2,
-                      width: 48,
-                      height: 48,
-                    }}
-                  >
-                    {stat.icon}
-                  </Avatar>
-                  <Box>
-                    <Typography variant="h4" component="div" fontWeight="bold">
-                      {stat.value}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {stat.title}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Typography variant="caption" color="text.secondary">
-                  {stat.description}
+              <Stack spacing={1}>
+                <Avatar sx={{ bgcolor: `${stat.color}.light`, color: `${stat.color}.dark`, width: 48, height: 48 }}>
+                  {stat.icon}
+                </Avatar>
+                <Typography variant="h5" fontWeight="bold">
+                  {stat.value}
                 </Typography>
-              </CardContent>
-            </Card>
-          </GridItem>
-        ))}
-      </Box>
-
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-        <GridItem xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Monthly Performance
-              </Typography>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="body2" color="text.secondary">
-                  Average Monthly Earnings
+                  {stat.title}
+                </Typography>
+              </Stack>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Lower Section */}
+      <Grid container spacing={3}>
+        {/* Monthly Performance */}
+        <Grid item xs={12} md={6}>
+          <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4, height: '100%' }}>
+            <Stack spacing={2}>
+              <Typography variant="h6" fontWeight="600">
+                Performance Metrics
+              </Typography>
+              <Divider />
+              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="body1" color="text.secondary">
+                  Avg. Monthly Earnings
                 </Typography>
                 <Typography variant="h5" color="success.main" fontWeight="bold">
                   {formatCurrency(monthly_earnings)}
                 </Typography>
-              </Box>
-              <Divider sx={{ my: 2 }} />
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="body2" color="text.secondary">
-                  Growth Rate
+              </Stack>
+              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="body1" color="text.secondary">
+                  Overall ROI
                 </Typography>
                 <Chip
-                  label={`+${formatPercentage(roi_percentage)}`}
+                  label={`${formatPercentage(roi_percentage)}`}
                   color={roi_percentage >= 0 ? 'success' : 'error'}
                   size="small"
+                  sx={{ fontWeight: 'bold' }}
                 />
-              </Box>
-            </CardContent>
-          </Card>
-        </GridItem>
+              </Stack>
+            </Stack>
+          </Paper>
+        </Grid>
 
-        <GridItem xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
+        {/* Portfolio Health */}
+        <Grid item xs={12} md={6}>
+          <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4, height: '100%' }}>
+             <Stack spacing={2}>
+              <Typography variant="h6" fontWeight="600">
                 Portfolio Health
               </Typography>
-              <Box mb={3}>
-                <Box display="flex" justifyContent="space-between" mb={1}>
-                  <Typography variant="body2">
-                    Risk Distribution
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {active_transactions} transactions
-                  </Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={Math.min((active_transactions / 10) * 100, 100)}
-                  color="success"
-                  sx={{ height: 8, borderRadius: 4 }}
-                />
-              </Box>
-              <Box>
-                <Box display="flex" justifyContent="space-between" mb={1}>
-                  <Typography variant="body2">
-                    Interest Coverage
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {formatPercentage((total_interest_amount / total_principal_amount) * 100)}
-                  </Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={Math.min((total_interest_amount / total_principal_amount) * 100, 100)}
-                  color="info"
-                  sx={{ height: 8, borderRadius: 4 }}
-                />
-              </Box>
-            </CardContent>
-          </Card>
-        </GridItem>
-      </Box>
-    </Box>
+              <Divider />
+              <Stack spacing={2.5}>
+                <Stack>
+                  <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                    <Typography variant="body1">
+                      Interest vs Principal
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {formatPercentage((total_interest_amount / total_principal_amount) * 100)}
+                    </Typography>
+                  </Stack>
+                  <LinearProgress
+                    variant="determinate"
+                    value={Math.min((total_interest_amount / total_principal_amount) * 100, 100)}
+                    color="primary"
+                    sx={{ height: 10, borderRadius: 5 }}
+                  />
+                </Stack>
+                <Stack>
+                  <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                    <Typography variant="body1">
+                      Active Transaction Load
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {active_transactions} / 10
+                    </Typography>
+                  </Stack>
+                  <LinearProgress
+                    variant="determinate"
+                    value={Math.min((active_transactions / 10) * 100, 100)}
+                    color="warning"
+                    sx={{ height: 10, borderRadius: 5 }}
+                  />
+                </Stack>
+              </Stack>
+            </Stack>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Stack>
   );
 };
 
