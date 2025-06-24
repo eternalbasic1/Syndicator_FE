@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { 
+  Container,
   Box, 
   Button, 
   Typography, 
@@ -37,10 +38,8 @@ import type { Transaction } from '../../types/transaction.types';
 // Styles
 const pageStyles = {
   root: {
-    p: { xs: 2, sm: 3 },
-    maxWidth: 1600,
-    mx: 'auto',
     width: '100%',
+    p: { xs: 2, sm: 3 },
   },
   header: {
     mb: 4,
@@ -128,6 +127,8 @@ const pageStyles = {
 };
 
 const TransactionsPage: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   // State
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
@@ -189,9 +190,6 @@ const TransactionsPage: React.FC = () => {
     }
   };
 
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
   // Render loading state
   if (isLoading) {
     return (
@@ -248,7 +246,7 @@ const TransactionsPage: React.FC = () => {
     );
   }
   return (
-    <Box sx={pageStyles.root}>
+    <Container maxWidth="xl" sx={pageStyles.root}>
       {/* Header */}
       <Box sx={pageStyles.header}>
         <Typography variant="h4" component="h1" sx={pageStyles.title}>
@@ -391,7 +389,7 @@ const TransactionsPage: React.FC = () => {
           <div>Dialog Open: {selectedTransaction ? 'true' : 'false'}</div>
         </Box>
       )}
-    </Box>
+    </Container>
   );
 };
 
