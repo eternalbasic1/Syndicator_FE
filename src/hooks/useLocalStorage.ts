@@ -83,8 +83,15 @@ export const useAuthToken = () => {
   return useLocalStorage<string | null>('jwt_token', null);
 };
 
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  name?: string;
+}
+
 export const useUserData = () => {
-  return useLocalStorage<any | null>('user_data', null);
+  return useLocalStorage<User | null>('user_data', null);
 };
 
 export const useThemePreference = () => {

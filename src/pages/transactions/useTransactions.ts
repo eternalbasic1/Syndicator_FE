@@ -2,7 +2,7 @@
 import { useCallback } from 'react';
 import { useGetAllTransactionsQuery, useCreateTransactionMutation } from '../../store/api/transactionApi';
 import { useGetSyndicateViewQuery } from '../../store/api/syndicateApi';
-import type { TransactionFormData, TransactionSyndicatorMetaData } from '../../types/transaction.types';
+import type { TransactionFormData } from '../../types/transaction.types';
 
 interface SplitwiseEntry {
   user_id: string;
@@ -95,7 +95,7 @@ export const useTransactions = () => {
     {
       user_id: syndicateData?.user?.user_id || '',
       username: syndicateData?.user?.username || '',
-      name: syndicateData?.user?.name || syndicateData?.user?.username || 'You'
+      name: syndicateData?.user?.username || 'You'
     },
     ...(Array.isArray(syndicateData?.friends) ? syndicateData.friends.map(friend => ({
       ...friend,
@@ -124,15 +124,4 @@ export const useTransactions = () => {
   };
 };
 
-interface Transaction {
-  transaction_id: string;
-  risk_taker_id: string;
-  risk_taker_username: string;
-  risk_taker_name: string | null;
-  syndicators: TransactionSyndicatorMetaData[];
-  total_principal_amount: number;
-  total_interest: number;
-  created_at: string;
-  start_date: string;
-  splitwise_entries: SplitwiseEntry[];
-}
+

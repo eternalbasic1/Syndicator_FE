@@ -1,24 +1,59 @@
 import React from 'react';
 import { Box, Container, Typography, Paper, CircularProgress } from '@mui/material';
-import Grid from '@mui/material/Grid';
-import GridItem from '../components/common/GridItem';
+import { Grid } from '@mui/material';
 import { useGetPortfolioQuery, useGetAllTransactionsQuery } from '../store/api/transactionApi';
-import type { Transaction } from '../types/transaction.types';
+import type { Transaction, PortfolioStats as PortfolioStatsType } from '../types/transaction.types';
 import Portfolio from '../components/portfolio/Portfolio';
 import PortfolioChart from '../components/portfolio/PortfolioChart';
 import PortfolioStats from '../components/portfolio/PortfolioStats';
+import { useMemo } from 'react';
 
 const PortfolioPage: React.FC = () => {
   const { data: portfolioData, isLoading: portfolioLoading } = useGetPortfolioQuery();
-  const { data: transactionsData, isLoading: transactionsLoading } = useGetAllTransactionsQuery();
+  const { data: transactionsResponse, isLoading: transactionsLoading } = useGetAllTransactionsQuery();
 
-  // Handle undefined or null data and ensure proper data structure
-  const safeTransactions = Array.isArray(transactionsData) ? transactionsData : [];
-  const allTransactions = safeTransactions.reduce((acc, tx) => {
-    return [...acc, tx];
-  }, [] as Transaction[]);
+  const allTransactions = useMemo<Transaction[]>(() => {
+    if (!transactionsResponse) return [];
+    const rawTransactions = Array.isArray(transactionsResponse)
+      ? transactionsResponse
+      : transactionsResponse.transactions || [];
+    return rawTransactions.map(
+      (tx: Partial<Transaction> & { total_interest_amount?: number }) => ({
+        transaction_id: tx.transaction_id || '',
+        risk_taker_id: tx.risk_taker_id || '',
+        risk_taker_username: tx.risk_taker_username || '',
+        risk_taker_name: tx.risk_taker_name || null,
+        syndicators: tx.syndicators || [],
+        total_principal_amount: tx.total_principal_amount || 0,
+        total_interest: tx.total_interest_amount || tx.total_interest || 0,
+        created_at: tx.created_at || new Date().toISOString(),
+        start_date: tx.start_date || new Date().toISOString(),
+        splitwise_entries: tx.splitwise_entries || [],
+      })
+    );
+  }, [transactionsResponse]);
 
-  if (portfolioLoading || transactionsLoading) {
+  const portfolioSummary = useMemo<PortfolioStatsType & { total_value: number; roi_percentage: number; monthly_earnings: number }>(() => {
+    const totalPrincipal = portfolioData?.total_principal_amount || 0;
+    const totalInterest = portfolioData?.total_interest_amount || 0;
+    const totalValue = totalPrincipal + totalInterest;
+    const roiPercentage = totalPrincipal > 0 ? (totalInterest / totalPrincipal) * 100 : 0;
+    const activeTransactions = allTransactions.length;
+    const monthlyEarnings = totalInterest / 12; // Simplified
+
+    return {
+      total_principal_amount: totalPrincipal,
+      total_interest_amount: totalInterest,
+      active_transactions: activeTransactions,
+      total_value: totalValue,
+      roi_percentage: roiPercentage,
+      monthly_earnings: monthlyEarnings,
+    };
+  }, [portfolioData, allTransactions]);
+
+  const isLoading = portfolioLoading || transactionsLoading;
+
+  if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
         <CircularProgress />
@@ -26,59 +61,42 @@ const PortfolioPage: React.FC = () => {
     );
   }
 
-  // Calculate additional portfolio metrics
-  const totalPrincipal = portfolioData?.total_principal_amount || 0;
-  const totalInterest = portfolioData?.total_interest_amount || 0;
-  const totalValue = totalPrincipal + totalInterest;
-  const roiPercentage = totalPrincipal > 0 ? (totalInterest / totalPrincipal) * 100 : 0;
-  const activeTransactions = transactionsData?.transactions?.length || 0;
-  const monthlyEarnings = totalInterest / 12; // Simplified monthly earnings calculation
-
-  const portfolioSummary = {
-    total_principal_amount: totalPrincipal,
-    total_interest_amount: totalInterest,
-    total_value: totalValue,
-    roi_percentage: roiPercentage,
-    active_transactions: activeTransactions,
-    monthly_earnings: monthlyEarnings,
-  };
-
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Typography variant="h4" component="h1" sx={{ mb: 4, fontWeight: 'bold' }}>
         Portfolio Overview
       </Typography>
 
-      <Grid container spacing={4}>
-        <GridItem xs={12} md={8}>
-          <Paper sx={{ p: 3 }}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={8}>
+          <Paper elevation={2} sx={{ p: 3, borderRadius: 4, height: '100%' }}>
             <Portfolio
               summary={portfolioSummary}
-              isLoading={portfolioLoading || transactionsLoading}
+              isLoading={isLoading}
             />
           </Paper>
-        </GridItem>
+        </Grid>
 
-        <GridItem xs={12} md={4}>
-          <Paper sx={{ p: 3 }}>
+        <Grid item xs={12} md={4}>
+          <Paper elevation={2} sx={{ p: 3, borderRadius: 4, height: '100%' }}>
             <PortfolioStats
               transactions={allTransactions}
-              totalPrincipal={totalPrincipal}
-              totalInterest={totalInterest}
-              loading={transactionsLoading}
+              totalPrincipal={portfolioSummary.total_principal_amount}
+              totalInterest={portfolioSummary.total_interest_amount}
+              loading={isLoading}
             />
           </Paper>
-        </GridItem>
+        </Grid>
 
-        <GridItem xs={12}>
-          <Paper sx={{ p: 3 }}>
+        <Grid item xs={12}>
+          <Paper elevation={2} sx={{ p: 3, borderRadius: 4 }}>
             <PortfolioChart
               transactions={allTransactions}
-              totalPrincipal={totalPrincipal}
-              totalInterest={totalInterest}
+              totalPrincipal={portfolioSummary.total_principal_amount}
+              totalInterest={portfolioSummary.total_interest_amount}
             />
           </Paper>
-        </GridItem>
+        </Grid>
       </Grid>
     </Container>
   );

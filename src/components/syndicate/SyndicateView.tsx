@@ -6,7 +6,6 @@ import {
   Box,
   Avatar,
   Chip,
-  Container,
 } from '@mui/material';
 import GridItem from '../common/GridItem';
 import { Email as EmailIcon } from '@mui/icons-material';
