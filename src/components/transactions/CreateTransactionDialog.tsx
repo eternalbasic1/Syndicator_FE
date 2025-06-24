@@ -40,7 +40,7 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
   onClose,
 }) => {
   const [createTransaction, { isLoading: isCreating }] = useCreateTransactionMutation();
-  const { data: syndicate } = useGetSyndicateViewQuery("sufgsu");
+  const { data: syndicate } = useGetSyndicateViewQuery();
   
   const [totalPrincipal, setTotalPrincipal] = useState<number>(0);
   const [totalInterest, setTotalInterest] = useState<number>(0);
@@ -151,148 +151,148 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Create New Transaction</DialogTitle>
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+      <DialogTitle sx={{ pb: 1 }}>Create New Transaction</DialogTitle>
       <DialogContent>
-        <Box display="flex" flexDirection="column" gap={3} mt={1}>
-          {error && <Alert severity="error">{error}</Alert>}
-          
-          <TextField
-            label="Total Principal Amount"
-            type="number"
-            value={totalPrincipal}
-            onChange={(e) => setTotalPrincipal(Number(e.target.value))}
-            fullWidth
-            inputProps={{ min: 0, step: 0.01 }}
-          />
-          
-          <TextField
-            label="Interest Rate (%)"
-            type="number"
-            value={totalInterest}
-            onChange={(e) => {
-              const newInterest = Number(e.target.value);
-              setTotalInterest(newInterest);
-              // Update all syndicate details with new interest rate
-              setSyndicateDetails(details => 
-                details.map(detail => ({ ...detail, interest: newInterest }))
-              );
-            }}
-            fullWidth
-            inputProps={{ min: 0, step: 0.01 }}
-          />
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        
+        <Grid container spacing={3} sx={{ mt: 1 }}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              autoFocus
+              label="Total Principal Amount"
+              type="number"
+              fullWidth
+              variant="outlined"
+              value={totalPrincipal || ''}
+              onChange={(e) => setTotalPrincipal(Number(e.target.value))}
+              InputProps={{
+                startAdornment: <Typography sx={{ mr: 1 }}>₹</Typography>,
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Interest Rate (%)"
+              type="number"
+              fullWidth
+              variant="outlined"
+              value={totalInterest || ''}
+              onChange={(e) => {
+                const newInterest = Number(e.target.value);
+                setTotalInterest(newInterest);
+                setSyndicateDetails(details => 
+                  details.map(detail => ({ ...detail, interest: newInterest }))
+                );
+              }}
+            />
+          </Grid>
+        </Grid>
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isSyndicated}
-                onChange={(e) => setIsSyndicated(e.target.checked)}
-              />
-            }
-            label="Syndicated Transaction"
-          />
+        <FormControlLabel
+          control={<Switch checked={isSyndicated} onChange={(e) => setIsSyndicated(e.target.checked)} />}
+          label="Syndicate this transaction"
+          sx={{ mt: 1, mb: 1 }}
+        />
 
-          {isSyndicated && (
-            <Card variant="outlined">
-              <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                  <Typography variant="h6">Syndicate Details</Typography>
-                  <Button
-                    startIcon={<Add />}
-                    onClick={addSyndicateDetail}
-                    variant="outlined"
-                    size="small"
-                  >
-                    Add Member
-                  </Button>
+        {isSyndicated && (
+          <Card variant="outlined" sx={{ p: 2 }}>
+            <CardContent>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h6">Syndicate Details</Typography>
+                <Button
+                  variant="outlined"
+                  startIcon={<Add />}
+                  onClick={addSyndicateDetail}
+                  size="small"
+                >
+                  Add Member
+                </Button>
+              </Box>
+
+              {syndicate?.friends && syndicate.friends.length > 0 && (
+                <Box mb={2}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    Available Friends:
+                  </Typography>
+                  <Box display="flex" flexWrap="wrap" gap={1}>
+                    {syndicate.friends.map((friend) => (
+                      <Chip
+                        key={friend.user_id}
+                        label={friend.username}
+                        size="small"
+                        onClick={() => {
+                          if (!syndicateDetails.find(d => d.username === friend.username)) {
+                            setSyndicateDetails([
+                              ...syndicateDetails,
+                              { username: friend.username, principal_amount: 0, interest: totalInterest },
+                            ]);
+                          }
+                        }}
+                      />
+                    ))}
+                  </Box>
                 </Box>
-                //TODO: Need to completely revamp code as i can see friends is not in syndicate data
-                {syndicate?.friends && (
-                  <Box mb={2}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Available Friends:
-                    </Typography>
-                    <Box display="flex" flexWrap="wrap" gap={1}>
-                      {syndicate.friends.map((friend) => (
-                        <Chip
-                          key={friend.user_id}
-                          label={friend.username}
-                          size="small"
-                          onClick={() => {
-                            if (!syndicateDetails.find(d => d.username === friend.username)) {
-                              setSyndicateDetails([
-                                ...syndicateDetails,
-                                { username: friend.username, principal_amount: 0, interest: totalInterest },
-                              ]);
-                            }
-                          }}
-                        />
-                      ))}
-                    </Box>
-                  </Box>
-                )}
+              )}
 
+              <Grid container spacing={2}>
                 {syndicateDetails.map((detail, index) => (
-                  <Card key={index} variant="outlined" sx={{ mb: 2 }}>
-                    <CardContent>
-                      <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={12} sm={4}>
-                          <TextField
-                            label="Username"
-                            value={detail.username}
-                            onChange={(e) => updateSyndicateDetail(index, 'username', e.target.value)}
-                            fullWidth
-                            size="small"
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                          <TextField
-                            label="Principal Amount"
-                            type="number"
-                            value={detail.principal_amount}
-                            onChange={(e) => updateSyndicateDetail(index, 'principal_amount', Number(e.target.value))}
-                            fullWidth
-                            size="small"
-                            inputProps={{ min: 0, step: 0.01 }}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                          <TextField
-                            label="Interest (%)"
-                            type="number"
-                            value={detail.interest}
-                            onChange={(e) => updateSyndicateDetail(index, 'interest', Number(e.target.value))}
-                            fullWidth
-                            size="small"
-                            inputProps={{ min: 0, step: 0.01 }}
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={2}>
-                          <IconButton
-                            onClick={() => removeSyndicateDetail(index)}
-                            color="error"
-                            size="small"
-                          >
-                            <Delete />
-                          </IconButton>
-                        </Grid>
-                      </Grid>
-                    </CardContent>
-                  </Card>
+                  <React.Fragment key={index}>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        label="Username"
+                        value={detail.username}
+                        onChange={(e) => updateSyndicateDetail(index, 'username', e.target.value)}
+                        fullWidth
+                        size="small"
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                      <TextField
+                        label="Principal"
+                        type="number"
+                        value={detail.principal_amount}
+                        onChange={(e) => updateSyndicateDetail(index, 'principal_amount', Number(e.target.value))}
+                        fullWidth
+                        size="small"
+                        InputProps={{ startAdornment: <Typography sx={{ mr: 1 }}>₹</Typography> }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={3}>
+                      <TextField
+                        label="Interest"
+                        type="number"
+                        value={detail.interest}
+                        onChange={(e) => updateSyndicateDetail(index, 'interest', Number(e.target.value))}
+                        fullWidth
+                        size="small"
+                        InputProps={{ endAdornment: <Typography>%</Typography> }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <IconButton
+                        onClick={() => removeSyndicateDetail(index)}
+                        color="error"
+                        size="small"
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Grid>
+                  </React.Fragment>
                 ))}
+              </Grid>
 
-                {syndicateDetails.length > 0 && (
-                  <Box mt={2}>
-                    <Typography variant="body2" color="text.secondary">
-                      Total Syndicate Principal: ₹
-                      {syndicateDetails.reduce((sum, detail) => sum + detail.principal_amount, 0).toLocaleString()}
-                    </Typography>
-                  </Box>
-                )}
-              </CardContent>
-            </Card>
-          )}
-        </Box>
+              {syndicateDetails.length > 0 && (
+                <Box mt={2} textAlign="right">
+                  <Typography variant="body1" fontWeight="500">
+                    Total Syndicate Principal: ₹
+                    {syndicateDetails.reduce((sum, detail) => sum + detail.principal_amount, 0).toLocaleString()}
+                  </Typography>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>

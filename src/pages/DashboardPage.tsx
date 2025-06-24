@@ -176,7 +176,7 @@ const DashboardPage: FunctionComponent = () => {
           {/* Main Content */}
           <Grid container spacing={3}>
             {/* Recent Transactions */}
-            <GridItem xs={12} lg={8}>
+            <GridItem xs={12} lg={7}>
               <Paper elevation={3} sx={{ p: 3, height: '100%', borderRadius: '12px' }}>
                 <Typography variant="h6" component="h2" gutterBottom fontWeight="600">
                   Recent Transactions
@@ -186,16 +186,8 @@ const DashboardPage: FunctionComponent = () => {
             </GridItem>
             
             {/* Side Panel */}
-            <GridItem xs={12} lg={4}>
+            <GridItem xs={12} lg={5}>
               <Stack spacing={3}>
-                {/* Quick Actions */}
-                <Paper elevation={3} sx={{ p: 3, borderRadius: '12px' }}>
-                  <Typography variant="h6" component="h2" gutterBottom fontWeight="600">
-                    Quick Actions
-                  </Typography>
-                  <QuickActions />
-                </Paper>
-                
                 {/* Quick Stats & Return Rate */}
                 <Paper elevation={3} sx={{ p: 3, borderRadius: '12px' }}>
                   <Typography variant="h6" component="h2" gutterBottom fontWeight="600">
@@ -217,6 +209,14 @@ const DashboardPage: FunctionComponent = () => {
                       {stats.returnRate >= 0 ? '+' : ''}{stats.returnRate.toFixed(2)}%
                     </Typography>
                   </Box>
+                </Paper>
+
+                {/* Quick Actions */}
+                <Paper elevation={3} sx={{ p: 3, borderRadius: '12px' }}>
+                  <Typography variant="h6" component="h2" gutterBottom fontWeight="600">
+                    Quick Actions
+                  </Typography>
+                  <QuickActions />
                 </Paper>
               </Stack>
             </GridItem>

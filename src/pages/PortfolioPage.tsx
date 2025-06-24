@@ -68,8 +68,9 @@ const PortfolioPage: React.FC = () => {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          <Paper elevation={2} sx={{ p: 3, borderRadius: 4, height: '100%' }}>
+        {/* Portfolio Summary */}
+        <Grid item xs={12}>
+          <Paper elevation={2} sx={{ p: 3, borderRadius: 4 }}>
             <Portfolio
               summary={portfolioSummary}
               isLoading={isLoading}
@@ -77,8 +78,9 @@ const PortfolioPage: React.FC = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={4}>
-          <Paper elevation={2} sx={{ p: 3, borderRadius: 4, height: '100%' }}>
+        {/* Detailed Statistics */}
+        <Grid item xs={12}>
+          <Paper elevation={2} sx={{ p: 3, borderRadius: 4 }}>
             <PortfolioStats
               transactions={allTransactions}
               totalPrincipal={portfolioSummary.total_principal_amount}
@@ -88,14 +90,13 @@ const PortfolioPage: React.FC = () => {
           </Paper>
         </Grid>
 
+        {/* Portfolio Distribution & Monthly Performance */}
         <Grid item xs={12}>
-          <Paper elevation={2} sx={{ p: 3, borderRadius: 4 }}>
-            <PortfolioChart
-              transactions={allTransactions}
-              totalPrincipal={portfolioSummary.total_principal_amount}
-              totalInterest={portfolioSummary.total_interest_amount}
-            />
-          </Paper>
+          <PortfolioChart
+            transactions={allTransactions}
+            totalPrincipal={portfolioSummary.total_principal_amount}
+            totalInterest={portfolioSummary.total_interest_amount}
+          />
         </Grid>
       </Grid>
     </Container>
