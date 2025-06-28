@@ -1,14 +1,7 @@
-import React, { useState } from 'react';
-import {
-  Container,
-  Paper,
-  Tabs,
-  Tab,
-  Box,
-  Typography,
-} from '@mui/material';
-import LoginForm from '../components/auth/LoginForm';
-import RegisterForm from '../components/auth/RegisterForm';
+import React, { useState } from "react";
+import { Container, Paper, Tabs, Tab, Box, Typography } from "@mui/material";
+import LoginForm from "../components/auth/LoginForm";
+import RegisterForm from "../components/auth/RegisterForm";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -35,7 +28,7 @@ function TabPanel(props: TabPanelProps) {
 const AuthPage: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -44,13 +37,13 @@ const AuthPage: React.FC = () => {
       <Box
         sx={{
           marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-        <Paper elevation={3} sx={{ width: '100%', mt: 3 }}>
-          <Box sx={{ textAlign: 'center', pt: 3 }}>
+        <Paper elevation={3} sx={{ width: "100%", mt: 3 }}>
+          <Box sx={{ textAlign: "center", pt: 3 }}>
             <Typography component="h1" variant="h4" color="primary">
               Syndicator
             </Typography>
@@ -58,8 +51,8 @@ const AuthPage: React.FC = () => {
               Financial Syndication Platform
             </Typography>
           </Box>
-          
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs value={tabValue} onChange={handleChange} centered>
               <Tab label="Login" />
               <Tab label="Register" />

@@ -1,6 +1,6 @@
 // src/pages/TransactionsPage.tsx
 //TODO: Fix Grid issue
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -8,23 +8,21 @@ import {
   Grid,
   Alert,
   CircularProgress,
-} from '@mui/material';
-import { Add } from '@mui/icons-material';
-import { useAuth } from '../../hooks/useAuth';
-import { useGetAllTransactionsQuery } from '../../store/api/transactionApi';
-import TransactionCard from '../../components/transactions/TransactionCard';
-import CreateTransactionDialog from '../../components/transactions/CreateTransactionDialog';
+} from "@mui/material";
+import { Add } from "@mui/icons-material";
+import { useGetAllTransactionsQuery } from "../../store/api/transactionApi";
+import TransactionCard from "../../components/transactions/TransactionCard";
+import CreateTransactionDialog from "../../components/transactions/CreateTransactionDialog";
 
 const TransactionsPage: React.FC = () => {
-  const { user } = useAuth();
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
-  
-  const { 
-    data: transactions, 
-    isLoading, 
-    error, 
-    refetch 
-  } = useGetAllTransactionsQuery(user?.username || '');
+
+  const {
+    data: transactions,
+    isLoading,
+    error,
+    refetch,
+  } = useGetAllTransactionsQuery();
 
   const handleCreateTransaction = () => {
     setOpenCreateDialog(true);
@@ -45,10 +43,13 @@ const TransactionsPage: React.FC = () => {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4">
-          Transactions
-        </Typography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
+        <Typography variant="h4">Transactions</Typography>
         <Button
           variant="contained"
           startIcon={<Add />}
@@ -64,7 +65,9 @@ const TransactionsPage: React.FC = () => {
         </Alert>
       )}
 
-      {transactions && transactions.length === 0 ? (
+      {transactions &&
+      transactions.transactions &&
+      transactions.transactions.length === 0 ? (
         <Box textAlign="center" py={8}>
           <Typography variant="h6" color="text.secondary" gutterBottom>
             No transactions found
@@ -82,7 +85,7 @@ const TransactionsPage: React.FC = () => {
         </Box>
       ) : (
         <Grid container spacing={3}>
-          {transactions?.map((transaction) => (
+          {transactions?.transactions?.map((transaction) => (
             <Grid item xs={12} md={6} lg={4} key={transaction.transaction_id}>
               <TransactionCard transaction={transaction} />
             </Grid>

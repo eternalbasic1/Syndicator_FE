@@ -1,36 +1,56 @@
-import React from 'react';
-import { Box, Paper, Typography, Skeleton } from '@mui/material';
-import Grid from '@mui/material/Grid';
-import GridItem from '../../components/common/GridItem';
+import React from "react";
+import { Grid, Typography, Box, Paper } from "@mui/material";
+import StatCard from "../../components/common/StatCard";
 import {
   AccountBalance as AccountBalanceIcon,
   TrendingUp as TrendingUpIcon,
   People as PeopleIcon,
-} from '@mui/icons-material';
-import type { Transaction, SplitwiseEntry } from '../../types/transaction.types';
+  MonetizationOn as MonetizationOnIcon,
+} from "@mui/icons-material";
+import type {
+  Transaction,
+  SplitwiseEntry,
+} from "../../types/transaction.types";
 
 interface SummaryCardsProps {
   transactions: Transaction[];
   loading?: boolean;
 }
 
-const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions, loading = false }) => {
-  console.log("Hitting summary")
+const SummaryCards: React.FC<SummaryCardsProps> = ({
+  transactions,
+  loading = false,
+}) => {
+  console.log("Hitting summary");
 
   if (loading) {
     return (
-      <Box display="flex" gap={3}>
-        {[1, 2, 3].map((i) => (
-          <Paper key={i} sx={{ p: 3, flex: 1 }}>
-            <Skeleton variant="rectangular" height={100} />
-          </Paper>
-        ))}
+      <Box sx={{ maxWidth: 1200, mx: "auto", mb: 4 }}>
+        <Paper
+          elevation={2}
+          sx={{ p: 3, borderRadius: 4, bgcolor: "background.default" }}
+        >
+          <Grid container spacing={5}>
+            {[1, 2, 3, 4].map((i) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
+                <StatCard
+                  icon={<AccountBalanceIcon />}
+                  label="Loading..."
+                  value={0}
+                  color="#e5e7eb"
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Paper>
       </Box>
     );
   }
 
   const totalPrincipal = transactions.reduce<number>((sum, t) => {
-    const userEntry = t.splitwise_entries?.find((entry: SplitwiseEntry) => entry.syndicator_id === t.risk_taker_id);
+    const userEntry = t.splitwise_entries?.find(
+      (entry: SplitwiseEntry) => entry.syndicator_id === t.risk_taker_id
+    );
     if (userEntry) {
       sum += userEntry.principal_amount;
     }
@@ -38,7 +58,9 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions, loading = fal
   }, 0);
 
   const totalInterest = transactions.reduce<number>((sum, t) => {
-    const userEntry = t.splitwise_entries?.find((entry: SplitwiseEntry) => entry.syndicator_id === t.risk_taker_id);
+    const userEntry = t.splitwise_entries?.find(
+      (entry: SplitwiseEntry) => entry.syndicator_id === t.risk_taker_id
+    );
     if (userEntry) {
       const interest = (userEntry.principal_amount * t.total_interest) / 100;
       sum += interest;
@@ -46,74 +68,65 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions, loading = fal
     return sum;
   }, 0);
 
+  const totalCommissionEarned = transactions.reduce<number>((sum, t) => {
+    return sum + (t.total_commission_earned || 0);
+  }, 0);
+
   const activeSyndicates = transactions.length;
 
-  const cards = [
+  const statCards = [
     {
-      title: 'Total Principal',
+      icon: <AccountBalanceIcon fontSize="inherit" />,
+      label: "Total Principal",
       value: `₹${totalPrincipal.toLocaleString()}`,
-      description: 'Your invested amount',
-      icon: <AccountBalanceIcon color="primary" sx={{ mr: 1 }} />,
-      color: 'primary',
+      color: "#6366f1",
+      description: "Your invested amount",
     },
     {
-      title: 'Total Interest',
+      icon: <TrendingUpIcon fontSize="inherit" />,
+      label: "Total Interest",
       value: `₹${totalInterest.toLocaleString()}`,
-      description: 'Your earned interest',
-      icon: <TrendingUpIcon color="success" sx={{ mr: 1 }} />,
-      color: 'success',
+      color: "#22c55e",
+      description: "Your earned interest",
     },
     {
-      title: 'Active Syndicates',
+      icon: <MonetizationOnIcon fontSize="inherit" />,
+      label: "Total Commission",
+      value: `₹${totalCommissionEarned.toLocaleString()}`,
+      color: "#f59e42",
+      description: "Your earned commission",
+    },
+    {
+      icon: <PeopleIcon fontSize="inherit" />,
+      label: "Active Syndicates",
       value: activeSyndicates,
-      description: 'Active investment groups',
-      icon: <PeopleIcon color="info" sx={{ mr: 1 }} />,
-      color: 'info',
+      color: "#3b82f6",
+      description: "Active investment groups",
     },
   ];
 
-  if (loading) {
-    return (
-      <Grid container spacing={3} mb={4} >
-        {[1, 2, 3].map((item) => (
-          <GridItem key={item} xs={12} md={4}>
-            <Paper sx={{ p: 3, height: '100%' }}>
-              <Skeleton variant="rectangular" width="60%" height={24} sx={{ mb: 1 }} />
-              <Skeleton variant="rectangular" width="80%" height={32} sx={{ mb: 1 }} />
-              <Skeleton variant="rectangular" width="50%" height={20} />
-            </Paper>
-          </GridItem>
+  return (
+    <Box sx={{ maxWidth: 1200, mx: "auto", mb: 4 }}>
+      <Typography variant="h6" fontWeight={700} mb={2}>
+        Quick Stats
+      </Typography>
+
+      <Grid container spacing={5}>
+        {statCards.map((card, idx) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={card.label}>
+            <Box
+              sx={{
+                minWidth: 220,
+                boxShadow: "0 2px 16px 0 rgba(60,60,60,0.06)",
+                borderRadius: 4,
+              }}
+            >
+              <StatCard {...card} />
+            </Box>
+          </Grid>
         ))}
       </Grid>
-    );
-  }
-
-  return (
-    <Grid container spacing={3} mb={4}>
-      {cards.map((card, index) => (
-        <GridItem key={index} xs={12} md={4}>
-          <Paper sx={{ p: 3, height: '100%' , minWidth: 350}}>
-            <Box display="flex" alignItems="center" mb={2}>
-              {card.icon}
-              <Typography variant="h6" component="div">
-                {card.title}
-              </Typography>
-            </Box>
-            <Typography 
-              variant="h4" 
-              color={`${card.color}.main`} 
-              gutterBottom
-              sx={{ fontWeight: 'bold' }}
-            >
-              {card.value}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {card.description}
-            </Typography>
-          </Paper>
-        </GridItem>
-      ))}
-    </Grid>
+    </Box>
   );
 };
 

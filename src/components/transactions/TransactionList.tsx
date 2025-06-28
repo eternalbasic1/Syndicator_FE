@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/transactions/TransactionList.tsx
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -9,16 +9,17 @@ import {
   Chip,
   IconButton,
   Grid,
-} from '@mui/material';
-import { Visibility } from '@mui/icons-material';
-import { useGetAllTransactionsQuery } from '../../store/api/transactionApi';
-import LoadingSpinner from '../common/LoadingSpinner';
-import TransactionDetails from './TransactionDetails';
-import type { Transaction } from '../../types/transaction.types';
+} from "@mui/material";
+import { Visibility } from "@mui/icons-material";
+import { useGetAllTransactionsQuery } from "../../store/api/transactionApi";
+import LoadingSpinner from "../common/LoadingSpinner";
+import TransactionDetails from "./TransactionDetails";
+import type { Transaction } from "../../types/transaction.types";
 
 const TransactionList: React.FC = () => {
-  const { data, isLoading } = useGetAllTransactionsQuery("sufgsu");
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const { data, isLoading } = useGetAllTransactionsQuery();
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
   if (isLoading) {
@@ -31,21 +32,26 @@ const TransactionList: React.FC = () => {
   };
 
   const getTransactionType = (syndicators: any[]) => {
-    return syndicators.length > 0 ? 'Syndicated' : 'Solo';
+    return syndicators.length > 0 ? "Syndicated" : "Solo";
   };
 
   return (
     <Box>
       {/*TODO: Need to fix types first then come back to here later*/}
       <Typography variant="h6" gutterBottom>
-        All Transactions ({data?.transaction_count || 0})
+        All Transactions ({data?.transaction_counts?.total || 0})
       </Typography>
-      
+
       {!data?.transactions?.length ? (
         <Card>
           <CardContent>
-            <Typography variant="body2" color="text.secondary" textAlign="center">
-              No transactions found. Create your first transaction to get started.
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              textAlign="center"
+            >
+              No transactions found. Create your first transaction to get
+              started.
             </Typography>
           </CardContent>
         </Card>
@@ -55,7 +61,11 @@ const TransactionList: React.FC = () => {
             <Grid item xs={12} key={transaction.transaction_id}>
               <Card>
                 <CardContent>
-                  <Box display="flex" justifyContent="between" alignItems="flex-start">
+                  <Box
+                    display="flex"
+                    justifyContent="between"
+                    alignItems="flex-start"
+                  >
                     <Box flex={1}>
                       <Box display="flex" alignItems="center" gap={1} mb={1}>
                         <Typography variant="h6">
@@ -64,22 +74,33 @@ const TransactionList: React.FC = () => {
                         <Chip
                           label={getTransactionType(transaction.syndicators)}
                           size="small"
-                          color={transaction.syndicators.length > 0 ? 'primary' : 'default'}
+                          color={
+                            transaction.syndicators.length > 0
+                              ? "primary"
+                              : "default"
+                          }
                         />
                       </Box>
-                      
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        Interest Rate: {transaction.total_interest}% | 
-                        Created: {new Date(transaction.created_at).toLocaleDateString()}
+
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        Interest Rate: {transaction.total_interest}% | Created:{" "}
+                        {new Date(transaction.created_at).toLocaleDateString()}
                       </Typography>
-                      
+
                       {transaction.syndicators.length > 0 && (
                         <Typography variant="body2" color="text.secondary">
-                          Syndicators: {transaction.syndicators.map(s => s.username).join(', ')}
+                          Syndicators:{" "}
+                          {transaction.syndicators
+                            .map((s) => s.username)
+                            .join(", ")}
                         </Typography>
                       )}
                     </Box>
-                    
+
                     <Box display="flex" gap={1}>
                       <IconButton
                         size="small"
@@ -96,7 +117,7 @@ const TransactionList: React.FC = () => {
           ))}
         </Grid>
       )}
-      
+
       {selectedTransaction && (
         <TransactionDetails
           open={detailsOpen}

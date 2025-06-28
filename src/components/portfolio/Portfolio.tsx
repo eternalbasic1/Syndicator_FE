@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Typography,
   Chip,
@@ -9,18 +9,20 @@ import {
   Paper,
   Grid,
   Skeleton,
-} from '@mui/material';
+} from "@mui/material";
 import {
   TrendingUp as TrendingUpIcon,
   AccountBalance as AccountBalanceIcon,
   Percent as PercentIcon,
   MonetizationOn as MonetizationOnIcon,
-} from '@mui/icons-material';
-import { formatCurrency, formatPercentage } from '../../utils/formatters';
+  MonetizationOn as MonthlyEarningsIcon,
+} from "@mui/icons-material";
+import { formatCurrency, formatPercentage } from "../../utils/formatters";
 
 interface PortfolioSummary {
   total_principal_amount: number;
   total_interest_amount: number;
+  total_commission_earned: number;
   total_value: number;
   roi_percentage: number;
   active_transactions: number;
@@ -32,10 +34,14 @@ interface PortfolioProps {
   isLoading?: boolean;
 }
 
-const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => {
+const Portfolio: React.FC<PortfolioProps> = ({
+  summary,
+  isLoading = false,
+}) => {
   const {
     total_principal_amount,
     total_interest_amount,
+    total_commission_earned,
     total_value,
     roi_percentage,
     active_transactions,
@@ -44,42 +50,61 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
 
   const stats = [
     {
-      title: 'Total Principal',
+      title: "Total Principal",
       value: formatCurrency(total_principal_amount),
       icon: <AccountBalanceIcon />,
-      color: 'primary' as const,
+      color: "primary" as const,
     },
     {
-      title: 'Total Interest',
+      title: "Total Interest",
       value: formatCurrency(total_interest_amount),
       icon: <TrendingUpIcon />,
-      color: 'secondary' as const,
+      color: "secondary" as const,
     },
     {
-      title: 'Total Value',
+      title: "Total Commission",
+      value: formatCurrency(total_commission_earned),
+      icon: <MonetizationOnIcon />,
+      color: "warning" as const,
+    },
+    {
+      title: "Total Value",
       value: formatCurrency(total_value),
       icon: <PercentIcon />,
-      color: 'success' as const,
+      color: "success" as const,
     },
     {
-      title: 'Monthly Earnings',
+      title: "Monthly Earnings",
       value: formatCurrency(monthly_earnings),
-      icon: <MonetizationOnIcon />,
-      color: 'warning' as const,
+      icon: <MonthlyEarningsIcon />,
+      color: "info" as const,
     },
   ];
 
   if (isLoading) {
     return (
       <Stack spacing={3}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <Skeleton variant="text" width={250} height={40} />
-          <Skeleton variant="rectangular" width={180} height={32} sx={{ borderRadius: '16px' }} />
+          <Skeleton
+            variant="rectangular"
+            width={180}
+            height={32}
+            sx={{ borderRadius: "16px" }}
+          />
         </Stack>
         <Grid container spacing={3}>
-          {[...Array(4)].map((_, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Skeleton variant="rounded" height={150} sx={{ borderRadius: 4 }} />
+          {[...Array(5)].map((_, index) => (
+            <Grid item xs={12} sm={6} md={2.4} key={index}>
+              <Skeleton
+                variant="rounded"
+                height={150}
+                sx={{ borderRadius: 4 }}
+              />
             </Grid>
           ))}
         </Grid>
@@ -106,27 +131,34 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
           label={`${active_transactions} Active Transactions`}
           color="primary"
           variant="filled"
-          sx={{ fontWeight: 'bold' }}
+          sx={{ fontWeight: "bold" }}
         />
       </Stack>
 
       {/* Stats Cards */}
       <Grid container spacing={3}>
         {stats.map((stat, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Paper 
-              elevation={2} 
-              sx={{ 
-                p: 2.5, 
-                borderRadius: 4, 
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
+          <Grid item xs={12} sm={6} md={2.4} key={index}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: 2.5,
+                borderRadius: 4,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
               }}
             >
               <Stack spacing={1}>
-                <Avatar sx={{ bgcolor: `${stat.color}.light`, color: `${stat.color}.dark`, width: 48, height: 48 }}>
+                <Avatar
+                  sx={{
+                    bgcolor: `${stat.color}.light`,
+                    color: `${stat.color}.dark`,
+                    width: 48,
+                    height: 48,
+                  }}
+                >
                   {stat.icon}
                 </Avatar>
                 <Typography variant="h5" fontWeight="bold">
@@ -145,13 +177,17 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
       <Grid container spacing={3}>
         {/* Monthly Performance */}
         <Grid item xs={12} md={6}>
-          <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4, height: '100%' }}>
+          <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4, height: "100%" }}>
             <Stack spacing={2}>
               <Typography variant="h6" fontWeight="600">
                 Performance Metrics
               </Typography>
               <Divider />
-              <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
                 <Typography variant="body1" color="text.secondary">
                   Avg. Monthly Earnings
                 </Typography>
@@ -159,15 +195,19 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
                   {formatCurrency(monthly_earnings)}
                 </Typography>
               </Stack>
-              <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
                 <Typography variant="body1" color="text.secondary">
                   Overall ROI
                 </Typography>
                 <Chip
                   label={`${formatPercentage(roi_percentage)}`}
-                  color={roi_percentage >= 0 ? 'success' : 'error'}
+                  color={roi_percentage >= 0 ? "success" : "error"}
                   size="small"
-                  sx={{ fontWeight: 'bold' }}
+                  sx={{ fontWeight: "bold" }}
                 />
               </Stack>
             </Stack>
@@ -176,31 +216,44 @@ const Portfolio: React.FC<PortfolioProps> = ({ summary, isLoading = false }) => 
 
         {/* Portfolio Health */}
         <Grid item xs={12} md={6}>
-          <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4, height: '100%' }}>
-             <Stack spacing={2}>
+          <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4, height: "100%" }}>
+            <Stack spacing={2}>
               <Typography variant="h6" fontWeight="600">
                 Portfolio Health
               </Typography>
               <Divider />
               <Stack spacing={2.5}>
                 <Stack>
-                  <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    mb={0.5}
+                  >
                     <Typography variant="body1">
                       Interest vs Principal
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {formatPercentage((total_interest_amount / total_principal_amount) * 100)}
+                      {formatPercentage(
+                        (total_interest_amount / total_principal_amount) * 100
+                      )}
                     </Typography>
                   </Stack>
                   <LinearProgress
                     variant="determinate"
-                    value={Math.min((total_interest_amount / total_principal_amount) * 100, 100)}
+                    value={Math.min(
+                      (total_interest_amount / total_principal_amount) * 100,
+                      100
+                    )}
                     color="primary"
                     sx={{ height: 10, borderRadius: 5 }}
                   />
                 </Stack>
                 <Stack>
-                  <Stack direction="row" justifyContent="space-between" mb={0.5}>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    mb={0.5}
+                  >
                     <Typography variant="body1">
                       Active Transaction Load
                     </Typography>
