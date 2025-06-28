@@ -1,6 +1,6 @@
 // src/components/transactions/TransactionDetails.tsx
 // TODO: Grid Fix
-import React from 'react';
+import React from "react";
 import {
   Dialog,
   DialogTitle,
@@ -14,8 +14,8 @@ import {
   CardContent,
   Container,
   Divider,
-} from '@mui/material';
-import type { Transaction } from '../../types/transaction.types';
+} from "@mui/material";
+import type { Transaction } from "../../types/transaction.types";
 
 interface TransactionDetailsProps {
   open: boolean;
@@ -29,11 +29,13 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
   onClose,
 }) => {
   const getTransactionType = () => {
-    return transaction.syndicators.length > 0 ? 'Syndicated' : 'Solo';
+    return transaction.syndicators.length > 0 ? "Syndicated" : "Solo";
   };
 
   const calculateExpectedReturn = () => {
-    return (transaction.total_principal_amount * transaction.total_interest) / 100;
+    return (
+      (transaction.total_principal_amount * transaction.total_interest) / 100
+    );
   };
 
   return (
@@ -43,11 +45,11 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
           <Typography variant="h6">Transaction Details</Typography>
           <Chip
             label={getTransactionType()}
-            color={transaction.syndicators.length > 0 ? 'primary' : 'default'}
+            color={transaction.syndicators.length > 0 ? "primary" : "default"}
           />
         </Box>
       </DialogTitle>
-      
+
       <DialogContent>
         <Box display="flex" flexDirection="column" gap={3}>
           <Card variant="outlined">
@@ -56,8 +58,10 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
                 Financial Summary
               </Typography>
               <Container maxWidth="sm">
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
                     <Typography variant="body2" color="text.secondary">
                       Principal Amount
                     </Typography>
@@ -65,7 +69,9 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
                       ₹{transaction.total_principal_amount.toLocaleString()}
                     </Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
                     <Typography variant="body2" color="text.secondary">
                       Interest Rate
                     </Typography>
@@ -73,7 +79,9 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
                       {transaction.total_interest}%
                     </Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
                     <Typography variant="body2" color="text.secondary">
                       Expected Return
                     </Typography>
@@ -81,7 +89,9 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
                       ₹{calculateExpectedReturn().toLocaleString()}
                     </Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
                     <Typography variant="body2" color="text.secondary">
                       Start Date
                     </Typography>
@@ -100,24 +110,24 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
                 Splitwise Entries
               </Typography>
               <Divider sx={{ mb: 2 }} />
-                {transaction.splitwise_entries.map((entry) => (
-                  <Box key={entry.splitwise_id} mb={1}>
-                    <Typography variant="body2" color="text.secondary">
-                      {entry.syndicator_username}
+              {transaction.splitwise_entries.map((entry) => (
+                <Box key={entry.splitwise_id} mb={1}>
+                  <Typography variant="body2" color="text.secondary">
+                    {entry.syndicator_username}
+                  </Typography>
+                  <Box display="flex" justifyContent="space-between">
+                    <Typography variant="body2">
+                      Principal: ₹{entry.principal_amount.toLocaleString()}
                     </Typography>
-                    <Box display="flex" justifyContent="space-between">
-                      <Typography variant="body2">
-                        Principal: ₹{entry.principal_amount.toLocaleString()}
-                      </Typography>
-                      <Typography variant="body2">
-                        Interest: ₹{entry.interest_amount.toLocaleString()}
-                      </Typography>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Created: {new Date(entry.created_at).toLocaleString()}
+                    <Typography variant="body2">
+                      Interest: ₹{entry.original_interest.toLocaleString()}
                     </Typography>
                   </Box>
-                ))}
+                  <Typography variant="body2" color="text.secondary">
+                    Created: {new Date(entry.created_at).toLocaleString()}
+                  </Typography>
+                </Box>
+              ))}
             </CardContent>
           </Card>
 
@@ -147,16 +157,20 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
                 Transaction Information
               </Typography>
               <Container maxWidth="sm">
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
                     <Typography variant="body2" color="text.secondary">
                       Transaction ID
                     </Typography>
-                    <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>
+                    <Typography variant="body2" sx={{ wordBreak: "break-all" }}>
                       {transaction.transaction_id}
                     </Typography>
                   </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
                     <Typography variant="body2" color="text.secondary">
                       Created At
                     </Typography>
@@ -170,7 +184,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
           </Card>
         </Box>
       </DialogContent>
-      
+
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
       </DialogActions>
