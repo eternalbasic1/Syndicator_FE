@@ -9,12 +9,16 @@ import {
   Box,
   Button,
   Container,
+  Paper,
 } from "@mui/material";
 import {
   AccountBalance,
   TrendingUp,
   Group,
   Assessment,
+  MonetizationOn,
+  Savings,
+  People,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import {
@@ -23,6 +27,7 @@ import {
 } from "../../store/api/transactionApi";
 import { useGetSyndicateViewQuery } from "../../store/api/syndicateApi";
 import LoadingSpinner from "../common/LoadingSpinner";
+import StatCard from "../common/StatCard";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -37,6 +42,12 @@ const Dashboard: React.FC = () => {
     return <LoadingSpinner message="Loading dashboard..." />;
   }
 
+  // Calculate total commission earned
+  const totalCommissionEarned =
+    transactions?.transactions?.reduce((sum, transaction) => {
+      return sum + (transaction.total_commission_earned || 0);
+    }, 0) || 0;
+  console.log("totalCommissionEarned", totalCommissionEarned);
   const stats = [
     {
       title: "Total Portfolio Value",
@@ -55,18 +66,63 @@ const Dashboard: React.FC = () => {
       onClick: () => navigate("/portfolio"),
     },
     {
+      title: "Total Commission Earned",
+      value: `₹${totalCommissionEarned.toLocaleString()}`,
+      icon: <MonetizationOn />,
+      color: "#ed6c02",
+      onClick: () => navigate("/transactions"),
+    },
+    {
       title: "Active Transactions",
       value: transactions?.transaction_counts?.total || 0,
       icon: <Assessment />,
-      color: "#ed6c02",
+      color: "#9c27b0",
       onClick: () => navigate("/transactions"),
     },
     {
       title: "Syndicate Members",
       value: syndicate?.friends?.length || 0,
       icon: <Group />,
-      color: "#9c27b0",
+      color: "#ff9800",
       onClick: () => navigate("/syndicate"),
+    },
+  ];
+
+  const statCards = [
+    {
+      icon: <Savings fontSize="inherit" />,
+      label: "Total Invested",
+      value: stats[0].value,
+      color: "#6366f1",
+      description: undefined,
+    },
+    {
+      icon: <TrendingUp fontSize="inherit" />,
+      label: "Total Returns",
+      value: stats[1].value,
+      color: "#22c55e",
+      description: undefined,
+    },
+    {
+      icon: <MonetizationOn fontSize="inherit" />,
+      label: "Total Commission",
+      value: stats[2].value,
+      color: "#f59e42",
+      description: undefined,
+    },
+    {
+      icon: <AccountBalance fontSize="inherit" />,
+      label: "Active Syndications",
+      value: stats[3].value,
+      color: "#3b82f6",
+      description: undefined,
+    },
+    {
+      icon: <People fontSize="inherit" />,
+      label: "Pending Requests",
+      value: stats[4].value,
+      color: "#a855f7",
+      description: undefined,
     },
   ];
 
@@ -75,51 +131,18 @@ const Dashboard: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Dashboard
       </Typography>
-
-      <Grid container spacing={3}>
-        {stats.map((stat, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card
-              sx={{
-                cursor: "pointer",
-                transition: "transform 0.2s",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                },
-              }}
-              onClick={stat.onClick}
-            >
-              <CardContent>
-                <Box display="flex" alignItems="center" mb={2}>
-                  <Box
-                    sx={{
-                      backgroundColor: stat.color,
-                      color: "white",
-                      borderRadius: "50%",
-                      width: 48,
-                      height: 48,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      mr: 2,
-                    }}
-                  >
-                    {stat.icon}
-                  </Box>
-                  <Box>
-                    <Typography variant="h5" component="div">
-                      {stat.value}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {stat.title}
-                    </Typography>
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h6" fontWeight={700} mb={2}>
+          Overview
+        </Typography>
+        <Grid container spacing={3}>
+          {statCards.map((card, idx) => (
+            <Grid item xs={12} sm={6} md={4} lg={2} xl={2.4} key={card.label}>
+              <StatCard {...card} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
       <Grid container spacing={3} sx={{ mt: 2 }}>
         <Grid item xs={12} md={6}>

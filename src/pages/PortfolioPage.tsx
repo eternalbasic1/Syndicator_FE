@@ -55,6 +55,7 @@ const PortfolioPage: React.FC = () => {
       total_value: number;
       roi_percentage: number;
       monthly_earnings: number;
+      total_commission_earned: number;
     }
   >(() => {
     const totalPrincipal = portfolioData?.total_principal_amount || 0;
@@ -66,6 +67,12 @@ const PortfolioPage: React.FC = () => {
         ? (totalInterestAfterCommission / totalPrincipal) * 100
         : 0;
     const monthlyEarnings = totalInterestAfterCommission / 12; // Simplified
+
+    // Calculate total commission earned from transactions
+    const totalCommissionEarned = allTransactions.reduce(
+      (sum, tx) => sum + (tx.total_commission_earned || 0),
+      0
+    );
 
     return {
       total_principal_amount: totalPrincipal,
@@ -88,6 +95,7 @@ const PortfolioPage: React.FC = () => {
       total_value: totalValue,
       roi_percentage: roiPercentage,
       monthly_earnings: monthlyEarnings,
+      total_commission_earned: totalCommissionEarned,
     };
   }, [portfolioData, allTransactions]);
 
@@ -125,6 +133,8 @@ const PortfolioPage: React.FC = () => {
                 total_principal_amount: portfolioSummary.total_principal_amount,
                 total_interest_amount:
                   portfolioSummary.total_interest_after_commission,
+                total_commission_earned:
+                  portfolioSummary.total_commission_earned,
                 total_value: portfolioSummary.total_value,
                 roi_percentage: portfolioSummary.roi_percentage,
                 active_transactions: allTransactions.length,

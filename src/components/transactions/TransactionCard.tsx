@@ -1,7 +1,5 @@
-
-
 // src/components/transactions/TransactionCard.tsx
-import React from 'react';
+import React from "react";
 import {
   Card,
   CardContent,
@@ -9,39 +7,49 @@ import {
   Box,
   Chip,
   Divider,
-} from '@mui/material';
+} from "@mui/material";
 import {
   AccountBalance,
   TrendingUp,
   CalendarToday,
   Person,
-} from '@mui/icons-material';
-import type { Transaction } from '../../types/transaction.types';
-import dayjs from 'dayjs';
+  MonetizationOn,
+} from "@mui/icons-material";
+import type { Transaction } from "../../types/transaction.types";
+import dayjs from "dayjs";
 
 interface TransactionCardProps {
   transaction: Transaction;
 }
 
 const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
-  const returnRate = transaction.total_principal_amount > 0 
-    ? ((transaction.total_interest / transaction.total_principal_amount) * 100).toFixed(2)
-    : '0.00';
+  const returnRate =
+    transaction.total_principal_amount > 0
+      ? (
+          (transaction.total_interest / transaction.total_principal_amount) *
+          100
+        ).toFixed(2)
+      : "0.00";
 
   return (
-    <Card sx={{ height: '100%' }}>
+    <Card sx={{ height: "100%" }}>
       <CardContent>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          mb={2}
+        >
           <Box display="flex" alignItems="center" gap={1}>
             <AccountBalance color="primary" />
             <Typography variant="h6" component="div">
               #{transaction.transaction_id.slice(0, 8)}
             </Typography>
           </Box>
-          <Chip 
-            label="Active" 
-            color="success" 
-            size="small" 
+          <Chip
+            label="Active"
+            color="success"
+            size="small"
             variant="outlined"
           />
         </Box>
@@ -56,7 +64,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
         </Box>
 
         <Box display="flex" alignItems="center" gap={1} mb={2}>
-          <TrendingUp sx={{ fontSize: 20, color: 'success.main' }} />
+          <TrendingUp sx={{ fontSize: 20, color: "success.main" }} />
           <Typography variant="body2" color="text.secondary">
             Expected Returns:
           </Typography>
@@ -65,17 +73,35 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction }) => {
           </Typography>
         </Box>
 
+        {transaction.commission_flag &&
+          transaction.total_commission_earned > 0 && (
+            <Box display="flex" alignItems="center" gap={1} mb={2}>
+              <MonetizationOn sx={{ fontSize: 20, color: "warning.main" }} />
+              <Typography variant="body2" color="text.secondary">
+                Commission Earned:
+              </Typography>
+              <Typography
+                variant="body1"
+                color="warning.main"
+                fontWeight="medium"
+              >
+                ₹{transaction.total_commission_earned.toLocaleString()} (
+                {transaction.commission_rate}%)
+              </Typography>
+            </Box>
+          )}
+
         <Divider sx={{ my: 2 }} />
 
         <Box display="flex" alignItems="center" gap={1} mb={1}>
-          <CalendarToday sx={{ fontSize: 16, color: 'text.secondary' }} />
+          <CalendarToday sx={{ fontSize: 16, color: "text.secondary" }} />
           <Typography variant="body2" color="text.secondary">
-            Start Date: {dayjs(transaction.start_date).format('MMM DD, YYYY')}
+            Start Date: {dayjs(transaction.start_date).format("MMM DD, YYYY")}
           </Typography>
         </Box>
 
         <Box display="flex" alignItems="center" gap={1}>
-          <Person sx={{ fontSize: 16, color: 'text.secondary' }} />
+          <Person sx={{ fontSize: 16, color: "text.secondary" }} />
           <Typography variant="body2" color="text.secondary">
             Syndicators: {transaction.syndicators.length}
           </Typography>

@@ -15,6 +15,7 @@ import {
   TrendingUp as TrendingUpIcon,
   People as PeopleIcon,
   AccountBalance as AccountBalanceIcon,
+  MonetizationOn as MonetizationOnIcon,
 } from "@mui/icons-material";
 
 import QuickActions from "../components/dashboard/QuickActions";
@@ -92,6 +93,15 @@ const DashboardPage: FunctionComponent = () => {
     });
   }, [transactionsResponse]);
 
+  const totalCommissionEarned = Array.isArray(
+    transactionsResponse?.transactions
+  )
+    ? transactionsResponse.transactions.reduce(
+        (sum: number, tx: any) => sum + (tx.total_commission_earned || 0),
+        0
+      )
+    : 0;
+
   const stats = useMemo(() => {
     const userEntries = transactions.flatMap((tx) =>
       tx.splitwise_entries.filter(
@@ -118,13 +128,16 @@ const DashboardPage: FunctionComponent = () => {
     return {
       totalPrincipal,
       totalInterestAmount,
+      totalCommissionEarned,
       pendingRequests: pendingRequestsCount,
       totalPortfolioValue: totalPrincipal + totalInterestAmount,
       returnRate:
         totalPrincipal > 0 ? (totalInterestAmount / totalPrincipal) * 100 : 0,
       activeTransactions: transactions.length,
     };
-  }, [friendRequests, transactions, user]);
+  }, [friendRequests, transactions, user, totalCommissionEarned]);
+
+  console.log("stats", stats);
 
   if (isTransactionsLoading || isFriendsLoading) {
     return (
@@ -184,6 +197,15 @@ const DashboardPage: FunctionComponent = () => {
             </GridItem>
             <GridItem xs={12} sm={6} md={3}>
               <StatsCard
+                title="Total Commission"
+                value={`₹${stats.totalCommissionEarned.toLocaleString()}`}
+                icon={<MonetizationOnIcon />}
+                color="warning"
+                loading={isTransactionsLoading}
+              />
+            </GridItem>
+            <GridItem xs={12} sm={6} md={3}>
+              <StatsCard
                 title="Active Syndications"
                 value={stats.activeTransactions.toString()}
                 icon={<AccountBalanceIcon />}
@@ -191,15 +213,15 @@ const DashboardPage: FunctionComponent = () => {
                 loading={isTransactionsLoading}
               />
             </GridItem>
-            <GridItem xs={12} sm={6} md={3}>
+            {/* <GridItem xs={12} sm={6} md={3}>
               <StatsCard
                 title="Pending Requests"
                 value={stats.pendingRequests.toString()}
                 icon={<PeopleIcon />}
-                color="warning"
+                color="secondary"
                 loading={isFriendsLoading}
               />
-            </GridItem>
+            </GridItem> */}
           </Grid>
 
           {isFriendsError && (
