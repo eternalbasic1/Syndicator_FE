@@ -28,6 +28,7 @@ import {
 import { useGetSyndicateViewQuery } from "../../store/api/syndicateApi";
 import LoadingSpinner from "../common/LoadingSpinner";
 import StatCard from "../common/StatCard";
+import RecentTransactions from "./RecentTransactions";
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -175,25 +176,14 @@ const Dashboard: React.FC = () => {
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Recent Activity
+                Recent Transactions
               </Typography>
-              {transactions?.transactions
-                ?.slice(0, 3)
-                .map((transaction: any) => (
-                  <Box key={transaction.transaction_id} mb={2}>
-                    <Typography variant="body2">
-                      Transaction: ₹
-                      {transaction.total_principal_amount.toLocaleString()}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {new Date(transaction.created_at).toLocaleDateString()}
-                    </Typography>
-                  </Box>
-                )) || (
-                <Typography variant="body2" color="text.secondary">
-                  No recent transactions
-                </Typography>
-              )}
+              <RecentTransactions
+                key={Date.now()}
+                transactions={transactions?.transactions || []}
+                loading={false}
+                maxItems={5}
+              />
             </CardContent>
           </Card>
         </Grid>

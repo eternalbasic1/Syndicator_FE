@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   Typography,
@@ -8,16 +8,11 @@ import {
   Tooltip,
   Divider,
   Stack,
-
-  Paper
-} from '@mui/material';
-import {
-  TrendingUp,
-  People,
-  ReceiptLong,
-} from '@mui/icons-material';
-import type { Transaction } from '../../types/transaction.types';
-import dayjs from 'dayjs';
+  Paper,
+} from "@mui/material";
+import { TrendingUp, People, ReceiptLong } from "@mui/icons-material";
+import type { Transaction } from "../../types/transaction.types";
+import dayjs from "dayjs";
 
 interface RecentTransactionsProps {
   transactions: Transaction[];
@@ -30,19 +25,27 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({
   loading = false,
   maxItems = 5,
 }) => {
-
   const getInitials = (name: string) => {
     return name
-      .split(' ')
+      .split(" ")
       .map((n) => n[0])
-      .join('')
+      .join("")
       .toUpperCase();
   };
 
   const renderSkeleton = () => (
     <Stack spacing={2}>
       {[...Array(3)].map((_, index) => (
-        <Paper key={index} variant="outlined" sx={{ p: 2, borderRadius: '8px', display: 'flex', alignItems: 'center' }}>
+        <Paper
+          key={index}
+          variant="outlined"
+          sx={{
+            p: 2,
+            borderRadius: "8px",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
           <Skeleton variant="circular" width={40} height={40} sx={{ mr: 2 }} />
           <Box sx={{ flexGrow: 1 }}>
             <Skeleton width="70%" height={24} />
@@ -61,7 +64,7 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({
   if (!transactions.length) {
     return (
       <Box py={6} textAlign="center">
-        <ReceiptLong sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
+        <ReceiptLong sx={{ fontSize: 48, color: "grey.400", mb: 2 }} />
         <Typography variant="h6" color="text.secondary">
           No Transactions Yet
         </Typography>
@@ -77,41 +80,55 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({
   return (
     <Stack divider={<Divider flexItem />} spacing={2}>
       {recentTransactions.map((transaction) => (
-        <Box 
-          key={transaction.transaction_id} 
-          sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            p: 1.5 
+        <Box
+          key={transaction.transaction_id}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            p: 1.5,
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
-            <Tooltip title={transaction.risk_taker_name || 'Risk Taker'}>
-              <Avatar sx={{ bgcolor: 'primary.light', color: 'primary.main', fontWeight: 'bold', mr: 2 }}>
-                {getInitials(transaction.risk_taker_name || 'RT')}
+          <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+            <Tooltip title={transaction.risk_taker_name || "Risk Taker"}>
+              <Avatar
+                sx={{
+                  bgcolor: "primary.light",
+                  color: "primary.main",
+                  fontWeight: "bold",
+                  mr: 2,
+                }}
+              >
+                {getInitials(transaction.risk_taker_name || "RT")}
               </Avatar>
             </Tooltip>
             <Box sx={{ minWidth: 0 }}>
               <Typography variant="subtitle1" fontWeight="600" noWrap>
-                {`Transaction #${transaction.transaction_id.substring(0, 8)}...`}
+                {transaction.risk_taker_name || transaction.risk_taker_username}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {dayjs(transaction.created_at).format('MMMM DD, YYYY')}
+                {dayjs(transaction.created_at).format("MMM DD, HH:mm")} •{" "}
               </Typography>
             </Box>
           </Box>
 
-          <Stack direction="column" alignItems="flex-end" spacing={0.5} sx={{ pl: 1 }}>
-            <Chip
+          <Stack
+            direction="column"
+            alignItems="flex-end"
+            spacing={0.5}
+            sx={{ pl: 1 }}
+          >
+            {/* <Chip
               icon={<TrendingUp />}
-              label={`₹${transaction.total_principal_amount.toLocaleString()}`}
+              label={`₹${transaction?.total_principal_amount?.toLocaleString()}`}
               color="success"
               size="small"
-              sx={{ fontWeight: 'bold' }}
-            />
+              sx={{ fontWeight: "bold" }}
+            /> */}
             {transaction.syndicators?.length > 0 && (
-              <Tooltip title={`${transaction.syndicators.length} syndicator(s)`}>
+              <Tooltip
+                title={`${transaction.syndicators.length} syndicator(s)`}
+              >
                 <Box display="flex" alignItems="center" mt={0.5}>
                   <People fontSize="small" color="action" sx={{ mr: 0.5 }} />
                   <Typography variant="caption" color="text.secondary">

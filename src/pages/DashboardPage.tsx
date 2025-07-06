@@ -93,6 +93,7 @@ const DashboardPage: FunctionComponent = () => {
     });
   }, [transactionsResponse]);
 
+  console.log("transactions VALUE", transactions);
   const totalCommissionEarned = Array.isArray(
     transactionsResponse?.transactions
   )
@@ -258,7 +259,7 @@ const DashboardPage: FunctionComponent = () => {
                   Recent Transactions
                 </Typography>
                 <RecentTransactions
-                  transactions={transactions}
+                  transactions={transactions || []}
                   loading={isTransactionsLoading}
                 />
               </Paper>
