@@ -1,6 +1,6 @@
-//TODO: Grid fix 
+//TODO: Grid fix
 // /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from 'react';
+import React from "react";
 import {
   Typography,
   Grid,
@@ -10,7 +10,7 @@ import {
   Stack,
   Divider,
   Skeleton,
-} from '@mui/material';
+} from "@mui/material";
 import {
   TrendingUp,
   TrendingDown,
@@ -19,9 +19,9 @@ import {
   Timeline,
   Group,
   InfoOutlined,
-} from '@mui/icons-material';
-import type { Transaction } from '../../types/transaction.types';
-import { formatCurrency, formatPercentage } from '../../utils/formatters';
+} from "@mui/icons-material";
+import type { Transaction } from "../../types/transaction.types";
+import { formatCurrency, formatPercentage } from "../../utils/formatters";
 
 interface PortfolioStatsProps {
   transactions: Transaction[];
@@ -34,18 +34,31 @@ interface StatCardProps {
   title: string;
   value: string | number;
   icon: React.ReactNode;
-  color: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
+  color: "primary" | "secondary" | "success" | "warning" | "error" | "info";
   trend?: {
     value: string;
     isPositive: boolean;
   };
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, trend }) => {
+const StatCard: React.FC<StatCardProps> = ({
+  title,
+  value,
+  icon,
+  color,
+  trend,
+}) => {
   return (
-    <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4, height: '100%' }}>
+    <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4, height: "100%" }}>
       <Stack direction="row" spacing={2} alignItems="center">
-        <Avatar sx={{ bgcolor: `${color}.light`, color: `${color}.dark`, width: 56, height: 56 }}>
+        <Avatar
+          sx={{
+            bgcolor: `${color}.light`,
+            color: `${color}.dark`,
+            width: 56,
+            height: 56,
+          }}
+        >
           {icon}
         </Avatar>
         <Stack spacing={0.5}>
@@ -60,13 +73,16 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, trend })
       {trend && (
         <Stack direction="row" alignItems="center" spacing={0.5} mt={1.5}>
           {trend.isPositive ? (
-            <TrendingUp sx={{ color: 'success.main', fontSize: '1rem' }} />
+            <TrendingUp sx={{ color: "success.main", fontSize: "1rem" }} />
           ) : (
-            <TrendingDown sx={{ color: 'error.main', fontSize: '1rem' }} />
+            <TrendingDown sx={{ color: "error.main", fontSize: "1rem" }} />
           )}
           <Typography
             variant="caption"
-            sx={{ color: trend.isPositive ? 'success.dark' : 'error.dark', fontWeight: 'bold' }}
+            sx={{
+              color: trend.isPositive ? "success.dark" : "error.dark",
+              fontWeight: "bold",
+            }}
           >
             {trend.value}
           </Typography>
@@ -76,13 +92,12 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, trend })
   );
 };
 
-const PortfolioStats: React.FC<PortfolioStatsProps> = ({ 
-  transactions, 
-  totalPrincipal, 
-  totalInterest, 
-  loading = false 
+const PortfolioStats: React.FC<PortfolioStatsProps> = ({
+  transactions,
+  totalPrincipal,
+  totalInterest,
+  loading = false,
 }) => {
-
   const stats = React.useMemo(() => {
     if (transactions.length === 0) {
       return {
@@ -96,14 +111,21 @@ const PortfolioStats: React.FC<PortfolioStatsProps> = ({
         roi: 0,
       };
     }
+    console.log("transactions=", transactions);
+    const amounts = transactions.map((t) => t.total_principal_amount);
+    const totalSyndicators = transactions.reduce(
+      (sum, t) => sum + t.syndicators.length,
+      0
+    );
+    const averageInterestRate =
+      transactions.reduce((sum, t) => sum + t.total_interest, 0) /
+      transactions.length;
 
-    const amounts = transactions.map(t => t.total_principal_amount);
-    const totalSyndicators = transactions.reduce((sum, t) => sum + t.syndicators.length, 0);
-    const averageInterestRate = transactions.reduce((sum, t) => sum + t.total_interest, 0) / transactions.length;
-    
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const recentTransactions = transactions.filter(t => new Date(t.created_at) >= thirtyDaysAgo).length;
+    const recentTransactions = transactions.filter(
+      (t) => new Date(t.created_at) >= thirtyDaysAgo
+    ).length;
 
     const roi = totalPrincipal > 0 ? (totalInterest / totalPrincipal) * 100 : 0;
 
@@ -135,10 +157,12 @@ const PortfolioStats: React.FC<PortfolioStatsProps> = ({
   }
 
   const insights = [
-    stats.recentTransactions > 0 && `+${stats.recentTransactions} new deals this month`,
-    stats.averageInterestRate > 15 && 'Portfolio contains high-yield assets',
-    stats.totalSyndicators > stats.totalTransactions * 1.5 && 'Strong syndication network',
-    stats.roi > 20 && 'Exceeding ROI targets',
+    stats.recentTransactions > 0 &&
+      `+${stats.recentTransactions} new deals this month`,
+    stats.averageInterestRate > 15 && "Portfolio contains high-yield assets",
+    stats.totalSyndicators > stats.totalTransactions * 1.5 &&
+      "Strong syndication network",
+    stats.roi > 20 && "Exceeding ROI targets",
   ].filter(Boolean) as string[];
 
   return (
@@ -204,7 +228,9 @@ const PortfolioStats: React.FC<PortfolioStatsProps> = ({
         <Grid item xs={12}>
           <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4 }}>
             <Stack spacing={2}>
-              <Typography variant="h6" fontWeight={600}>Quick Insights</Typography>
+              <Typography variant="h6" fontWeight={600}>
+                Quick Insights
+              </Typography>
               <Divider />
               <Stack direction="row" flexWrap="wrap" gap={1.5}>
                 {insights.map((insight, i) => (

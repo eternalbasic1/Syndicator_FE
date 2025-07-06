@@ -20,13 +20,11 @@ import {
 import { formatCurrency, formatPercentage } from "../../utils/formatters";
 
 interface PortfolioSummary {
-  total_principal_amount: number;
-  total_interest_amount: number;
+  risk_taker_corpus: number;
+  risk_taker_interest: number;
   total_commission_earned: number;
   total_value: number;
-  roi_percentage: number;
   active_transactions: number;
-  monthly_earnings: number;
 }
 
 interface PortfolioProps {
@@ -39,25 +37,23 @@ const Portfolio: React.FC<PortfolioProps> = ({
   isLoading = false,
 }) => {
   const {
-    total_principal_amount,
-    total_interest_amount,
+    risk_taker_corpus,
+    risk_taker_interest,
     total_commission_earned,
     total_value,
-    roi_percentage,
     active_transactions,
-    monthly_earnings,
   } = summary;
-
+  console.log("summary=", summary);
   const stats = [
     {
-      title: "Total Principal",
-      value: formatCurrency(total_principal_amount),
+      title: "Risk Taker Corpus",
+      value: formatCurrency(risk_taker_corpus),
       icon: <AccountBalanceIcon />,
-      color: "primary" as const,
+      color: "info" as const,
     },
     {
-      title: "Total Interest",
-      value: formatCurrency(total_interest_amount),
+      title: "Risk Taker Interest",
+      value: formatCurrency(risk_taker_interest),
       icon: <TrendingUpIcon />,
       color: "secondary" as const,
     },
@@ -72,12 +68,6 @@ const Portfolio: React.FC<PortfolioProps> = ({
       value: formatCurrency(total_value),
       icon: <PercentIcon />,
       color: "success" as const,
-    },
-    {
-      title: "Monthly Earnings",
-      value: formatCurrency(monthly_earnings),
-      icon: <MonthlyEarningsIcon />,
-      color: "info" as const,
     },
   ];
 
@@ -189,23 +179,11 @@ const Portfolio: React.FC<PortfolioProps> = ({
                 alignItems="center"
               >
                 <Typography variant="body1" color="text.secondary">
-                  Avg. Monthly Earnings
-                </Typography>
-                <Typography variant="h5" color="success.main" fontWeight="bold">
-                  {formatCurrency(monthly_earnings)}
-                </Typography>
-              </Stack>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Typography variant="body1" color="text.secondary">
                   Overall ROI
                 </Typography>
                 <Chip
-                  label={`${formatPercentage(roi_percentage)}`}
-                  color={roi_percentage >= 0 ? "success" : "error"}
+                  label={`${formatPercentage(risk_taker_interest)}`}
+                  color={risk_taker_interest >= 0 ? "success" : "error"}
                   size="small"
                   sx={{ fontWeight: "bold" }}
                 />
@@ -223,31 +201,6 @@ const Portfolio: React.FC<PortfolioProps> = ({
               </Typography>
               <Divider />
               <Stack spacing={2.5}>
-                <Stack>
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    mb={0.5}
-                  >
-                    <Typography variant="body1">
-                      Interest vs Principal
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {formatPercentage(
-                        (total_interest_amount / total_principal_amount) * 100
-                      )}
-                    </Typography>
-                  </Stack>
-                  <LinearProgress
-                    variant="determinate"
-                    value={Math.min(
-                      (total_interest_amount / total_principal_amount) * 100,
-                      100
-                    )}
-                    color="primary"
-                    sx={{ height: 10, borderRadius: 5 }}
-                  />
-                </Stack>
                 <Stack>
                   <Stack
                     direction="row"
