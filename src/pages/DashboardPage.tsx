@@ -13,7 +13,6 @@ import {
 import {
   Savings as SavingsIcon,
   TrendingUp as TrendingUpIcon,
-  People as PeopleIcon,
   AccountBalance as AccountBalanceIcon,
   MonetizationOn as MonetizationOnIcon,
 } from "@mui/icons-material";
@@ -93,13 +92,19 @@ const DashboardPage: FunctionComponent = () => {
     });
   }, [transactionsResponse]);
 
+  console.log("transactions VALUE", transactions);
   const totalCommissionEarned = Array.isArray(
     transactionsResponse?.transactions
   )
-    ? transactionsResponse.transactions.reduce(
-        (sum: number, tx: any) => sum + (tx.total_commission_earned || 0),
-        0
-      )
+    ? transactionsResponse.transactions.reduce<number>((sum, tx) => {
+        const userEntry = tx.splitwise_entries?.find(
+          (entry: SplitwiseEntry) => entry.syndicator_id === tx.risk_taker_id
+        );
+        if (userEntry?.syndicator_id === user?.user_id) {
+          return sum + (tx.total_commission_earned || 0);
+        }
+        return sum; // Return current sum, not 0
+      }, 0)
     : 0;
 
   const stats = useMemo(() => {
@@ -114,20 +119,26 @@ const DashboardPage: FunctionComponent = () => {
       0
     );
 
-    const totalInterestAmount = userEntries.reduce(
-      (sum: number, entry: SplitwiseEntry) =>
-        sum + (entry.original_interest / 100) * entry.principal_amount,
-      0
-    );
+    const totalInterestAmount = transactions.reduce<number>((sum, t) => {
+      const userEntry = t.splitwise_entries?.find(
+        (entry: SplitwiseEntry) => entry.syndicator_id === user?.user_id
+      );
+      if (userEntry) {
+        sum += userEntry.interest_after_commission || 0;
+      }
+      return sum;
+    }, 0);
 
     const pendingRequestsCount =
       friendRequests?.requests?.received?.filter(
         (req: { status: string }) => req.status === "pending"
       ).length || 0;
 
+    const totalreturns = totalInterestAmount + totalCommissionEarned;
+
     return {
       totalPrincipal,
-      totalInterestAmount,
+      totalreturns,
       totalCommissionEarned,
       pendingRequests: pendingRequestsCount,
       totalPortfolioValue: totalPrincipal + totalInterestAmount,
@@ -189,7 +200,7 @@ const DashboardPage: FunctionComponent = () => {
             <GridItem xs={12} sm={6} md={3}>
               <StatsCard
                 title="Total Returns"
-                value={`₹${stats.totalInterestAmount.toLocaleString()}`}
+                value={`₹${stats.totalreturns.toLocaleString()}`}
                 icon={<TrendingUpIcon />}
                 color="success"
                 loading={isTransactionsLoading}
@@ -247,7 +258,7 @@ const DashboardPage: FunctionComponent = () => {
                   Recent Transactions
                 </Typography>
                 <RecentTransactions
-                  transactions={transactions}
+                  transactions={transactions || []}
                   loading={isTransactionsLoading}
                 />
               </Paper>

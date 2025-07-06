@@ -4,13 +4,13 @@ import StatCard from "../../components/common/StatCard";
 import {
   AccountBalance as AccountBalanceIcon,
   TrendingUp as TrendingUpIcon,
-  People as PeopleIcon,
   MonetizationOn as MonetizationOnIcon,
 } from "@mui/icons-material";
 import type {
   Transaction,
   SplitwiseEntry,
 } from "../../types/transaction.types";
+import { useAuth } from "@/hooks/useAuth";
 
 interface SummaryCardsProps {
   transactions: Transaction[];
@@ -21,8 +21,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
   transactions,
   loading = false,
 }) => {
-  console.log("Hitting summary");
-
+  const { user } = useAuth();
   if (loading) {
     return (
       <Box sx={{ maxWidth: 1200, mx: "auto", mb: 4 }}>
@@ -49,7 +48,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
 
   const totalPrincipal = transactions.reduce<number>((sum, t) => {
     const userEntry = t.splitwise_entries?.find(
-      (entry: SplitwiseEntry) => entry.syndicator_id === t.risk_taker_id
+      (entry: SplitwiseEntry) => entry.syndicator_id === user?.user_id
     );
     if (userEntry) {
       sum += userEntry.principal_amount;
@@ -57,22 +56,41 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
     return sum;
   }, 0);
 
-  const totalInterest = transactions.reduce<number>((sum, t) => {
+  const totalGrossInterest = transactions.reduce<number>((sum, t) => {
     const userEntry = t.splitwise_entries?.find(
-      (entry: SplitwiseEntry) => entry.syndicator_id === t.risk_taker_id
+      (entry: SplitwiseEntry) => entry.syndicator_id === user?.user_id
     );
     if (userEntry) {
-      const interest = (userEntry.principal_amount * t.total_interest) / 100;
-      sum += interest;
+      const grossInterest =
+        (userEntry.principal_amount * t.total_interest) / 100;
+      sum += grossInterest;
     }
     return sum;
   }, 0);
 
-  const totalCommissionEarned = transactions.reduce<number>((sum, t) => {
-    return sum + (t.total_commission_earned || 0);
+  const totalNetInterest = transactions.reduce<number>((sum, t) => {
+    const userEntry = t.splitwise_entries?.find(
+      (entry: SplitwiseEntry) => entry.syndicator_id === user?.user_id
+    );
+    if (userEntry) {
+      sum += userEntry.interest_after_commission || 0;
+    }
+    return sum;
   }, 0);
 
-  const activeSyndicates = transactions.length;
+  const totalCommissionEarned = Array.isArray(transactions)
+    ? transactions.reduce<number>((sum, tx) => {
+        const userEntry = tx.splitwise_entries?.find(
+          (entry: SplitwiseEntry) => entry.syndicator_id === tx.risk_taker_id
+        );
+        if (userEntry?.syndicator_id === user?.user_id) {
+          return sum + (tx.total_commission_earned || 0);
+        }
+        return sum; // Return current sum, not 0
+      }, 0)
+    : 0;
+
+  // const activeSyndicates = transactions.length;
 
   const statCards = [
     {
@@ -84,10 +102,17 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
     },
     {
       icon: <TrendingUpIcon fontSize="inherit" />,
-      label: "Total Interest",
-      value: `₹${totalInterest.toLocaleString()}`,
+      label: "Total Gross Interest",
+      value: `₹${totalGrossInterest.toLocaleString()}`,
       color: "#22c55e",
-      description: "Your earned interest",
+      description: "Your earned interest before commission",
+    },
+    {
+      icon: <TrendingUpIcon fontSize="inherit" />,
+      label: "Total Net Interest",
+      value: `₹${totalNetInterest.toLocaleString()}`,
+      color: "#16a34a",
+      description: "Your earned interest after commission",
     },
     {
       icon: <MonetizationOnIcon fontSize="inherit" />,
@@ -96,13 +121,13 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
       color: "#f59e42",
       description: "Your earned commission",
     },
-    {
-      icon: <PeopleIcon fontSize="inherit" />,
-      label: "Active Syndicates",
-      value: activeSyndicates,
-      color: "#3b82f6",
-      description: "Active investment groups",
-    },
+    // {
+    //   icon: <PeopleIcon fontSize="inherit" />,
+    //   label: "Active Syndicates",
+    //   value: activeSyndicates,
+    //   color: "#3b82f6",
+    //   description: "Active investment groups",
+    // },
   ];
 
   return (
@@ -112,7 +137,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
       </Typography>
 
       <Grid container spacing={5}>
-        {statCards.map((card, idx) => (
+        {statCards.map((card) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={card.label}>
             <Box
               sx={{

@@ -19,12 +19,14 @@ import Portfolio from "../components/portfolio/Portfolio";
 import PortfolioChart from "../components/portfolio/PortfolioChart";
 import PortfolioStats from "../components/portfolio/PortfolioStats";
 import { useMemo } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 const PortfolioPage: React.FC = () => {
   const { data: portfolioData, isLoading: portfolioLoading } =
     useGetPortfolioQuery();
   const { data: transactionsResponse, isLoading: transactionsLoading } =
     useGetAllTransactionsQuery();
+  const { user } = useAuth();
 
   const allTransactions = useMemo<Transaction[]>(() => {
     if (!transactionsResponse) return [];
@@ -73,7 +75,7 @@ const PortfolioPage: React.FC = () => {
       (sum, tx) => sum + (tx.total_commission_earned || 0),
       0
     );
-
+    console.log("portfolioDataFINAL=", portfolioData);
     return {
       total_principal_amount: totalPrincipal,
       total_original_interest: portfolioData?.total_original_interest || 0,
@@ -98,6 +100,54 @@ const PortfolioPage: React.FC = () => {
       total_commission_earned: totalCommissionEarned,
     };
   }, [portfolioData, allTransactions]);
+
+  // Calculate the total corpus where the user is the risk taker (use transaction principal directly)
+  const riskTakerCorpus = useMemo(() => {
+    if (!user) return 0;
+    return allTransactions.reduce((sum, tx) => {
+      if (
+        tx.risk_taker_id === user.user_id ||
+        tx.risk_taker_username === user.username
+      ) {
+        return sum + (tx.total_principal_amount || 0);
+      }
+      return sum;
+    }, 0);
+  }, [allTransactions, user]);
+
+  // Calculate the total interest for all risk taker transactions
+  console.log("allTransactions=", allTransactions);
+  console.log("user=", user);
+  const riskTakerInterest = useMemo(() => {
+    if (!user) return 0;
+    return allTransactions.reduce((sum, tx) => {
+      if (
+        tx.risk_taker_id === user.user_id ||
+        tx.risk_taker_username === user.username
+      ) {
+        return (
+          sum + ((tx.total_principal_amount * tx.total_interest) / 100 || 0)
+        );
+      }
+      return sum;
+    }, 0);
+  }, [allTransactions, user]);
+
+  // Calculate total commission earned from transactions (as is)
+  // const totalCommissionEarned = useMemo(
+  //   () =>
+  //     allTransactions.reduce(
+  //       (sum, tx) => sum + (tx.total_commission_earned || 0),
+  //       0
+  //   ),
+  //   [allTransactions]
+  // );
+
+  // Calculate total value as corpus + interest
+  const totalValue = useMemo(
+    () => riskTakerCorpus + riskTakerInterest,
+    [riskTakerCorpus, riskTakerInterest]
+  );
 
   const isLoading = portfolioLoading || transactionsLoading;
 
@@ -130,15 +180,17 @@ const PortfolioPage: React.FC = () => {
           <Paper elevation={2} sx={{ p: 3, borderRadius: 4 }}>
             <Portfolio
               summary={{
-                total_principal_amount: portfolioSummary.total_principal_amount,
-                total_interest_amount:
-                  portfolioSummary.total_interest_after_commission,
+                risk_taker_corpus: riskTakerCorpus,
+                risk_taker_interest: riskTakerInterest,
                 total_commission_earned:
-                  portfolioSummary.total_commission_earned,
-                total_value: portfolioSummary.total_value,
-                roi_percentage: portfolioSummary.roi_percentage,
-                active_transactions: allTransactions.length,
-                monthly_earnings: portfolioSummary.monthly_earnings,
+                  portfolioData?.breakdown?.as_risk_taker?.commission_earned ??
+                  0,
+                total_value: totalValue,
+                active_transactions: allTransactions.filter(
+                  (tx) =>
+                    tx.risk_taker_id === user?.user_id ||
+                    tx.risk_taker_username === user?.username
+                ).length,
               }}
               isLoading={isLoading}
             />
@@ -161,8 +213,8 @@ const PortfolioPage: React.FC = () => {
         <Grid item xs={12}>
           <PortfolioChart
             transactions={allTransactions}
-            totalPrincipal={portfolioSummary.total_principal_amount}
-            totalInterest={portfolioSummary.total_interest_after_commission}
+            totalPrincipal={riskTakerCorpus}
+            totalInterest={riskTakerInterest}
           />
         </Grid>
       </Grid>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Typography,
   useTheme,
@@ -7,7 +7,7 @@ import {
   Divider,
   Skeleton,
   Box,
-} from '@mui/material';
+} from "@mui/material";
 import {
   PieChart,
   Pie,
@@ -15,14 +15,9 @@ import {
   ResponsiveContainer,
   Tooltip,
   Legend,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from 'recharts';
-import type { Transaction } from '../../types/transaction.types';
-import { formatAmount, formatCurrency } from '../../utils/formatters';
+} from "recharts";
+import type { Transaction } from "../../types/transaction.types";
+import { formatCurrency } from "../../utils/formatters";
 
 interface PortfolioChartProps {
   transactions: Transaction[];
@@ -43,7 +38,11 @@ interface CustomTooltipProps {
   label?: string;
 }
 
-const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
+const CustomTooltip: React.FC<CustomTooltipProps> = ({
+  active,
+  payload,
+  label,
+}) => {
   if (active && payload && payload.length) {
     return (
       <Paper elevation={3} sx={{ p: 1.5, borderRadius: 2 }}>
@@ -51,7 +50,11 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
           {label}
         </Typography>
         {payload.map((entry) => (
-          <Typography key={entry.name} variant="caption" sx={{ color: entry.color, display: 'block' }}>
+          <Typography
+            key={entry.name}
+            variant="caption"
+            sx={{ color: entry.color, display: "block" }}
+          >
             {`${entry.name}: ${formatCurrency(entry.value)}`}
           </Typography>
         ))}
@@ -61,34 +64,42 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label })
   return null;
 };
 
-const PortfolioChart: React.FC<PortfolioChartProps> = ({ 
-  transactions, 
-  totalPrincipal, 
-  totalInterest, 
-  loading = false 
+const PortfolioChart: React.FC<PortfolioChartProps> = ({
+  transactions,
+  totalPrincipal,
+  totalInterest,
+  loading = false,
 }) => {
   const theme = useTheme();
 
   const pieData = [
-    { name: 'Total Principal', value: totalPrincipal },
-    { name: 'Total Interest', value: totalInterest },
+    { name: "Total Principal", value: totalPrincipal },
+    { name: "Total Interest", value: totalInterest },
   ];
 
-  const monthlyData = React.useMemo(() => {
-    const monthlyBreakdown: { [key: string]: { principal: number; interest: number } } = {};
-    transactions.forEach(transaction => {
-      const date = new Date(transaction.created_at);
-      const monthKey = date.toLocaleString('default', { month: 'short', year: '2-digit' });
-      if (!monthlyBreakdown[monthKey]) {
-        monthlyBreakdown[monthKey] = { principal: 0, interest: 0 };
-      }
-      monthlyBreakdown[monthKey].principal += transaction.total_principal_amount;
-      monthlyBreakdown[monthKey].interest += transaction.total_interest;
-    });
-    return Object.entries(monthlyBreakdown)
-      .map(([month, data]) => ({ month, ...data }))
-      .sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime());
-  }, [transactions]);
+  // const monthlyData = React.useMemo(() => {
+  //   const monthlyBreakdown: {
+  //     [key: string]: { principal: number; interest: number };
+  //   } = {};
+  //   transactions.forEach((transaction) => {
+  //     const date = new Date(transaction.created_at);
+  //     const monthKey = date.toLocaleString("default", {
+  //       month: "short",
+  //       year: "2-digit",
+  //     });
+  //     if (!monthlyBreakdown[monthKey]) {
+  //       monthlyBreakdown[monthKey] = { principal: 0, interest: 0 };
+  //     }
+  //     monthlyBreakdown[monthKey].principal +=
+  //       transaction.total_principal_amount;
+  //     monthlyBreakdown[monthKey].interest += transaction.total_interest;
+  //   });
+  //   return Object.entries(monthlyBreakdown)
+  //     .map(([month, data]) => ({ month, ...data }))
+  //     .sort(
+  //       (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
+  //   );
+  // }, [transactions]);
 
   const PIE_COLORS = [theme.palette.primary.light, theme.palette.success.light];
 
@@ -103,7 +114,18 @@ const PortfolioChart: React.FC<PortfolioChartProps> = ({
 
   if (transactions.length === 0) {
     return (
-      <Paper elevation={2} sx={{ p: 3, borderRadius: 4, textAlign: 'center', height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Paper
+        elevation={2}
+        sx={{
+          p: 3,
+          borderRadius: 4,
+          textAlign: "center",
+          height: 300,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Typography variant="h6" color="text.secondary">
           No transaction data available to render charts.
         </Typography>
@@ -115,14 +137,27 @@ const PortfolioChart: React.FC<PortfolioChartProps> = ({
     <Stack spacing={3}>
       <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4 }}>
         <Stack spacing={2}>
-          <Typography variant="h6" fontWeight={600}>Portfolio Distribution</Typography>
+          <Typography variant="h6" fontWeight={600}>
+            Portfolio Distribution
+          </Typography>
           <Divider />
           <Box sx={{ height: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
+                <Pie
+                  data={pieData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  label
+                >
                   {pieData.map((_entry, index) => (
-                    <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={PIE_COLORS[index % PIE_COLORS.length]}
+                    />
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
@@ -133,7 +168,7 @@ const PortfolioChart: React.FC<PortfolioChartProps> = ({
         </Stack>
       </Paper>
 
-      {monthlyData.length > 0 && (
+      {/* {monthlyData.length > 0 && (
         <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4 }}>
           <Stack spacing={2}>
             <Typography variant="h6" fontWeight={600}>Monthly Performance</Typography>
@@ -153,7 +188,7 @@ const PortfolioChart: React.FC<PortfolioChartProps> = ({
             </Box>
           </Stack>
         </Paper>
-      )}
+      )} */}
     </Stack>
   );
 };
