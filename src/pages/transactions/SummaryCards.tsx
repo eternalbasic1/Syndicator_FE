@@ -11,6 +11,7 @@ import type {
   Transaction,
   SplitwiseEntry,
 } from "../../types/transaction.types";
+import { useAuth } from "@/hooks/useAuth";
 
 interface SummaryCardsProps {
   transactions: Transaction[];
@@ -21,8 +22,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
   transactions,
   loading = false,
 }) => {
-  console.log("Hitting summary");
-
+  const { user } = useAuth();
   if (loading) {
     return (
       <Box sx={{ maxWidth: 1200, mx: "auto", mb: 4 }}>
@@ -49,7 +49,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
 
   const totalPrincipal = transactions.reduce<number>((sum, t) => {
     const userEntry = t.splitwise_entries?.find(
-      (entry: SplitwiseEntry) => entry.syndicator_id === t.risk_taker_id
+      (entry: SplitwiseEntry) => entry.syndicator_id === user?.user_id
     );
     if (userEntry) {
       sum += userEntry.principal_amount;
@@ -59,7 +59,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
 
   const totalInterest = transactions.reduce<number>((sum, t) => {
     const userEntry = t.splitwise_entries?.find(
-      (entry: SplitwiseEntry) => entry.syndicator_id === t.risk_taker_id
+      (entry: SplitwiseEntry) => entry.syndicator_id === user?.user_id
     );
     if (userEntry) {
       const interest = (userEntry.principal_amount * t.total_interest) / 100;
@@ -68,9 +68,17 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
     return sum;
   }, 0);
 
-  const totalCommissionEarned = transactions.reduce<number>((sum, t) => {
-    return sum + (t.total_commission_earned || 0);
-  }, 0);
+  const totalCommissionEarned = Array.isArray(transactions)
+    ? transactions.reduce<number>((sum, tx) => {
+        const userEntry = tx.splitwise_entries?.find(
+          (entry: SplitwiseEntry) => entry.syndicator_id === tx.risk_taker_id
+        );
+        if (userEntry?.syndicator_id === user?.user_id) {
+          return sum + (tx.total_commission_earned || 0);
+        }
+        return sum; // Return current sum, not 0
+      }, 0)
+    : 0;
 
   const activeSyndicates = transactions.length;
 

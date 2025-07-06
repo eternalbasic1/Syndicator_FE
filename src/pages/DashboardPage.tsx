@@ -96,10 +96,15 @@ const DashboardPage: FunctionComponent = () => {
   const totalCommissionEarned = Array.isArray(
     transactionsResponse?.transactions
   )
-    ? transactionsResponse.transactions.reduce(
-        (sum: number, tx: any) => sum + (tx.total_commission_earned || 0),
-        0
-      )
+    ? transactionsResponse.transactions.reduce<number>((sum, tx) => {
+        const userEntry = tx.splitwise_entries?.find(
+          (entry: SplitwiseEntry) => entry.syndicator_id === tx.risk_taker_id
+        );
+        if (userEntry?.syndicator_id === user?.user_id) {
+          return sum + (tx.total_commission_earned || 0);
+        }
+        return sum; // Return current sum, not 0
+      }, 0)
     : 0;
 
   const stats = useMemo(() => {
