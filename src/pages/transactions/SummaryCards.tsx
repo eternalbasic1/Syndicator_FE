@@ -57,13 +57,24 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
     return sum;
   }, 0);
 
-  const totalInterest = transactions.reduce<number>((sum, t) => {
+  const totalGrossInterest = transactions.reduce<number>((sum, t) => {
     const userEntry = t.splitwise_entries?.find(
       (entry: SplitwiseEntry) => entry.syndicator_id === user?.user_id
     );
     if (userEntry) {
-      const interest = (userEntry.principal_amount * t.total_interest) / 100;
-      sum += interest;
+      const grossInterest =
+        (userEntry.principal_amount * t.total_interest) / 100;
+      sum += grossInterest;
+    }
+    return sum;
+  }, 0);
+
+  const totalNetInterest = transactions.reduce<number>((sum, t) => {
+    const userEntry = t.splitwise_entries?.find(
+      (entry: SplitwiseEntry) => entry.syndicator_id === user?.user_id
+    );
+    if (userEntry) {
+      sum += userEntry.interest_after_commission || 0;
     }
     return sum;
   }, 0);
@@ -92,10 +103,17 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
     },
     {
       icon: <TrendingUpIcon fontSize="inherit" />,
-      label: "Total Interest",
-      value: `₹${totalInterest.toLocaleString()}`,
+      label: "Total Gross Interest",
+      value: `₹${totalGrossInterest.toLocaleString()}`,
       color: "#22c55e",
-      description: "Your earned interest",
+      description: "Your earned interest before commission",
+    },
+    {
+      icon: <TrendingUpIcon fontSize="inherit" />,
+      label: "Total Net Interest",
+      value: `₹${totalNetInterest.toLocaleString()}`,
+      color: "#16a34a",
+      description: "Your earned interest after commission",
     },
     {
       icon: <MonetizationOnIcon fontSize="inherit" />,
@@ -104,13 +122,13 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
       color: "#f59e42",
       description: "Your earned commission",
     },
-    {
-      icon: <PeopleIcon fontSize="inherit" />,
-      label: "Active Syndicates",
-      value: activeSyndicates,
-      color: "#3b82f6",
-      description: "Active investment groups",
-    },
+    // {
+    //   icon: <PeopleIcon fontSize="inherit" />,
+    //   label: "Active Syndicates",
+    //   value: activeSyndicates,
+    //   color: "#3b82f6",
+    //   description: "Active investment groups",
+    // },
   ];
 
   return (
