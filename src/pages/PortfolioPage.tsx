@@ -182,7 +182,9 @@ const PortfolioPage: React.FC = () => {
               summary={{
                 risk_taker_corpus: riskTakerCorpus,
                 risk_taker_interest: riskTakerInterest,
-                total_commission_earned: totalCommissionEarned,
+                total_commission_earned:
+                  portfolioData?.breakdown?.as_risk_taker?.commission_earned ??
+                  0,
                 total_value: totalValue,
                 active_transactions: allTransactions.filter(
                   (tx) =>
