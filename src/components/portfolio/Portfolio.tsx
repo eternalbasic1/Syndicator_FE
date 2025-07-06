@@ -15,7 +15,6 @@ import {
   AccountBalance as AccountBalanceIcon,
   Percent as PercentIcon,
   MonetizationOn as MonetizationOnIcon,
-  MonetizationOn as MonthlyEarningsIcon,
 } from "@mui/icons-material";
 import { formatCurrency, formatPercentage } from "../../utils/formatters";
 

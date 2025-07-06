@@ -4,7 +4,6 @@ import StatCard from "../../components/common/StatCard";
 import {
   AccountBalance as AccountBalanceIcon,
   TrendingUp as TrendingUpIcon,
-  People as PeopleIcon,
   MonetizationOn as MonetizationOnIcon,
 } from "@mui/icons-material";
 import type {
@@ -91,7 +90,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
       }, 0)
     : 0;
 
-  const activeSyndicates = transactions.length;
+  // const activeSyndicates = transactions.length;
 
   const statCards = [
     {
@@ -138,7 +137,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
       </Typography>
 
       <Grid container spacing={5}>
-        {statCards.map((card, idx) => (
+        {statCards.map((card) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={card.label}>
             <Box
               sx={{

@@ -2,7 +2,6 @@ import React from "react";
 import {
   Box,
   Typography,
-  Chip,
   Skeleton,
   Avatar,
   Tooltip,
@@ -10,7 +9,7 @@ import {
   Stack,
   Paper,
 } from "@mui/material";
-import { TrendingUp, People, ReceiptLong } from "@mui/icons-material";
+import { People, ReceiptLong } from "@mui/icons-material";
 import type { Transaction } from "../../types/transaction.types";
 import dayjs from "dayjs";
 

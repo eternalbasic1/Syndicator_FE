@@ -13,7 +13,6 @@ import {
 import {
   Savings as SavingsIcon,
   TrendingUp as TrendingUpIcon,
-  People as PeopleIcon,
   AccountBalance as AccountBalanceIcon,
   MonetizationOn as MonetizationOnIcon,
 } from "@mui/icons-material";

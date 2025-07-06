@@ -15,14 +15,9 @@ import {
   ResponsiveContainer,
   Tooltip,
   Legend,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
 } from "recharts";
 import type { Transaction } from "../../types/transaction.types";
-import { formatAmount, formatCurrency } from "../../utils/formatters";
+import { formatCurrency } from "../../utils/formatters";
 
 interface PortfolioChartProps {
   transactions: Transaction[];
@@ -82,29 +77,29 @@ const PortfolioChart: React.FC<PortfolioChartProps> = ({
     { name: "Total Interest", value: totalInterest },
   ];
 
-  const monthlyData = React.useMemo(() => {
-    const monthlyBreakdown: {
-      [key: string]: { principal: number; interest: number };
-    } = {};
-    transactions.forEach((transaction) => {
-      const date = new Date(transaction.created_at);
-      const monthKey = date.toLocaleString("default", {
-        month: "short",
-        year: "2-digit",
-      });
-      if (!monthlyBreakdown[monthKey]) {
-        monthlyBreakdown[monthKey] = { principal: 0, interest: 0 };
-      }
-      monthlyBreakdown[monthKey].principal +=
-        transaction.total_principal_amount;
-      monthlyBreakdown[monthKey].interest += transaction.total_interest;
-    });
-    return Object.entries(monthlyBreakdown)
-      .map(([month, data]) => ({ month, ...data }))
-      .sort(
-        (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
-      );
-  }, [transactions]);
+  // const monthlyData = React.useMemo(() => {
+  //   const monthlyBreakdown: {
+  //     [key: string]: { principal: number; interest: number };
+  //   } = {};
+  //   transactions.forEach((transaction) => {
+  //     const date = new Date(transaction.created_at);
+  //     const monthKey = date.toLocaleString("default", {
+  //       month: "short",
+  //       year: "2-digit",
+  //     });
+  //     if (!monthlyBreakdown[monthKey]) {
+  //       monthlyBreakdown[monthKey] = { principal: 0, interest: 0 };
+  //     }
+  //     monthlyBreakdown[monthKey].principal +=
+  //       transaction.total_principal_amount;
+  //     monthlyBreakdown[monthKey].interest += transaction.total_interest;
+  //   });
+  //   return Object.entries(monthlyBreakdown)
+  //     .map(([month, data]) => ({ month, ...data }))
+  //     .sort(
+  //       (a, b) => new Date(a.month).getTime() - new Date(b.month).getTime()
+  //   );
+  // }, [transactions]);
 
   const PIE_COLORS = [theme.palette.primary.light, theme.palette.success.light];
 

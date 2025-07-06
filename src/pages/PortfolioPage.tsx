@@ -134,14 +134,14 @@ const PortfolioPage: React.FC = () => {
   }, [allTransactions, user]);
 
   // Calculate total commission earned from transactions (as is)
-  const totalCommissionEarned = useMemo(
-    () =>
-      allTransactions.reduce(
-        (sum, tx) => sum + (tx.total_commission_earned || 0),
-        0
-      ),
-    [allTransactions]
-  );
+  // const totalCommissionEarned = useMemo(
+  //   () =>
+  //     allTransactions.reduce(
+  //       (sum, tx) => sum + (tx.total_commission_earned || 0),
+  //       0
+  //   ),
+  //   [allTransactions]
+  // );
 
   // Calculate total value as corpus + interest
   const totalValue = useMemo(

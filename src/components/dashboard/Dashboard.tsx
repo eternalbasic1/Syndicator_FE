@@ -9,7 +9,6 @@ import {
   Box,
   Button,
   Container,
-  Paper,
 } from "@mui/material";
 import {
   AccountBalance,
@@ -137,7 +136,7 @@ const Dashboard: React.FC = () => {
           Overview
         </Typography>
         <Grid container spacing={3}>
-          {statCards.map((card, idx) => (
+          {statCards.map((card) => (
             <Grid item xs={12} sm={6} md={4} lg={2} xl={2.4} key={card.label}>
               <StatCard {...card} />
             </Grid>
