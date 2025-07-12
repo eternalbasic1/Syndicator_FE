@@ -1,15 +1,14 @@
-
-import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import { Box, useMediaQuery, useTheme } from '@mui/material';
-import Header from './Header';
-import Sidebar from './Sidebar';
+import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
+import Header from "./Header";
+import Sidebar from "./Sidebar";
 
 const DRAWER_WIDTH = 240;
 
 const Layout: React.FC = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
@@ -17,11 +16,8 @@ const Layout: React.FC = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <Header 
-        drawerWidth={DRAWER_WIDTH}
-        onDrawerToggle={handleDrawerToggle}
-      />
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+      <Header drawerWidth={DRAWER_WIDTH} onDrawerToggle={handleDrawerToggle} />
       <Sidebar
         drawerWidth={DRAWER_WIDTH}
         mobileOpen={mobileOpen}
@@ -33,9 +29,11 @@ const Layout: React.FC = () => {
         sx={{
           flexGrow: 1,
           width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
-          mt: '64px',
-          minHeight: 'calc(100vh - 64px)',
-          backgroundColor: 'background.default',
+          mt: { xs: "56px", sm: "64px" },
+          minHeight: { xs: "calc(100vh - 56px)", sm: "calc(100vh - 64px)" },
+          backgroundColor: "background.default",
+          p: { xs: 2, sm: 3, md: 4 },
+          overflowX: "hidden",
         }}
       >
         <Outlet />
