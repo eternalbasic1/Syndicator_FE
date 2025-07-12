@@ -1,7 +1,6 @@
-
 // src/components/common/Layout/Sidebar.tsx
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Drawer,
@@ -13,14 +12,10 @@ import {
   Toolbar,
   Typography,
   Divider,
-} from '@mui/material';
-import {
-  Dashboard,
-  AccountBalance,
-  People,
-  Work,
-  TrendingUp,
-} from '@mui/icons-material';
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
+import { Dashboard, AccountBalance, People, Work } from "@mui/icons-material";
 
 interface SidebarProps {
   drawerWidth: number;
@@ -30,11 +25,11 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
-  { text: 'Transactions', icon: <AccountBalance />, path: '/transactions' },
-  { text: 'Friends', icon: <People />, path: '/friends' },
-  { text: 'Portfolio', icon: <Work />, path: '/portfolio' },
-  { text: 'Syndicate', icon: <TrendingUp />, path: '/syndicate' },
+  { text: "Dashboard", icon: <Dashboard />, path: "/dashboard" },
+  { text: "Transactions", icon: <AccountBalance />, path: "/transactions" },
+  { text: "Friends", icon: <People />, path: "/friends" },
+  { text: "Portfolio", icon: <Work />, path: "/portfolio" },
+  // { text: "Syndicate", icon: <TrendingUp />, path: "/syndicate" },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -45,18 +40,33 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const drawer = (
     <div>
-      <Toolbar>
-        <Typography variant="h6" noWrap component="div">
+      <Toolbar
+        sx={{
+          minHeight: { xs: "56px", sm: "64px" },
+          px: { xs: 2, sm: 3 },
+        }}
+      >
+        <Typography
+          variant={isSmallScreen ? "h6" : "h5"}
+          noWrap
+          component="div"
+          sx={{
+            fontWeight: 600,
+            fontSize: { xs: "1.125rem", sm: "1.25rem" },
+          }}
+        >
           Syndicator
         </Typography>
       </Toolbar>
       <Divider />
-      <List>
+      <List sx={{ px: { xs: 1, sm: 2 } }}>
         {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
+          <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
             <ListItemButton
               selected={location.pathname === item.path}
               onClick={() => {
@@ -65,9 +75,42 @@ const Sidebar: React.FC<SidebarProps> = ({
                   onDrawerToggle();
                 }
               }}
+              sx={{
+                borderRadius: 2,
+                mx: { xs: 0.5, sm: 1 },
+                py: { xs: 1, sm: 1.5 },
+                "&.Mui-selected": {
+                  backgroundColor: "primary.main",
+                  color: "primary.contrastText",
+                  "&:hover": {
+                    backgroundColor: "primary.dark",
+                  },
+                  "& .MuiListItemIcon-root": {
+                    color: "primary.contrastText",
+                  },
+                },
+                "&:hover": {
+                  backgroundColor: "action.hover",
+                },
+              }}
             >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+              <ListItemIcon
+                sx={{
+                  minWidth: { xs: 36, sm: 40 },
+                  fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText
+                primary={item.text}
+                sx={{
+                  "& .MuiListItemText-primary": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                    fontWeight: 500,
+                  },
+                }}
+              />
             </ListItemButton>
           </ListItem>
         ))}
@@ -88,10 +131,13 @@ const Sidebar: React.FC<SidebarProps> = ({
           keepMounted: true,
         }}
         sx={{
-          display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
+          display: { xs: "block", sm: "none" },
+          "& .MuiDrawer-paper": {
+            boxSizing: "border-box",
             width: drawerWidth,
+            borderRight: "1px solid #E5E7EB",
+            boxShadow:
+              "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
           },
         }}
       >
@@ -100,10 +146,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
+          display: { xs: "none", sm: "block" },
+          "& .MuiDrawer-paper": {
+            boxSizing: "border-box",
             width: drawerWidth,
+            borderRight: "1px solid #E5E7EB",
+            boxShadow: "none",
+            backgroundColor: "#FFFFFF",
           },
         }}
         open
