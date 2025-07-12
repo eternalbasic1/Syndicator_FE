@@ -15,13 +15,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import {
-  Dashboard,
-  AccountBalance,
-  People,
-  Work,
-  TrendingUp,
-} from "@mui/icons-material";
+import { Dashboard, AccountBalance, People, Work } from "@mui/icons-material";
 
 interface SidebarProps {
   drawerWidth: number;
