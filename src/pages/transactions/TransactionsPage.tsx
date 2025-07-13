@@ -111,7 +111,7 @@ const pageStyles = {
     borderColor: "divider",
     "&:focus-within": {
       borderColor: "primary.main",
-      boxShadow: "0 0 0 3px rgba(79, 70, 229, 0.1)",
+      boxShadow: "0 0 0 3px rgba(0, 0, 1, 0.1)",
     },
   },
   searchInput: {
@@ -123,6 +123,7 @@ const pageStyles = {
     "&::placeholder": {
       color: "text.secondary",
     },
+    backgroundColor: "transparent",
   },
 };
 
