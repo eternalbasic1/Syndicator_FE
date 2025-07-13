@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import { Link as RouterLink } from "react-router-dom";
 
 const QuickActions: React.FC = () => {

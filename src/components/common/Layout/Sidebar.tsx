@@ -10,7 +10,6 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography,
   Divider,
   useTheme,
   useMediaQuery,
