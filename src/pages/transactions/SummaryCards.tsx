@@ -1,7 +1,6 @@
 import React from "react";
 import { Typography, Box, useTheme, useMediaQuery } from "@mui/material";
 import StatsCard from "../../components/dashboard/StatsCard";
-import GridItem from "../../components/common/GridItem";
 import {
   AccountBalance as AccountBalanceIcon,
   TrendingUp as TrendingUpIcon,
