@@ -1,6 +1,7 @@
 import React from "react";
-import { Grid, Typography, Box, Paper } from "@mui/material";
-import StatCard from "../../components/common/StatCard";
+import { Grid, Typography } from "@mui/material";
+import StatsCard from "../../components/dashboard/StatsCard";
+import GridItem from "../../components/common/GridItem";
 import {
   AccountBalance as AccountBalanceIcon,
   TrendingUp as TrendingUpIcon,
@@ -24,25 +25,19 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
   const { user } = useAuth();
   if (loading) {
     return (
-      <Box sx={{ maxWidth: 1200, mx: "auto", mb: 4 }}>
-        <Paper
-          elevation={2}
-          sx={{ p: 3, borderRadius: 4, bgcolor: "background.default" }}
-        >
-          <Grid container spacing={5}>
-            {[1, 2, 3, 4].map((i) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
-                <StatCard
-                  icon={<AccountBalanceIcon />}
-                  label="Loading..."
-                  value={0}
-                  color="#e5e7eb"
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Paper>
-      </Box>
+      <Grid container spacing={{ xs: 1, sm: 3 }}>
+        {[1, 2, 3, 4].map((i) => (
+          <GridItem xs={12} sm={6} md={3} key={i}>
+            <StatsCard
+              title="Loading..."
+              value={0}
+              icon={<AccountBalanceIcon />}
+              color="primary"
+              loading={true}
+            />
+          </GridItem>
+        ))}
+      </Grid>
     );
   }
 
@@ -92,66 +87,46 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
 
   // const activeSyndicates = transactions.length;
 
-  const statCards = [
-    {
-      icon: <AccountBalanceIcon fontSize="inherit" />,
-      label: "Total Principal",
-      value: `₹${totalPrincipal.toLocaleString()}`,
-      color: "#6366f1",
-      description: "Your invested amount",
-    },
-    {
-      icon: <TrendingUpIcon fontSize="inherit" />,
-      label: "Total Gross Interest",
-      value: `₹${totalGrossInterest.toLocaleString()}`,
-      color: "#22c55e",
-      description: "Your earned interest before commission",
-    },
-    {
-      icon: <TrendingUpIcon fontSize="inherit" />,
-      label: "Total Net Interest",
-      value: `₹${totalNetInterest.toLocaleString()}`,
-      color: "#16a34a",
-      description: "Your earned interest after commission",
-    },
-    {
-      icon: <MonetizationOnIcon fontSize="inherit" />,
-      label: "Total Commission",
-      value: `₹${totalCommissionEarned.toLocaleString()}`,
-      color: "#f59e42",
-      description: "Your earned commission",
-    },
-    // {
-    //   icon: <PeopleIcon fontSize="inherit" />,
-    //   label: "Active Syndicates",
-    //   value: activeSyndicates,
-    //   color: "#3b82f6",
-    //   description: "Active investment groups",
-    // },
-  ];
-
   return (
-    <Box sx={{ maxWidth: 1200, mx: "auto", mb: 4 }}>
+    <>
       <Typography variant="h6" fontWeight={700} mb={2}>
         Quick Stats
       </Typography>
-
-      <Grid container spacing={5}>
-        {statCards.map((card) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={card.label}>
-            <Box
-              sx={{
-                minWidth: 220,
-                boxShadow: "0 2px 16px 0 rgba(60,60,60,0.06)",
-                borderRadius: 4,
-              }}
-            >
-              <StatCard {...card} />
-            </Box>
-          </Grid>
-        ))}
+      <Grid container spacing={2} alignItems="stretch">
+        <GridItem xs={8} sm={6} md={4}>
+          <StatsCard
+            title="Total Principal"
+            value={`₹${totalPrincipal.toLocaleString()}`}
+            icon={<AccountBalanceIcon />}
+            color="primary"
+          />
+        </GridItem>
+        <GridItem xs={8} sm={6} md={4}>
+          <StatsCard
+            title="Total Gross Interest"
+            value={`₹${totalGrossInterest.toLocaleString()}`}
+            icon={<TrendingUpIcon />}
+            color="success"
+          />
+        </GridItem>
+        <GridItem xs={8} sm={6} md={4}>
+          <StatsCard
+            title="Total Net Interest"
+            value={`₹${totalNetInterest.toLocaleString()}`}
+            icon={<TrendingUpIcon />}
+            color="info"
+          />
+        </GridItem>
+        <GridItem xs={8} sm={6} md={4}>
+          <StatsCard
+            title="Total Commission"
+            value={`₹${totalCommissionEarned.toLocaleString()}`}
+            icon={<MonetizationOnIcon />}
+            color="warning"
+          />
+        </GridItem>
       </Grid>
-    </Box>
+    </>
   );
 };
 

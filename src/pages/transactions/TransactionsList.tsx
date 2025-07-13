@@ -68,15 +68,16 @@ const tableStyles = {
     backgroundColor: "background.paper",
     color: "text.secondary",
     fontWeight: 600,
-    fontSize: "0.75rem",
+    fontSize: { xs: "0.7rem", sm: "0.75rem" },
     textTransform: "uppercase",
     letterSpacing: "0.05em",
-    padding: "12px 16px",
+    padding: { xs: "8px 8px", sm: "12px 16px" },
     borderBottom: "1px solid",
     borderColor: "divider",
   },
   bodyCell: {
-    padding: "16px",
+    padding: { xs: "10px 8px", sm: "16px" },
+    fontSize: { xs: "0.85rem", sm: "1rem" },
     borderBottom: "1px solid",
     borderColor: "divider",
     "&:last-child": {
@@ -306,8 +307,10 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
 
   return (
     <Paper elevation={0} sx={tableStyles.container}>
-      <TableContainer>
-        <Table>
+      <TableContainer
+        sx={{ width: "100%", overflowX: { xs: "auto", sm: "visible" } }}
+      >
+        <Table sx={{ minWidth: 650, width: "100%" }}>
           <TableHead>
             <TableRow>
               <TableCell sx={tableStyles.headerCell}>

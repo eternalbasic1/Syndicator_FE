@@ -21,9 +21,10 @@ const StatCard: React.FC<StatCardProps> = ({
     <Card
       elevation={3}
       sx={{
-        p: 3,
+        p: { xs: 1.5, sm: 3 },
         borderRadius: 4,
-        minWidth: 200,
+        minWidth: { xs: "unset", sm: 200 },
+        width: "100%",
         height: "100%",
         display: "flex",
         flexDirection: "column",
@@ -43,13 +44,13 @@ const StatCard: React.FC<StatCardProps> = ({
           bgcolor: color || theme.palette.primary.main,
           color: "#fff",
           borderRadius: "50%",
-          width: 48,
-          height: 48,
+          width: { xs: 36, sm: 48 },
+          height: { xs: 36, sm: 48 },
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           mb: 2,
-          fontSize: 28,
+          fontSize: { xs: 22, sm: 28 },
         }}
       >
         {icon}
@@ -58,7 +59,7 @@ const StatCard: React.FC<StatCardProps> = ({
         variant="h4"
         fontWeight={700}
         mb={0.5}
-        sx={{ fontSize: "2rem" }}
+        sx={{ fontSize: { xs: "1.3rem", sm: "2rem" } }}
       >
         {value}
       </Typography>
@@ -67,11 +68,17 @@ const StatCard: React.FC<StatCardProps> = ({
         fontWeight={500}
         color="text.secondary"
         mb={0.5}
+        sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
       >
         {label}
       </Typography>
       {description && (
-        <Typography variant="body2" color="text.secondary" align="center">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          align="center"
+          sx={{ fontSize: { xs: "0.85rem", sm: "1rem" } }}
+        >
           {description}
         </Typography>
       )}
