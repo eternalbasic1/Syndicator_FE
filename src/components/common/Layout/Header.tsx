@@ -71,18 +71,25 @@ const Header: React.FC<HeaderProps> = ({ drawerWidth, onDrawerToggle }) => {
         >
           <MenuIcon />
         </IconButton>
-        <Typography
-          variant={isMobile ? "h6" : "h5"}
-          noWrap
-          component="div"
-          sx={{
-            flexGrow: 1,
-            fontWeight: 600,
-            fontSize: { xs: "1.125rem", sm: "1.25rem" },
-          }}
-        >
-          Syndicator
-        </Typography>
+
+        <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
+          <img
+            src="/syndicator.svg"
+            alt="Syndicator Logo"
+            style={{ height: 32, marginRight: 10, display: "block" }}
+          />
+          <Typography
+            variant={isMobile ? "h6" : "h5"}
+            noWrap
+            component="div"
+            sx={{
+              fontWeight: 800,
+              fontSize: { xs: "1.125rem", sm: "1.25rem" },
+            }}
+          >
+            Syndicator
+          </Typography>
+        </Box>
         <Box
           sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 2 } }}
         >

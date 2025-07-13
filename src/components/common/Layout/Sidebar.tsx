@@ -15,7 +15,13 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import { Dashboard, AccountBalance, People, Work } from "@mui/icons-material";
+import {
+  Dashboard,
+  AccountBalance,
+  People,
+  Work,
+  Menu,
+} from "@mui/icons-material";
 
 interface SidebarProps {
   drawerWidth: number;
@@ -51,17 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           px: { xs: 2, sm: 3 },
         }}
       >
-        <Typography
-          variant={isSmallScreen ? "h6" : "h5"}
-          noWrap
-          component="div"
-          sx={{
-            fontWeight: 600,
-            fontSize: { xs: "1.125rem", sm: "1.25rem" },
-          }}
-        >
-          Syndicator
-        </Typography>
+        <Menu sx={{ fontSize: isSmallScreen ? "0rem" : "1.7rem" }} />
       </Toolbar>
       <Divider />
       <List sx={{ px: { xs: 1, sm: 2 } }}>
