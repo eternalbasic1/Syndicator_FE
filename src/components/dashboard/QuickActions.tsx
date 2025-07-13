@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-//import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
+import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import { Link as RouterLink } from "react-router-dom";
 
 const QuickActions: React.FC = () => {
@@ -41,7 +41,7 @@ const QuickActions: React.FC = () => {
       <Stack spacing={{ xs: 1.5, sm: 2 }}>
         <Button
           component={RouterLink}
-          to="/transactions"
+          to="/transactions/new"
           variant="contained"
           startIcon={<AddIcon />}
           fullWidth
@@ -57,7 +57,7 @@ const QuickActions: React.FC = () => {
         </Button>
         <Button
           component={RouterLink}
-          to="/friends"
+          to="/friends/add"
           variant="outlined"
           startIcon={<GroupAddIcon />}
           fullWidth
@@ -71,7 +71,7 @@ const QuickActions: React.FC = () => {
         >
           Add Friend
         </Button>
-        {/* <Button
+        <Button
           component={RouterLink}
           to="/requests"
           variant="outlined"
@@ -86,7 +86,7 @@ const QuickActions: React.FC = () => {
           }}
         >
           View Requests
-        </Button> */}
+        </Button>
       </Stack>
     </Paper>
   );
