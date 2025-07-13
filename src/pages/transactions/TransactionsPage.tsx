@@ -30,6 +30,7 @@ import type { Transaction } from "../../types/transaction.types";
 const TransactionsPage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] =
@@ -71,148 +72,192 @@ const TransactionsPage: React.FC = () => {
 
   return (
     <Container
-      maxWidth={isDesktop ? "xl" : "md"}
+      maxWidth={isDesktop ? "xl" : "lg"}
       sx={{
-        py: { xs: 2, sm: 4 },
-        overflowX: "hidden",
+        py: { xs: 2, sm: 3, md: 4 },
+        px: { xs: 2, sm: 3 },
         minHeight: "100vh",
       }}
     >
-      {/* Header & Actions */}
-      <Grid
-        container
-        spacing={2}
-        alignItems="center"
-        justifyContent="space-between"
-        mb={2}
-      >
-        <Grid item xs={8} md={6}>
-          <Typography
-            variant={isMobile ? "h5" : "h4"}
-            fontWeight={700}
-            mb={{ xs: 1, md: 0 }}
-          >
-            Transactions
-          </Typography>
-        </Grid>
-        <Grid item xs={8} md={6}>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={2}
-            justifyContent={{ md: "flex-end" }}
-          >
-            <Tooltip title="Refresh data">
-              <IconButton
-                color="primary"
-                onClick={() => window.location.reload()}
-              >
-                <RefreshIcon />
-              </IconButton>
-            </Tooltip>
-            <Button
-              variant="outlined"
-              color="inherit"
-              startIcon={<FilterIcon />}
-              disabled={isLoading}
-              sx={{ minWidth: 110 }}
+      {/* Header Section */}
+      <Box mb={{ xs: 2, sm: 3, md: 4 }}>
+        <Grid container spacing={2} alignItems="center">
+          {/* Title */}
+          <Grid item xs={12} sm={6} md={8}>
+            <Typography
+              variant={isMobile ? "h5" : isTablet ? "h4" : "h3"}
+              fontWeight={700}
+              color="text.primary"
+              sx={{ mb: { xs: 1, sm: 0 } }}
             >
-              {isMobile ? "Filter" : "Filter & Sort"}
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleOpenForm}
-              size={isMobile ? "medium" : "large"}
-              disabled={isLoading}
-              sx={{ minWidth: 110 }}
+              Transactions
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ display: { xs: "none", sm: "block" } }}
             >
-              {isMobile ? "New" : "New Transaction"}
-            </Button>
-          </Stack>
-        </Grid>
-      </Grid>
-
-      {/* Quick Stats */}
-      <Box mb={3}>
-        <SummaryCards transactions={transactions} loading={isLoading} />
-      </Box>
-
-      {/* Search & Table */}
-      <Paper
-        elevation={1}
-        sx={{
-          p: { xs: 1, sm: 2 },
-          borderRadius: 3,
-          mb: 3,
-          width: "100%",
-          overflowX: "auto",
-        }}
-      >
-        <Grid container alignItems="center" spacing={2} mb={2}>
-          <Grid item xs={8} sm={6} md={8}>
-            <Box
-              display="flex"
-              alignItems="center"
-              sx={{
-                backgroundColor: "background.paper",
-                borderRadius: 2,
-                px: 2,
-                py: 1,
-                border: "1px solid",
-                borderColor: "divider",
-                width: "100%",
-              }}
-            >
-              <SearchIcon color="action" fontSize="small" />
-              <input
-                type="text"
-                placeholder="Search transactions..."
-                style={{
-                  marginLeft: 8,
-                  flex: 1,
-                  border: "none",
-                  outline: "none",
-                  fontSize: "0.95rem",
-                  background: "transparent",
-                  width: "100%",
-                }}
-              />
-            </Box>
+              Manage your syndication transactions and track performance
+            </Typography>
           </Grid>
-          <Grid item xs={8} sm={6} md={4}>
+
+          {/* Actions */}
+          <Grid item xs={12} sm={6} md={4}>
             <Stack
-              direction="row"
+              direction={{ xs: "row", sm: "row" }}
               spacing={1}
               justifyContent={{ xs: "flex-start", sm: "flex-end" }}
+              alignItems="center"
             >
+              <Tooltip title="Refresh data">
+                <IconButton
+                  color="primary"
+                  onClick={() => window.location.reload()}
+                  size={isMobile ? "small" : "medium"}
+                >
+                  <RefreshIcon />
+                </IconButton>
+              </Tooltip>
+
+              <Button
+                variant="outlined"
+                color="inherit"
+                startIcon={<FilterIcon />}
+                disabled={isLoading}
+                size={isMobile ? "small" : "medium"}
+                sx={{
+                  minWidth: { xs: 80, sm: 100 },
+                  display: { xs: "none", sm: "inline-flex" },
+                }}
+              >
+                Filter
+              </Button>
+
               <Button
                 variant="contained"
-                onClick={handleOpenForm}
                 startIcon={<AddIcon />}
-                size="small"
-                sx={{ display: { xs: "none", sm: "inline-flex" } }}
+                onClick={handleOpenForm}
+                size={isMobile ? "small" : "medium"}
+                disabled={isLoading}
+                sx={{
+                  minWidth: { xs: 80, sm: 120 },
+                  fontWeight: 600,
+                }}
               >
-                Add Transaction
+                {isMobile ? "New" : "New Transaction"}
               </Button>
             </Stack>
           </Grid>
         </Grid>
-        <Divider sx={{ my: 2 }} />
-        <Box sx={{ width: "100%", overflowX: "auto" }}>
-          <TransactionsList
-            transactions={transactions}
-            onViewTransaction={handleViewTransaction}
-            loading={isLoading}
-            error={
-              typeof transactionsError === "string"
-                ? transactionsError
-                : transactionsError
-                ? "Failed to load transactions."
-                : undefined
-            }
-          />
-        </Box>
-      </Paper>
+      </Box>
+
+      {/* Summary Cards Section */}
+      <Box mb={{ xs: 2, sm: 3, md: 4 }}>
+        <SummaryCards transactions={transactions} loading={isLoading} />
+      </Box>
+
+      {/* Main Content Section */}
+      <Box>
+        <Paper
+          elevation={3}
+          sx={{
+            borderRadius: "12px",
+            border: "1px solid",
+            borderColor: "divider",
+            overflow: "hidden",
+            boxShadow:
+              "0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)",
+          }}
+        >
+          {/* Search and Filters Header */}
+          <Box sx={{ p: { xs: 2, sm: 3 } }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={8} md={9}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    backgroundColor: "background.default",
+                    borderRadius: 2,
+                    px: 2,
+                    py: 1.5,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    "&:focus-within": {
+                      borderColor: "primary.main",
+                      boxShadow: "0 0 0 2px rgba(25, 118, 210, 0.2)",
+                    },
+                  }}
+                >
+                  <SearchIcon
+                    sx={{
+                      color: "text.secondary",
+                      mr: 1,
+                      fontSize: { xs: 18, sm: 20 },
+                    }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search transactions..."
+                    style={{
+                      flex: 1,
+                      border: "none",
+                      outline: "none",
+                      fontSize: isMobile ? "14px" : "16px",
+                      background: "transparent",
+                      color: "inherit",
+                    }}
+                  />
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} sm={4} md={3}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  justifyContent={{ xs: "flex-start", sm: "flex-end" }}
+                >
+                  <Button
+                    variant="outlined"
+                    startIcon={<FilterIcon />}
+                    size="small"
+                    sx={{ display: { sm: "none" } }}
+                  >
+                    Filter
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={handleOpenForm}
+                    startIcon={<AddIcon />}
+                    size="small"
+                    sx={{ display: { sm: "none" } }}
+                  >
+                    Add
+                  </Button>
+                </Stack>
+              </Grid>
+            </Grid>
+          </Box>
+
+          <Divider />
+
+          {/* Transactions List */}
+          <Box sx={{ p: { xs: 1, sm: 2 } }}>
+            <TransactionsList
+              transactions={transactions}
+              onViewTransaction={handleViewTransaction}
+              loading={isLoading}
+              error={
+                typeof transactionsError === "string"
+                  ? transactionsError
+                  : transactionsError
+                  ? "Failed to load transactions."
+                  : undefined
+              }
+            />
+          </Box>
+        </Paper>
+      </Box>
 
       {/* Transaction Form Dialog */}
       <TransactionForm

@@ -125,9 +125,9 @@ const Portfolio: React.FC<PortfolioProps> = ({
       </Stack>
 
       {/* Stats Cards */}
-      <Grid container spacing={3}>
+      <Grid container spacing={2} sx={{ m: -2 }}>
         {stats.map((stat, index) => (
-          <Grid item xs={12} sm={6} md={2.4} key={index}>
+          <Grid item xs={10} sm={6} md={4} key={index}>
             <Paper
               elevation={2}
               sx={{
@@ -139,7 +139,7 @@ const Portfolio: React.FC<PortfolioProps> = ({
                 justifyContent: "space-between",
               }}
             >
-              <Stack spacing={1}>
+              <Stack spacing={1} alignItems="center">
                 <Avatar
                   sx={{
                     bgcolor: `${stat.color}.light`,
@@ -160,23 +160,17 @@ const Portfolio: React.FC<PortfolioProps> = ({
             </Paper>
           </Grid>
         ))}
-      </Grid>
-
-      {/* Lower Section */}
-      <Grid container spacing={3}>
-        {/* Monthly Performance */}
         <Grid item xs={12} md={6}>
-          <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4, height: "100%" }}>
-            <Stack spacing={2}>
+          <Paper
+            elevation={2}
+            sx={{ mr: 7, p: 4, borderRadius: 4, height: "100%" }}
+          >
+            <Stack spacing={2} alignItems="center">
               <Typography variant="h6" fontWeight="600">
                 Performance Metrics
               </Typography>
               <Divider />
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-              >
+              <Stack direction="row" alignItems="center" spacing={2}>
                 <Typography variant="body1" color="text.secondary">
                   Overall ROI
                 </Typography>
@@ -190,17 +184,18 @@ const Portfolio: React.FC<PortfolioProps> = ({
             </Stack>
           </Paper>
         </Grid>
-
-        {/* Portfolio Health */}
         <Grid item xs={12} md={6}>
-          <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4, height: "100%" }}>
-            <Stack spacing={2}>
+          <Paper
+            elevation={2}
+            sx={{ mr: 7, p: 4, borderRadius: 4, height: "100%" }}
+          >
+            <Stack spacing={2} alignItems="center">
               <Typography variant="h6" fontWeight="600">
                 Portfolio Health
               </Typography>
               <Divider />
-              <Stack spacing={2.5}>
-                <Stack>
+              <Stack spacing={2.5} alignItems="center" width="100%">
+                <Stack width="100%">
                   <Stack
                     direction="row"
                     justifyContent="space-between"
@@ -224,6 +219,66 @@ const Portfolio: React.FC<PortfolioProps> = ({
             </Stack>
           </Paper>
         </Grid>
+      </Grid>
+
+      {/* Lower Section */}
+      <Grid container spacing={3}>
+        {/* Monthly Performance */}
+        {/* <Grid item xs={12} md={6}>
+          <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4, height: "100%" }}>
+            <Stack spacing={2} alignItems="center">
+              <Typography variant="h6" fontWeight="600">
+                Performance Metrics
+              </Typography>
+              <Divider />
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <Typography variant="body1" color="text.secondary">
+                  Overall ROI
+                </Typography>
+                <Chip
+                  label={`${formatPercentage(risk_taker_interest)}`}
+                  color={risk_taker_interest >= 0 ? "success" : "error"}
+                  size="small"
+                  sx={{ fontWeight: "bold" }}
+                />
+              </Stack>
+            </Stack>
+          </Paper>
+        </Grid> */}
+
+        {/* Portfolio Health */}
+        {/* <Grid item xs={12} md={6}>
+          <Paper elevation={2} sx={{ p: 2.5, borderRadius: 4, height: "100%" }}>
+            <Stack spacing={2} alignItems="center">
+              <Typography variant="h6" fontWeight="600">
+                Portfolio Health
+              </Typography>
+              <Divider />
+              <Stack spacing={2.5} alignItems="center" width="100%">
+                <Stack width="100%">
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    mb={0.5}
+                  >
+                    <Typography variant="body1">
+                      Active Transaction Load
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {active_transactions} / 10
+                    </Typography>
+                  </Stack>
+                  <LinearProgress
+                    variant="determinate"
+                    value={Math.min((active_transactions / 10) * 100, 100)}
+                    color="warning"
+                    sx={{ height: 10, borderRadius: 5 }}
+                  />
+                </Stack>
+              </Stack>
+            </Stack>
+          </Paper>
+        </Grid> */}
       </Grid>
     </Stack>
   );
