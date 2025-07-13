@@ -63,7 +63,7 @@ const LoginForm: React.FC = () => {
           mb: 3,
           textAlign: "center",
           fontWeight: 600,
-          color: "#fff",
+          color: "black",
           fontSize: { xs: "1.125rem", sm: "1.25rem" },
         }}
       >

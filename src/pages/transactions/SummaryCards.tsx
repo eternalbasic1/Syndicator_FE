@@ -1,10 +1,11 @@
 import React from "react";
-import { Grid, Typography, Box, Paper } from "@mui/material";
-import StatCard from "../../components/common/StatCard";
+import { Typography, Box, useTheme, useMediaQuery } from "@mui/material";
+import StatsCard from "../../components/dashboard/StatsCard";
 import {
   AccountBalance as AccountBalanceIcon,
   TrendingUp as TrendingUpIcon,
   MonetizationOn as MonetizationOnIcon,
+  Percent as PercentIcon,
 } from "@mui/icons-material";
 import type {
   Transaction,
@@ -22,31 +23,47 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
   loading = false,
 }) => {
   const { user } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   if (loading) {
     return (
-      <Box sx={{ maxWidth: 1200, mx: "auto", mb: 4 }}>
-        <Paper
-          elevation={2}
-          sx={{ p: 3, borderRadius: 4, bgcolor: "background.default" }}
+      <Box>
+        <Typography
+          variant={isMobile ? "h6" : "h5"}
+          fontWeight={600}
+          color="text.primary"
+          sx={{ mb: { xs: 2, sm: 3 } }}
         >
-          <Grid container spacing={5}>
-            {[1, 2, 3, 4].map((i) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
-                <StatCard
-                  icon={<AccountBalanceIcon />}
-                  label="Loading..."
-                  value={0}
-                  color="#e5e7eb"
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Paper>
+          Quick Stats
+        </Typography>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: { xs: 2, sm: 3 } }}>
+          {[1, 2, 3, 4].map((i) => (
+            <Box
+              key={i}
+              sx={{
+                flex: {
+                  xs: "1 1 calc(50% - 8px)",
+                  sm: "1 1 calc(50% - 12px)",
+                  md: "1 1 calc(25% - 18px)",
+                },
+              }}
+            >
+              <StatsCard
+                title="Loading..."
+                value="₹0"
+                icon={<AccountBalanceIcon />}
+                color="primary"
+                loading={true}
+              />
+            </Box>
+          ))}
+        </Box>
       </Box>
     );
   }
 
-  const totalPrincipal = transactions.reduce<number>((sum, t) => {
+  const totalPrincipal = transactions.reduce((sum, t) => {
     const userEntry = t.splitwise_entries?.find(
       (entry: SplitwiseEntry) => entry.syndicator_id === user?.user_id
     );
@@ -56,7 +73,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
     return sum;
   }, 0);
 
-  const totalGrossInterest = transactions.reduce<number>((sum, t) => {
+  const totalGrossInterest = transactions.reduce((sum, t) => {
     const userEntry = t.splitwise_entries?.find(
       (entry: SplitwiseEntry) => entry.syndicator_id === user?.user_id
     );
@@ -68,7 +85,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
     return sum;
   }, 0);
 
-  const totalNetInterest = transactions.reduce<number>((sum, t) => {
+  const totalNetInterest = transactions.reduce((sum, t) => {
     const userEntry = t.splitwise_entries?.find(
       (entry: SplitwiseEntry) => entry.syndicator_id === user?.user_id
     );
@@ -79,78 +96,87 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
   }, 0);
 
   const totalCommissionEarned = Array.isArray(transactions)
-    ? transactions.reduce<number>((sum, tx) => {
+    ? transactions.reduce((sum, tx) => {
         const userEntry = tx.splitwise_entries?.find(
           (entry: SplitwiseEntry) => entry.syndicator_id === tx.risk_taker_id
         );
         if (userEntry?.syndicator_id === user?.user_id) {
           return sum + (tx.total_commission_earned || 0);
         }
-        return sum; // Return current sum, not 0
+        return sum;
       }, 0)
     : 0;
 
-  // const activeSyndicates = transactions.length;
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
-  const statCards = [
+  const statsData = [
     {
-      icon: <AccountBalanceIcon fontSize="inherit" />,
-      label: "Total Principal",
-      value: `₹${totalPrincipal.toLocaleString()}`,
-      color: "#6366f1",
-      description: "Your invested amount",
+      title: "Total Principal",
+      value: formatCurrency(totalPrincipal),
+      icon: <AccountBalanceIcon />,
+      color: "primary" as const,
     },
     {
-      icon: <TrendingUpIcon fontSize="inherit" />,
-      label: "Total Gross Interest",
-      value: `₹${totalGrossInterest.toLocaleString()}`,
-      color: "#22c55e",
-      description: "Your earned interest before commission",
+      title: "Total Gross Interest",
+      value: formatCurrency(totalGrossInterest),
+      icon: <TrendingUpIcon />,
+      color: "success" as const,
     },
     {
-      icon: <TrendingUpIcon fontSize="inherit" />,
-      label: "Total Net Interest",
-      value: `₹${totalNetInterest.toLocaleString()}`,
-      color: "#16a34a",
-      description: "Your earned interest after commission",
+      title: "Total Net Interest",
+      value: formatCurrency(totalNetInterest),
+      icon: <MonetizationOnIcon />,
+      color: "info" as const,
     },
     {
-      icon: <MonetizationOnIcon fontSize="inherit" />,
-      label: "Total Commission",
-      value: `₹${totalCommissionEarned.toLocaleString()}`,
-      color: "#f59e42",
-      description: "Your earned commission",
+      title: "Total Commission",
+      value: formatCurrency(totalCommissionEarned),
+      icon: <PercentIcon />,
+      color: "warning" as const,
     },
-    // {
-    //   icon: <PeopleIcon fontSize="inherit" />,
-    //   label: "Active Syndicates",
-    //   value: activeSyndicates,
-    //   color: "#3b82f6",
-    //   description: "Active investment groups",
-    // },
   ];
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: "auto", mb: 4 }}>
-      <Typography variant="h6" fontWeight={700} mb={2}>
+    <Box>
+      <Typography
+        variant={isMobile ? "h6" : "h5"}
+        fontWeight={600}
+        color="text.primary"
+        sx={{ mb: { xs: 2, sm: 3 } }}
+      >
         Quick Stats
       </Typography>
 
-      <Grid container spacing={5}>
-        {statCards.map((card) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={card.label}>
-            <Box
-              sx={{
-                minWidth: 220,
-                boxShadow: "0 2px 16px 0 rgba(60,60,60,0.06)",
-                borderRadius: 4,
-              }}
-            >
-              <StatCard {...card} />
-            </Box>
-          </Grid>
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: { xs: 2, sm: 3 } }}>
+        {statsData.map((stat, index) => (
+          <Box
+            key={index}
+            sx={{
+              flex: {
+                xs: "1 1 calc(50% - 8px)",
+                sm: "1 1 calc(50% - 12px)",
+                md: "1 1 calc(25% - 18px)",
+              },
+            }}
+          >
+            <StatsCard
+              title={stat.title}
+              value={stat.value}
+              icon={stat.icon}
+              color={stat.color}
+              loading={false}
+            />
+          </Box>
         ))}
-      </Grid>
+      </Box>
     </Box>
   );
 };

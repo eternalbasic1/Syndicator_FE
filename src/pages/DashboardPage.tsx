@@ -4,7 +4,6 @@ import {
   Box,
   Typography,
   Alert,
-  Grid,
   Container,
   Paper,
   Stack,
@@ -20,7 +19,6 @@ import {
 } from "@mui/icons-material";
 
 import QuickActions from "../components/dashboard/QuickActions";
-import GridItem from "../components/common/GridItem";
 import { useAuth } from "../hooks/useAuth";
 import { useGetAllTransactionsQuery } from "../store/api/transactionApi";
 import { useGetFriendRequestsQuery } from "../store/api/friendApi";
@@ -33,6 +31,7 @@ const DashboardPage: FunctionComponent = () => {
   const { user } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
   const { data: transactionsResponse, isLoading: isTransactionsLoading } =
     useGetAllTransactionsQuery(undefined, {
@@ -177,12 +176,12 @@ const DashboardPage: FunctionComponent = () => {
         py: { xs: 2, sm: 3, md: 4 },
       }}
     >
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3 } }}>
         <Stack spacing={{ xs: 2, sm: 3, md: 4 }}>
           {/* Header */}
           <Box>
             <Typography
-              variant={isMobile ? "h5" : "h4"}
+              variant={isMobile ? "h5" : isTablet ? "h4" : "h3"}
               component="h1"
               fontWeight="bold"
               sx={{ mb: { xs: 0.5, sm: 1 } }}
@@ -200,8 +199,18 @@ const DashboardPage: FunctionComponent = () => {
           </Box>
 
           {/* Stats Cards */}
-          <Grid container spacing={{ xs: 2, sm: 3 }}>
-            <GridItem xs={12} sm={6} md={3}>
+          <Box
+            sx={{ display: "flex", flexWrap: "wrap", gap: { xs: 2, sm: 3 } }}
+          >
+            <Box
+              sx={{
+                flex: {
+                  xs: "1 1 calc(50% - 8px)",
+                  sm: "1 1 calc(50% - 12px)",
+                  md: "1 1 calc(25% - 18px)",
+                },
+              }}
+            >
               <StatsCard
                 title="Total Invested"
                 value={`₹${stats.totalPrincipal.toLocaleString()}`}
@@ -209,8 +218,16 @@ const DashboardPage: FunctionComponent = () => {
                 color="primary"
                 loading={isTransactionsLoading}
               />
-            </GridItem>
-            <GridItem xs={12} sm={6} md={3}>
+            </Box>
+            <Box
+              sx={{
+                flex: {
+                  xs: "1 1 calc(50% - 8px)",
+                  sm: "1 1 calc(50% - 12px)",
+                  md: "1 1 calc(25% - 18px)",
+                },
+              }}
+            >
               <StatsCard
                 title="Total Returns"
                 value={`₹${stats.totalreturns.toLocaleString()}`}
@@ -218,8 +235,16 @@ const DashboardPage: FunctionComponent = () => {
                 color="success"
                 loading={isTransactionsLoading}
               />
-            </GridItem>
-            <GridItem xs={12} sm={6} md={3}>
+            </Box>
+            <Box
+              sx={{
+                flex: {
+                  xs: "1 1 calc(50% - 8px)",
+                  sm: "1 1 calc(50% - 12px)",
+                  md: "1 1 calc(25% - 18px)",
+                },
+              }}
+            >
               <StatsCard
                 title="Total Commission"
                 value={`₹${stats.totalCommissionEarned.toLocaleString()}`}
@@ -227,8 +252,16 @@ const DashboardPage: FunctionComponent = () => {
                 color="warning"
                 loading={isTransactionsLoading}
               />
-            </GridItem>
-            <GridItem xs={12} sm={6} md={3}>
+            </Box>
+            <Box
+              sx={{
+                flex: {
+                  xs: "1 1 calc(50% - 8px)",
+                  sm: "1 1 calc(50% - 12px)",
+                  md: "1 1 calc(25% - 18px)",
+                },
+              }}
+            >
               <StatsCard
                 title="Active Syndications"
                 value={stats.activeTransactions.toString()}
@@ -236,8 +269,8 @@ const DashboardPage: FunctionComponent = () => {
                 color="info"
                 loading={isTransactionsLoading}
               />
-            </GridItem>
-          </Grid>
+            </Box>
+          </Box>
 
           {isFriendsError && (
             <Alert
@@ -249,9 +282,13 @@ const DashboardPage: FunctionComponent = () => {
           )}
 
           {/* Main Content */}
-          <Grid container spacing={{ xs: 2, sm: 3 }}>
+          <Box
+            sx={{ display: "flex", flexWrap: "wrap", gap: { xs: 2, sm: 3 } }}
+          >
             {/* Recent Transactions */}
-            <GridItem xs={12} lg={7}>
+            <Box
+              sx={{ flex: { xs: "1 1 100%", lg: "1 1 calc(58.33% - 12px)" } }}
+            >
               <Paper
                 elevation={3}
                 sx={{
@@ -264,10 +301,12 @@ const DashboardPage: FunctionComponent = () => {
               >
                 <RecentTransactions transactions={transactions} />
               </Paper>
-            </GridItem>
+            </Box>
 
             {/* Quick Actions & Stats */}
-            <GridItem xs={12} lg={5}>
+            <Box
+              sx={{ flex: { xs: "1 1 100%", lg: "1 1 calc(41.67% - 12px)" } }}
+            >
               <Stack spacing={{ xs: 2, sm: 3 }}>
                 <QuickActions />
                 <QuickStats
@@ -275,8 +314,8 @@ const DashboardPage: FunctionComponent = () => {
                   pendingRequests={stats.pendingRequests}
                 />
               </Stack>
-            </GridItem>
-          </Grid>
+            </Box>
+          </Box>
         </Stack>
       </Container>
     </Box>

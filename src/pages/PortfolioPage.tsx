@@ -5,8 +5,9 @@ import {
   Typography,
   Paper,
   CircularProgress,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
-import { Grid } from "@mui/material";
 import {
   useGetPortfolioQuery,
   useGetAllTransactionsQuery,
@@ -27,6 +28,9 @@ const PortfolioPage: React.FC = () => {
   const { data: transactionsResponse, isLoading: transactionsLoading } =
     useGetAllTransactionsQuery();
   const { user } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
   const allTransactions = useMemo<Transaction[]>(() => {
     if (!transactionsResponse) return [];
@@ -133,16 +137,6 @@ const PortfolioPage: React.FC = () => {
     }, 0);
   }, [allTransactions, user]);
 
-  // Calculate total commission earned from transactions (as is)
-  // const totalCommissionEarned = useMemo(
-  //   () =>
-  //     allTransactions.reduce(
-  //       (sum, tx) => sum + (tx.total_commission_earned || 0),
-  //       0
-  //   ),
-  //   [allTransactions]
-  // );
-
   // Calculate total value as corpus + interest
   const totalValue = useMemo(
     () => riskTakerCorpus + riskTakerInterest,
@@ -165,59 +159,83 @@ const PortfolioPage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Container
+      maxWidth="xl"
+      sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}
+    >
       <Typography
-        variant="h4"
+        variant={isMobile ? "h5" : isTablet ? "h4" : "h3"}
         component="h1"
-        sx={{ mb: 4, fontWeight: "bold" }}
+        sx={{ mb: { xs: 2, sm: 3, md: 4 }, fontWeight: "bold" }}
       >
         Portfolio Overview
       </Typography>
 
-      <Grid container spacing={3}>
+      <Box
+        sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, sm: 3 } }}
+      >
         {/* Portfolio Summary */}
-        <Grid item xs={12}>
-          <Paper elevation={2} sx={{ p: 3, borderRadius: 4 }}>
-            <Portfolio
-              summary={{
-                risk_taker_corpus: riskTakerCorpus,
-                risk_taker_interest: riskTakerInterest,
-                total_commission_earned:
-                  portfolioData?.breakdown?.as_risk_taker?.commission_earned ??
-                  0,
-                total_value: totalValue,
-                active_transactions: allTransactions.filter(
-                  (tx) =>
-                    tx.risk_taker_id === user?.user_id ||
-                    tx.risk_taker_username === user?.username
-                ).length,
-              }}
-              isLoading={isLoading}
-            />
-          </Paper>
-        </Grid>
+        <Paper
+          elevation={3}
+          sx={{
+            p: { xs: 2, sm: 3 },
+            borderRadius: "12px",
+            boxShadow:
+              "0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)",
+          }}
+        >
+          <Portfolio
+            summary={{
+              risk_taker_corpus: riskTakerCorpus,
+              risk_taker_interest: riskTakerInterest,
+              total_commission_earned:
+                portfolioData?.breakdown?.as_risk_taker?.commission_earned ?? 0,
+              total_value: totalValue,
+              active_transactions: allTransactions.filter(
+                (tx) =>
+                  tx.risk_taker_id === user?.user_id ||
+                  tx.risk_taker_username === user?.username
+              ).length,
+            }}
+            isLoading={isLoading}
+          />
+        </Paper>
 
         {/* Detailed Statistics */}
-        <Grid item xs={12}>
-          <Paper elevation={2} sx={{ p: 3, borderRadius: 4 }}>
-            <PortfolioStats
-              transactions={allTransactions}
-              totalPrincipal={portfolioSummary.total_principal_amount}
-              totalInterest={portfolioSummary.total_interest_after_commission}
-              loading={isLoading}
-            />
-          </Paper>
-        </Grid>
+        <Paper
+          elevation={3}
+          sx={{
+            p: { xs: 2, sm: 3 },
+            borderRadius: "12px",
+            boxShadow:
+              "0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)",
+          }}
+        >
+          <PortfolioStats
+            transactions={allTransactions}
+            totalPrincipal={portfolioSummary.total_principal_amount}
+            totalInterest={portfolioSummary.total_interest_after_commission}
+            loading={isLoading}
+          />
+        </Paper>
 
         {/* Portfolio Distribution & Monthly Performance */}
-        <Grid item xs={12}>
+        <Paper
+          elevation={3}
+          sx={{
+            p: { xs: 2, sm: 3 },
+            borderRadius: "12px",
+            boxShadow:
+              "0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)",
+          }}
+        >
           <PortfolioChart
             transactions={allTransactions}
             totalPrincipal={riskTakerCorpus}
             totalInterest={riskTakerInterest}
           />
-        </Grid>
-      </Grid>
+        </Paper>
+      </Box>
     </Container>
   );
 };

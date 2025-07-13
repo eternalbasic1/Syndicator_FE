@@ -18,10 +18,10 @@ const QuickActions: React.FC = () => {
 
   return (
     <Paper
-      elevation={2}
+      elevation={3}
       sx={{
         p: { xs: 2, sm: 2.5 },
-        borderRadius: 4,
+        borderRadius: "12px",
         height: "100%",
         boxShadow:
           "0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03)",
