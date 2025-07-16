@@ -41,6 +41,9 @@ export interface Transaction {
   total_commission_earned: number;
   created_at: string;
   start_date: string;
+  end_date: string;
+  lender_name: string | null;
+  month_period_of_loan: number;
   splitwise_entries: SplitwiseEntry[];
 }
 

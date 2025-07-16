@@ -88,6 +88,9 @@ const DashboardPage: FunctionComponent = () => {
         total_interest: interest,
         created_at: (recordTx.created_at as string) || new Date().toISOString(),
         start_date: (recordTx.start_date as string) || new Date().toISOString(),
+        end_date: (recordTx.end_date as string) || "",
+        lender_name: (recordTx.lender_name as string) ?? null,
+        month_period_of_loan: (recordTx.month_period_of_loan as number) ?? 0,
         splitwise_entries: Array.isArray(recordTx.splitwise_entries)
           ? recordTx.splitwise_entries
           : [],

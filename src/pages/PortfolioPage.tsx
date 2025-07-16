@@ -51,6 +51,9 @@ const PortfolioPage: React.FC = () => {
         total_commission_earned: tx.total_commission_earned || 0,
         created_at: tx.created_at || new Date().toISOString(),
         start_date: tx.start_date || new Date().toISOString(),
+        end_date: tx.end_date || "",
+        lender_name: tx.lender_name ?? null,
+        month_period_of_loan: tx.month_period_of_loan ?? 0,
         splitwise_entries: tx.splitwise_entries || [],
       })
     );

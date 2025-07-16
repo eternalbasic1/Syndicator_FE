@@ -240,7 +240,10 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                 <TableHead>
                   <TableRow>
                     <TableCell sx={tableStyles.headerCell}>
-                      Transaction
+                      Lender Name
+                    </TableCell>
+                    <TableCell sx={tableStyles.headerCell}>
+                      Loan Period
                     </TableCell>
                     <TableCell sx={tableStyles.headerCell} align="right">
                       Amount
@@ -265,6 +268,9 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                     <TableRow key={row} sx={tableStyles.loadingRow}>
                       <TableCell sx={tableStyles.bodyCell}>
                         <Skeleton variant="text" width={120} />
+                      </TableCell>
+                      <TableCell sx={tableStyles.bodyCell}>
+                        <Skeleton variant="text" width={80} />
                       </TableCell>
                       <TableCell sx={tableStyles.bodyCell} align="right">
                         <Skeleton
@@ -391,7 +397,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                   alignItems="center"
                 >
                   <Typography variant="subtitle2" fontWeight={600}>
-                    {transaction.transaction_id.slice(0, 8)}...
+                    {transaction.lender_name || "No Lender Name"}
                   </Typography>
                   <IconButton
                     size="small"
@@ -516,7 +522,13 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
               <TableCell sx={tableStyles.headerCell}>
                 <Box display="flex" alignItems="center">
                   <WalletIcon sx={{ fontSize: 16, mr: 1, opacity: 0.7 }} />
-                  Transaction
+                  Lender Name
+                </Box>
+              </TableCell>
+              <TableCell sx={tableStyles.headerCell}>
+                <Box display="flex" alignItems="center">
+                  <EventIcon sx={{ fontSize: 16, mr: 1, opacity: 0.7 }} />
+                  Loan Period
                 </Box>
               </TableCell>
               <TableCell sx={tableStyles.headerCell} align="right">
@@ -573,12 +585,16 @@ const TransactionsList: React.FC<TransactionsListProps> = ({
                   <TableCell sx={tableStyles.bodyCell}>
                     <Box>
                       <Typography variant="subtitle2" fontWeight={600} noWrap>
-                        {transaction.transaction_id.slice(0, 8)}...
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {transaction.transaction_id ? "Transaction" : "Loan"}
+                        {transaction.lender_name || "No Lender Name"}
                       </Typography>
                     </Box>
+                  </TableCell>
+                  <TableCell sx={tableStyles.bodyCell}>
+                    <Typography variant="body2">
+                      {transaction.month_period_of_loan
+                        ? `${transaction.month_period_of_loan} month(s)`
+                        : "-"}
+                    </Typography>
                   </TableCell>
 
                   <TableCell
