@@ -67,6 +67,10 @@ export interface CreateTransactionRequest {
   risk_taker_flag: boolean;
   risk_taker_commission: number;
   syndicate_details: SyndicateDetails;
+  start_date: string;
+  end_date: string;
+  lender_name: string;
+  month_period_of_loan: number;
 }
 
 export interface CommissionDetails {
@@ -131,4 +135,8 @@ export interface TransactionFormData {
   risk_taker_flag: boolean;
   risk_taker_commission: number;
   syndicate_details: SyndicateDetails;
+  start_date: string;
+  end_date: string;
+  lender_name: string;
+  month_period_of_loan: number;
 }

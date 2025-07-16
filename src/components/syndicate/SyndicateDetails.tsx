@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -18,7 +18,7 @@ import {
   ListItemSecondaryAction,
   TextField,
   Alert,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Close as CloseIcon,
   Person as PersonIcon,
@@ -26,8 +26,8 @@ import {
   AccountBox as AccountBoxIcon,
   Add as AddIcon,
   Group as GroupIcon,
-} from '@mui/icons-material';
-import type { SyndicateMember } from '../../types/syndicate.types';
+} from "@mui/icons-material";
+import type { SyndicateMember } from "../../types/syndicate.types";
 
 interface SyndicateDetailsProps {
   open: boolean;
@@ -50,51 +50,67 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
   friend,
   syndicateData,
 }) => {
-  const [transactionAmount, setTransactionAmount] = useState('');
-  const [interestRate, setInterestRate] = useState('');
+  const [transactionAmount, setTransactionAmount] = useState("");
+  const [interestRate, setInterestRate] = useState("");
+  const [lenderName, setLenderName] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [monthPeriodOfLoan, setMonthPeriodOfLoan] = useState<number>(0);
 
   const getInitials = (name: string) => {
     return name
-      .split(' ')
-      .map(word => word.charAt(0))
-      .join('')
+      .split(" ")
+      .map((word) => word.charAt(0))
+      .join("")
       .toUpperCase()
       .slice(0, 2);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const handleCreateTransaction = () => {
     if (!friend) return;
-    
     try {
       const amount = parseFloat(transactionAmount);
       const interest = parseFloat(interestRate);
-      
       if (isNaN(amount) || amount <= 0) {
-        throw new Error('Please enter a valid amount');
+        throw new Error("Please enter a valid amount");
       }
-      
       if (isNaN(interest) || interest < 0) {
-        throw new Error('Please enter a valid interest rate');
+        throw new Error("Please enter a valid interest rate");
       }
-
+      if (!lenderName) {
+        throw new Error("Please enter a lender name");
+      }
+      if (!startDate) {
+        throw new Error("Please select a start date");
+      }
+      if (!endDate) {
+        throw new Error("Please select an end date");
+      }
+      if (!monthPeriodOfLoan || monthPeriodOfLoan <= 0) {
+        throw new Error("Please enter a valid month period of loan");
+      }
       // TODO: Implement transaction creation logic
-      console.log('Creating transaction:', {
+      console.log("Creating transaction:", {
         friend,
         amount,
         interest,
+        lender_name: lenderName,
+        start_date: startDate,
+        end_date: endDate,
+        month_period_of_loan: monthPeriodOfLoan,
       });
     } catch (error) {
-      console.error('Transaction creation error:', error);
+      console.error("Transaction creation error:", error);
       // TODO: Show error message to user
     }
   };
@@ -111,7 +127,7 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
         sx: {
           borderRadius: 2,
           boxShadow: 4,
-          border: '1px solid rgba(0, 0, 0, 0.12)',
+          border: "1px solid rgba(0, 0, 0, 0.12)",
         },
       }}
     >
@@ -120,7 +136,7 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
           <Box display="flex" alignItems="center" gap={2}>
             <Avatar
               sx={{
-                bgcolor: 'primary.main',
+                bgcolor: "primary.main",
                 width: 48,
                 height: 48,
               }}
@@ -133,14 +149,10 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
             </Avatar>
             <Box>
               <Typography variant="h6" fontWeight="bold">
-                {friend ? (
-                  friend.name || friend.username
-                ) : (
-                  'Syndicate Overview'
-                )}
+                {friend ? friend.name || friend.username : "Syndicate Overview"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {friend ? `@${friend.username}` : 'Network Details'}
+                {friend ? `@${friend.username}` : "Network Details"}
               </Typography>
             </Box>
           </Box>
@@ -167,7 +179,7 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
                       Full Name
                     </Typography>
                     <Typography variant="body1">
-                      {friend.name || 'Not provided'}
+                      {friend.name || "Not provided"}
                     </Typography>
                   </Box>
                 </Box>
@@ -195,7 +207,10 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
                     <Typography variant="body2" color="text.secondary">
                       User ID
                     </Typography>
-                    <Typography variant="body1" sx={{ fontFamily: 'monospace' }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ fontFamily: "monospace" }}
+                    >
                       {friend.user_id}
                     </Typography>
                   </Box>
@@ -211,7 +226,8 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
                 Quick Transaction
               </Typography>
               <Alert severity="info" sx={{ mb: 2 }}>
-                Create a syndicated transaction with {friend.name || friend.username}
+                Create a syndicated transaction with{" "}
+                {friend.name || friend.username}
               </Alert>
               <Box display="flex" flexDirection="column" gap={2}>
                 <TextField
@@ -236,6 +252,38 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
                     endAdornment: <Typography sx={{ ml: 1 }}>%</Typography>,
                   }}
                 />
+                <TextField
+                  label="Lender Name"
+                  type="text"
+                  value={lenderName}
+                  onChange={(e) => setLenderName(e.target.value)}
+                  placeholder="Enter lender name"
+                  fullWidth
+                />
+                <TextField
+                  label="Start Date"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                />
+                <TextField
+                  label="End Date"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                />
+                <TextField
+                  label="Month Period of Loan"
+                  type="number"
+                  value={monthPeriodOfLoan}
+                  onChange={(e) => setMonthPeriodOfLoan(Number(e.target.value))}
+                  placeholder="Enter month period of loan"
+                  fullWidth
+                />
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
@@ -254,7 +302,7 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
             <Typography variant="h6" gutterBottom>
               Syndicate Network Overview
             </Typography>
-            
+
             <Box mb={3}>
               <Box display="flex" gap={2} mb={2}>
                 <Chip
@@ -275,10 +323,15 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
             </Typography>
             <List>
               {syndicateData.friends.map((networkFriend, index) => (
-                <ListItem key={networkFriend.user_id} divider={index < syndicateData.friends.length - 1}>
+                <ListItem
+                  key={networkFriend.user_id}
+                  divider={index < syndicateData.friends.length - 1}
+                >
                   <ListItemAvatar>
-                    <Avatar sx={{ bgcolor: 'primary.main' }}>
-                      {getInitials(networkFriend.name || networkFriend.username)}
+                    <Avatar sx={{ bgcolor: "primary.main" }}>
+                      {getInitials(
+                        networkFriend.name || networkFriend.username
+                      )}
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
@@ -295,7 +348,12 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
                     }
                   />
                   <ListItemSecondaryAction>
-                    <Chip label="Active" size="small" color="success" variant="outlined" />
+                    <Chip
+                      label="Active"
+                      size="small"
+                      color="success"
+                      variant="outlined"
+                    />
                   </ListItemSecondaryAction>
                 </ListItem>
               ))}
@@ -309,11 +367,17 @@ const SyndicateDetails: React.FC<SyndicateDetailsProps> = ({
                 justifyContent="center"
                 py={4}
               >
-                <GroupIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+                <GroupIcon
+                  sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
+                />
                 <Typography variant="h6" color="text.secondary" gutterBottom>
                   No Network Members
                 </Typography>
-                <Typography variant="body2" color="text.secondary" textAlign="center">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  textAlign="center"
+                >
                   Start by adding friends to build your syndicate network
                 </Typography>
               </Box>
