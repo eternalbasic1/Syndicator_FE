@@ -169,6 +169,72 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
                 InputProps={{ endAdornment: "%" }}
               />
             </GridItem>
+            <GridItem xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Lender Name"
+                type="text"
+                value={formData.lender_name}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    lender_name: e.target.value,
+                  }))
+                }
+                error={!!errors.lender_name}
+                helperText={errors.lender_name}
+              />
+            </GridItem>
+            <GridItem xs={12} md={3}>
+              <TextField
+                fullWidth
+                label="Start Date"
+                type="date"
+                value={formData.start_date}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    start_date: e.target.value,
+                  }))
+                }
+                InputLabelProps={{ shrink: true }}
+                error={!!errors.start_date}
+                helperText={errors.start_date}
+              />
+            </GridItem>
+            <GridItem xs={12} md={3}>
+              <TextField
+                fullWidth
+                label="End Date"
+                type="date"
+                value={formData.end_date}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    end_date: e.target.value,
+                  }))
+                }
+                InputLabelProps={{ shrink: true }}
+                error={!!errors.end_date}
+                helperText={errors.end_date}
+              />
+            </GridItem>
+            <GridItem xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Month Period of Loan"
+                type="number"
+                value={formData.month_period_of_loan}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    month_period_of_loan: Number(e.target.value),
+                  }))
+                }
+                error={!!errors.month_period_of_loan}
+                helperText={errors.month_period_of_loan}
+              />
+            </GridItem>
             <GridItem xs={12}>
               <FormControl fullWidth>
                 <InputLabel>Select Syndicators (Optional)</InputLabel>

@@ -13,6 +13,10 @@ export const useTransactionForm = (
     risk_taker_flag: false,
     risk_taker_commission: 0,
     syndicate_details: {},
+    start_date: "",
+    end_date: "",
+    lender_name: "",
+    month_period_of_loan: 0,
     ...initialData,
   });
 
@@ -46,6 +50,20 @@ export const useTransactionForm = (
         newErrors.risk_taker_commission =
           "Commission can only be applied when there are syndicate members";
       }
+    }
+
+    if (!formData.lender_name) {
+      newErrors.lender_name = "Lender name is required";
+    }
+    if (!formData.start_date) {
+      newErrors.start_date = "Start date is required";
+    }
+    if (!formData.end_date) {
+      newErrors.end_date = "End date is required";
+    }
+    if (!formData.month_period_of_loan || formData.month_period_of_loan <= 0) {
+      newErrors.month_period_of_loan =
+        "Month period of loan must be greater than 0";
     }
 
     if (selectedFriends.length > 0) {
@@ -97,6 +115,10 @@ export const useTransactionForm = (
       risk_taker_flag: false,
       risk_taker_commission: 0,
       syndicate_details: {},
+      start_date: "",
+      end_date: "",
+      lender_name: "",
+      month_period_of_loan: 0,
       ...initialData,
     });
     setSelectedFriends([]);

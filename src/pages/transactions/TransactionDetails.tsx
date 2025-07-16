@@ -115,6 +115,34 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
                     {format(new Date(transaction.start_date), "PP")}
                   </Typography>
                 </GridItem>
+                <GridItem xs={12} md={6}>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    End Date
+                  </Typography>
+                  <Typography variant="body1" mb={2}>
+                    {transaction.end_date
+                      ? format(new Date(transaction.end_date), "PP")
+                      : "-"}
+                  </Typography>
+                </GridItem>
+                <GridItem xs={12} md={6}>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    Lender Name
+                  </Typography>
+                  <Typography variant="body1" mb={2}>
+                    {transaction.lender_name || "-"}
+                  </Typography>
+                </GridItem>
+                <GridItem xs={12} md={6}>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    Loan Period
+                  </Typography>
+                  <Typography variant="body1" mb={2}>
+                    {transaction.month_period_of_loan
+                      ? `${transaction.month_period_of_loan} month(s)`
+                      : "-"}
+                  </Typography>
+                </GridItem>
               </Grid>
             </CardContent>
           </Card>

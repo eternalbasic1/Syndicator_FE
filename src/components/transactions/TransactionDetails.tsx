@@ -178,6 +178,40 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
                       {new Date(transaction.created_at).toLocaleString()}
                     </Typography>
                   </Box>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      End Date
+                    </Typography>
+                    <Typography variant="body2">
+                      {transaction.end_date
+                        ? new Date(transaction.end_date).toLocaleDateString()
+                        : "-"}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      Lender Name
+                    </Typography>
+                    <Typography variant="body2">
+                      {transaction.lender_name || "-"}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      Loan Period
+                    </Typography>
+                    <Typography variant="body2">
+                      {transaction.month_period_of_loan
+                        ? `${transaction.month_period_of_loan} month(s)`
+                        : "-"}
+                    </Typography>
+                  </Box>
                 </Box>
               </Container>
             </CardContent>

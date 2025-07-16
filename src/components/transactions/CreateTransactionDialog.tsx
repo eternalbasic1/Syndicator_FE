@@ -52,6 +52,10 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
   const [syndicateDetails, setSyndicateDetails] = useState<SyndicateDetail[]>(
     []
   );
+  const [lenderName, setLenderName] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [monthPeriodOfLoan, setMonthPeriodOfLoan] = useState<number>(0);
   const [error, setError] = useState<string>("");
 
   const handleReset = () => {
@@ -61,6 +65,10 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
     setRiskTakerFlag(false);
     setRiskTakerCommission(0);
     setSyndicateDetails([]);
+    setLenderName("");
+    setStartDate("");
+    setEndDate("");
+    setMonthPeriodOfLoan(0);
     setError("");
   };
 
@@ -98,6 +106,23 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
 
     if (totalInterest <= 0) {
       setError("Total interest must be greater than 0");
+      return false;
+    }
+
+    if (!lenderName) {
+      setError("Lender name is required");
+      return false;
+    }
+    if (!startDate) {
+      setError("Start date is required");
+      return false;
+    }
+    if (!endDate) {
+      setError("End date is required");
+      return false;
+    }
+    if (!monthPeriodOfLoan || monthPeriodOfLoan <= 0) {
+      setError("Month period of loan must be greater than 0");
       return false;
     }
 
@@ -163,6 +188,10 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
         total_interest_amount: totalInterest,
         risk_taker_flag: riskTakerFlag,
         risk_taker_commission: riskTakerCommission,
+        lender_name: lenderName,
+        start_date: startDate,
+        end_date: endDate,
+        month_period_of_loan: monthPeriodOfLoan,
       };
 
       if (isSyndicated && syndicateDetails.length > 0) {
@@ -224,6 +253,48 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
                   }))
                 );
               }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Lender Name"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={lenderName}
+              onChange={(e) => setLenderName(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              label="Start Date"
+              type="date"
+              fullWidth
+              variant="outlined"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              label="End Date"
+              type="date"
+              fullWidth
+              variant="outlined"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Month Period of Loan"
+              type="number"
+              fullWidth
+              variant="outlined"
+              value={monthPeriodOfLoan || ""}
+              onChange={(e) => setMonthPeriodOfLoan(Number(e.target.value))}
             />
           </Grid>
         </Grid>
