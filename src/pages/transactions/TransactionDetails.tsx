@@ -472,12 +472,12 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({
                           ₹
                           {transaction.splitwise_entries
                             .reduce(
-                              (sum, entry) => sum + entry.original_interest,
+                              (sum, entry) => sum + entry.original_interest * entry.principal_amount / 100,
                               0
                             )
                             .toLocaleString()}
                         </Typography>
-                      </GridItem>
+                      </GridItem>   
                       <GridItem xs={12} md={3}>
                         <Typography variant="subtitle2" color="textSecondary">
                           Total Interest After Commission

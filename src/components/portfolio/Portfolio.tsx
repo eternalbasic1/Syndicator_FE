@@ -175,7 +175,7 @@ const Portfolio: React.FC<PortfolioProps> = ({
                   Overall ROI
                 </Typography>
                 <Chip
-                  label={`${formatPercentage(risk_taker_interest)}`}
+                  label={`${formatPercentage(risk_taker_interest/risk_taker_corpus*100)}`}
                   color={risk_taker_interest >= 0 ? "success" : "error"}
                   size="small"
                   sx={{ fontWeight: "bold" }}
